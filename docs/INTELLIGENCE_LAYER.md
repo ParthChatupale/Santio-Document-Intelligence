@@ -1,6 +1,6 @@
 # Evidence foundation, version 0.1
 
-The first implementation adds strict result contracts, an evidence index over saved Docling output, and limited attribution checks. It does not run an LLM or automatically extract semantic result records yet.
+The first implementation adds strict result contracts, an evidence index over saved Docling output, and limited attribution checks. This evidence CLI does not run an LLM or automatically extract semantic result records. A separate [paper-understanding workflow](PAPER_UNDERSTANDING.md) now uses a connected model for cited overviews, semantic relationships, and retrieval-backed questions. Those outputs do not populate the structured experiment records described here.
 
 The core now lives in the installable `pbl_docintel` package. See
 [Python/RAG integration](PYTHON_RAG_INTEGRATION.md) for adapter and chunk APIs.

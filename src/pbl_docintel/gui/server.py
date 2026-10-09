@@ -17,12 +17,28 @@ from urllib.parse import urlparse
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from pydantic import BaseModel, ConfigDict, Field
 
 from .. import DoclingAdapter, EvidenceAdapter, index_document, rag_chunks, validate_results
 from ..schema import EvidenceIndex, Location, ResultCollection
 
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024
+
+
+class ModelConnection(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    provider: str
+    url: str = Field(max_length=500)
+    model: str = Field(min_length=1, max_length=200)
+    key: str = Field(default="", max_length=1000)
+    keep_key: bool = False
+
+
+class QuestionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    question: str = Field(min_length=3, max_length=3000)
 
 
 def fingerprint(path: Path) -> str:
@@ -167,6 +183,10 @@ class Workspace:
                     location["display_rect"] = display_rect(original, index.document.pages)
                 units[key] = data
         exports = ["evidence", "rag", "docling"] if index else []
+        if index:
+            exports += ["text"]
+        if loaded.docling and loaded.docling.with_suffix(".md").is_file():
+            exports += ["fulltext"]
         if loaded.results:
             exports += ["results", "csv", "markdown", "checks"]
         return {"paper": loaded.paper, "source_sha256": loaded.source_hash,
@@ -187,6 +207,13 @@ def export(loaded: LoadedPaper, kind: str) -> tuple[bytes, str, str]:
         return as_json(index.model_dump(mode="json")), "application/json", "evidence.json"
     if kind == "docling" and loaded.docling:
         return loaded.docling.read_bytes(), "application/json", "docling.json"
+    if kind == "fulltext" and loaded.docling:
+        markdown = loaded.docling.with_suffix(".md")
+        if markdown.is_file():
+            return markdown.read_bytes(), "text/markdown", "document.md"
+    if kind == "text" and index:
+        lines = [u.text for u in index.units.values() if u.kind == "text" and u.text.strip()]
+        return "\n\n".join(lines).encode(), "text/plain", "extracted-text.txt"
     if kind == "rag" and index:
         chunks = rag_chunks(index, results=results)
         raw = "".join(json.dumps(c, ensure_ascii=False, allow_nan=False) + "\n" for c in chunks)
@@ -234,7 +261,8 @@ def export(loaded: LoadedPaper, kind: str) -> tuple[bytes, str, str]:
     raise KeyError("This export is unavailable for this paper")
 
 
-def create_app(root: Path) -> FastAPI:
+def create_app(root: Path, *, allowed_hosts: list[str] | None = None,
+               allowed_origins: tuple[str, ...] = ()) -> FastAPI:
     # Windows registry MIME settings can classify .mjs as text/plain. Module
     # scripts and workers require JavaScript MIME types with nosniff enabled.
     mimetypes.add_type("text/javascript", ".mjs")
@@ -242,14 +270,22 @@ def create_app(root: Path) -> FastAPI:
     workspace = Workspace(root)
     from .imports import Imports, new_upload_id
     imports = Imports(workspace)
+    from .intelligence import Intelligence
+    intelligence = Intelligence(workspace)
     @asynccontextmanager
     async def lifespan(app):
         yield
         imports.close()
+        intelligence.close()
     app = FastAPI(title="Research evidence workspace", docs_url=None, redoc_url=None, lifespan=lifespan)
     app.state.workspace = workspace
     app.state.imports = imports
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
+    app.state.intelligence = intelligence
+    app.add_middleware(TrustedHostMiddleware,
+                       allowed_hosts=allowed_hosts if allowed_hosts is not None else ["127.0.0.1", "localhost", "testserver"])
+    if allowed_origins:
+        app.add_middleware(CORSMiddleware, allow_origins=list(allowed_origins),
+                           allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
     static = Path(__file__).parent / "static"
 
     @app.middleware("http")
@@ -278,6 +314,8 @@ def create_app(root: Path) -> FastAPI:
 
     def same_origin(request: Request):
         origin = request.headers.get("origin")
+        if origin and origin in allowed_origins:
+            return
         if origin:
             parsed = urlparse(origin)
             if parsed.netloc != request.headers.get("host") or parsed.scheme not in {"http", "https"}:
@@ -288,6 +326,67 @@ def create_app(root: Path) -> FastAPI:
     @app.get("/api/imports")
     def jobs():
         return imports.list()
+
+    @app.get("/api/model")
+    def model_state():
+        return intelligence.model.public()
+
+    @app.post("/api/model")
+    def model_connection(body: ModelConnection, request: Request):
+        same_origin(request)
+        try:
+            return intelligence.configure(body.provider, body.url, body.model, body.key, body.keep_key)
+        except ValueError as error:
+            raise HTTPException(400, str(error)) from None
+
+    @app.post("/api/model/test")
+    def test_model(request: Request):
+        same_origin(request)
+        try:
+            response = intelligence.model.generate("Return a JSON object with ok=true. This is a connection check; no documents are included.", {},
+                                                  {"type": "object", "properties": {"ok": {"type": "boolean"}}, "required": ["ok"], "additionalProperties": False})
+            if response.get("ok") is not True:
+                raise ValueError("Model connected but did not return the requested JSON")
+            return {"ok": True}
+        except ValueError as error:
+            raise HTTPException(502, str(error)) from None
+
+    @app.get("/api/papers/{paper_id}/understanding")
+    def understanding(paper_id: str):
+        load(paper_id)
+        try:
+            return intelligence.state(paper_id)
+        except (ValueError, OSError) as error:
+            raise HTTPException(409, str(error)) from None
+
+    @app.post("/api/papers/{paper_id}/understanding", status_code=202)
+    def generate_understanding(paper_id: str, request: Request):
+        same_origin(request)
+        load(paper_id)
+        try:
+            return intelligence.start(paper_id, "analysis")
+        except ValueError as error:
+            raise HTTPException(409, str(error)) from None
+
+    @app.post("/api/papers/{paper_id}/questions", status_code=202)
+    def ask(paper_id: str, body: QuestionRequest, request: Request):
+        same_origin(request)
+        load(paper_id)
+        if len(body.question.strip()) < 3:
+            raise HTTPException(422, "Enter a question with at least three characters")
+        try:
+            return intelligence.start(paper_id, "question", body.question.strip())
+        except ValueError as error:
+            raise HTTPException(409, str(error)) from None
+
+    @app.get("/api/papers/{paper_id}/understanding/export")
+    def understanding_export(paper_id: str):
+        load(paper_id)
+        report = intelligence.state(paper_id)["report"]
+        if report is None:
+            raise HTTPException(404, "Generate paper understanding before exporting it")
+        return Response(json.dumps(report, ensure_ascii=False, indent=2), media_type="application/json",
+                        headers={"Content-Disposition": 'attachment; filename="paper-understanding.json"'})
 
     @app.post("/api/imports", status_code=202)
     async def upload(request: Request, filename: str, title: str = "", ocr: bool = False):

@@ -4,6 +4,10 @@ The React + TypeScript interface is implemented over the Python evidence SDK.
 It includes the supplied Waves WebGL1 shader, real PDF cover previews, a searchable
 library, PDF upload and Docling processing, original-page inspection, detected
 regions, provisional annotations, attribution findings, and evidence/RAG exports.
+The paper workspace also includes Overview, Relationships, Read, and Ask.
+See [model setup and paper understanding](PAPER_UNDERSTANDING.md) for NVIDIA,
+local Ollama, and reusable Python APIs. Generated views require a connected model;
+the extracted reading and evidence views work without one.
 
 ## Run from PowerShell
 
@@ -58,9 +62,27 @@ Library registrations are saved in `data/gui-library.json`; job states are in
 rewritten. An empty workspace can accept uploads without a hand-written manifest.
 User filenames are display metadata; storage paths use generated identifiers.
 
+## Understand and read a paper
+
+Open a paper to see **Overview**. Choose **Connect NVIDIA API**, enter your key
+and a model ID from NVIDIA Build, and save/test the connection. The test sends no
+paper content. **Analyze this paper** then reads the extracted text in batches
+and saves cited statements and semantic relationships. Generation sends the
+excerpts to the configured provider; local Ollama is available as an alternative.
+
+**Relationships** shows searchable subject–relation–object cards with supporting
+quotes. **Ask** retrieves evidence from this paper and lets the model request
+additional searches, up to three rounds. Partial answers and missing evidence
+remain visible. Click a citation to open the source region in **Evidence**.
+Source checks establish quote accuracy and location, not the correctness of
+the model's interpretation.
+
+**Read** displays the actual extracted prose with search, source-page links and
+a download of the saved Docling Markdown. It does not require a model.
+
 ## Explore evidence
 
-Open a paper from the library. Select **Results, Tables, Figures, Equations, or
+Select the **Evidence** workspace tab, then **Results, Tables, Figures, Equations, or
 Text** in the evidence explorer. Use its picker, search, or expandable list.
 The original PDF opens at the selected evidence location. On a narrow display,
 use **Original source / Evidence** tabs; selection is preserved between them.
@@ -80,20 +102,23 @@ explicitly labeled as lacking transcription. Semantic experiment extraction is
 not implemented. The existing nine Tetris3D annotations are manually curated;
 new uploads receive detected evidence, not invented experiment annotations.
 
-## Review, comparison, and exports
+## Issues, results, and exports
 
-Review shows unresolved/failed attribution findings. Raw merged values remain
+Issues shows unresolved/failed attribution findings. Raw merged values remain
 intact. Passing machine checks do not establish human review or scientific
 correctness. Review decisions and corrections are currently read-only.
 
-Compare is a provisional source-linked result table. Experiment compatibility,
+Results is a provisional source-linked result table. Experiment compatibility,
 cross-paper ranking and automatic leaderboards are not implemented.
 
 Export offers available evidence JSON, unchanged Docling JSON, RAG JSONL, and
-result JSON/CSV/Markdown and attribution checks when annotations exist. JSON
+result JSON/CSV/Markdown and attribution checks when annotations exist. The saved
+Docling Markdown and extracted prose can also be downloaded. Generated understanding
+has a separate JSON export in Overview. JSON
 preserves exact text; CSV protects spreadsheet formula fields. Original source
 fingerprints and evidence IDs remain in the SDK exports. RAG chunks can be used
-by Python/retrieval systems; the application does not yet generate RAG answers.
+by Python/retrieval systems; Ask now generates cited answers using lexical retrieval
+and a connected model. Cross-paper question answering is not implemented.
 
 ## Implementation and validation
 
@@ -118,14 +143,17 @@ npm run build
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-The 53 Python tests cover the SDK, attribution, source identity, local HTTP
+The 74 Python tests cover the SDK, attribution, source identity, local HTTP
 boundaries, persistent registrations/jobs, invalid/oversized uploads and foreign
-origins. Five frontend tests cover animation timing, pause/resume, explicit
+origins, model request contracts, citation validation, question search rounds,
+generation failures and report persistence. Five frontend tests cover animation timing, pause/resume, explicit
 motion preferences and PDF coordinate projection including rotation/crop offsets.
 Browser QA covers the actual library, result selection,
 review ambiguity, original source/crops, exports, shader compilation, and narrow
 layouts. A real one-page upload was converted and indexed in an isolated test
 workspace without changing the main library. These checks do not establish
-semantic extraction accuracy or hosted-product readiness.
+semantic extraction accuracy or hosted-product readiness. Model tests inject
+explicit fixtures; a real NVIDIA generation requires an API key and has not
+been evaluated for quality on this corpus.
 
 `Architecture_Final.pptx` is unrelated and excluded from this implementation.

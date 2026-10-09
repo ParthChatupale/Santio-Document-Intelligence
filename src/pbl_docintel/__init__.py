@@ -6,7 +6,10 @@ from .adapters import DoclingAdapter, DocumentAdapter, EvidenceAdapter, index_do
 from .rag import rag_chunks, resolve_evidence, to_langchain_documents, write_rag_jsonl
 from .schema import EvidenceIndex, ResultCollection, ResultRecord
 from .validation import check_collection as validate_results
+from .understanding import analyze, answer
+from .models import HTTPJSONModel
 
 __all__ = ["DoclingAdapter", "DocumentAdapter", "EvidenceAdapter", "EvidenceIndex",
            "ResultCollection", "ResultRecord", "index_document", "rag_chunks",
-           "resolve_evidence", "to_langchain_documents", "validate_results", "write_rag_jsonl"]
+           "resolve_evidence", "to_langchain_documents", "validate_results", "write_rag_jsonl",
+           "analyze", "answer", "HTTPJSONModel"]

@@ -6,6 +6,7 @@ import type { MotionPreference } from './animation';
 import { Icon } from './Icons';
 import { Cover } from './Cover';
 import { PdfViewer } from './PdfViewer';
+import { Understanding, PaperText } from './Understanding';
 import { json, paperUrl, pageOf, supportingRefs, unitTitle } from './types';
 import type { Paper, DocumentData, Job, Unit, Result } from './types';
 
@@ -120,7 +121,7 @@ export default function App() {
     {modal === 'import' && <ImportDialog jobs={jobs} update={refreshJobs} done={() => {refresh(); refreshJobs();}} open={id => {setModal(null); navigate(id);}} close={() => setModal(null)}/>}
     {modal === 'exports' && data && <Dialog title="Export this paper" close={() => setModal(null)}>
       <p className="muted">Evidence and provenance from this document. Result annotations retain their review status.</p>
-      <div className="export-list">{data.exports.map(kind => <a key={kind} href={paperUrl(data.paper.paper_id) + '/exports/' + kind} download><Icon name="export"/><span>{({rag:'RAG chunks · JSONL',evidence:'Evidence index · JSON',docling:'Docling document · JSON',results:'Result annotations · JSON',csv:'Result annotations · CSV',markdown:'Result annotations · Markdown',checks:'Attribution findings · JSON'} as Record<string,string>)[kind]}</span><Icon name="arrow" size={16}/></a>)}</div>
+      <div className="export-list">{data.exports.map(kind => <a key={kind} href={paperUrl(data.paper.paper_id) + '/exports/' + kind} download><Icon name="export"/><span>{({rag:'RAG chunks · JSONL',evidence:'Evidence index · JSON',docling:'Docling document · JSON',results:'Result annotations · JSON',csv:'Result annotations · CSV',markdown:'Result annotations · Markdown',checks:'Attribution findings · JSON',fulltext:'Full Docling paper · Markdown',text:'Extracted prose · text'} as Record<string,string>)[kind]}</span><Icon name="arrow" size={16}/></a>)}</div>
       <p className="muted fine">RAG export provides chunks for your Python/retrieval system. It does not generate answers.</p>
     </Dialog>}
   </div>;
@@ -187,7 +188,7 @@ function Workspace({data, page, setPage, unitId, resultId, select, back, exports
   const initialUnit = data.units[unitId];
   const unitCategory = (unit: Unit): Category => unit.label === 'formula' ? 'Equations' : unit.kind === 'picture' ? 'Figures' : unit.kind.startsWith('table') ? 'Tables' : 'Text';
   const [category, setCategory] = useState<Category>(resultId ? 'Results' : initialUnit ? unitCategory(initialUnit) : data.records.length ? 'Results' : data.counts.table ? 'Tables' : data.counts.picture ? 'Figures' : 'Text');
-  const [task, setTask] = useState<'inspect'|'review'|'compare'>('inspect');
+  const [task, setTask] = useState<'overview'|'relationships'|'read'|'ask'|'inspect'|'review'|'compare'>(unitId || resultId ? 'inspect' : 'overview');
   const [tab, setTab] = useState('source'), [query, setQuery] = useState('');
   const [crop, setCrop] = useState<string | null>(null);
   const [panelWidth, setPanelWidth] = useState(400);
@@ -212,12 +213,12 @@ function Workspace({data, page, setPage, unitId, resultId, select, back, exports
     <header className="document-header"><button className="icon-button" aria-label="Back to library" onClick={back}><Icon name="back"/></button>
       <div className="document-title"><div className="eyebrow">{data.paper.paper_id}</div><h1>{data.paper.title}</h1></div>
       <button className="secondary export-button" aria-label="Export" disabled={!data.exports.length} onClick={exports}><Icon name="export" size={17}/><span>Export</span></button></header>
-    <div className="workspace-taskbar"><div className="task-tabs">{[['inspect','Explore','source'],['review','Review','review'],['compare','Compare','compare']].map(([value,label,icon]) => <button key={value} className={task === value ? 'active' : ''} onClick={() => {
-      setTask(value as typeof task); if (value !== 'inspect') setCategory('Results'); setQuery('');
+    <div className="workspace-taskbar"><div className="task-tabs">{[['overview','Overview','source'],['relationships','Relationships','layers'],['read','Read','source'],['ask','Ask','search'],['inspect','Evidence','source'],['review','Issues','review'],['compare','Results','compare']].map(([value,label,icon]) => <button key={value} className={task === value ? 'active' : ''} onClick={() => {
+      setTask(value as typeof task); if (value === 'review' || value === 'compare') setCategory('Results'); setQuery('');
       if (value === 'review') {const first = data.records.find(record => allChecks.some(check => check.result_id === record.result_id)); if (first) chooseRecord(first); else select('', '', page); setTab('evidence');}
     }}><Icon name={icon} size={16}/>{label}{value === 'review' && allChecks.length > 0 && <span>{allChecks.length}</span>}</button>)}</div>
-      <span className="task-note">{task === 'review' ? 'Read-only findings · saved reviews pending' : task === 'compare' ? 'Provisional results · compatibility not assessed' : data.document ? 'Docling detections + source provenance' : 'Source only · no extracted evidence'}</span></div>
-    {task === 'compare' ? <div className="comparison">
+      <span className="task-note">{task === 'review' ? 'Read-only findings · saved reviews pending' : task === 'compare' ? 'Curated annotations · compatibility not assessed' : ['overview','relationships','ask'].includes(task) ? 'Model-generated understanding with source links' : data.document ? 'Docling extraction + source provenance' : 'Source only · no extracted evidence'}</span></div>
+    {task === 'overview' || task === 'relationships' || task === 'ask' ? <Understanding data={data} view={task} open={unit => {setTask('inspect'); chooseUnit(unit);}}/> : task === 'read' ? <PaperText data={data} open={unit => {setTask('inspect'); chooseUnit(unit);}}/> : task === 'compare' ? <div className="comparison">
       <div className="eyebrow">REPORTED RESULTS</div><h2>Context before conclusions.</h2><p className="muted">These are existing curated annotations, not an automatically generated or validated leaderboard. Open a value to inspect its source and conditions.</p>
       <div className="table-scroll"><table><thead><tr><th>Method</th><th>Dataset</th><th>Metric</th><th>Extracted value</th><th>Review</th><th>Conditions</th></tr></thead><tbody>{data.records.map(record => <tr key={record.result_id}><td>{record.method.reported}</td><td>{record.benchmark.dataset.reported}</td><td>{record.metric.name.reported}</td><td><button onClick={() => {setTask('inspect'); chooseRecord(record);}}>{resultLabel(record)} ↗</button></td><td><Badge warning={record.review.status === 'needs_review'}>{friendly(record.review.status)}</Badge></td><td>{record.conditions.map(c => c.value).join('; ') || 'Not specified'}</td></tr>)}</tbody></table></div>
       {!data.records.length && <div className="empty">No result annotations for this document. Its detected regions are available in Explore.</div>}

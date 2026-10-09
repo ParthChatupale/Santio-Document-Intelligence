@@ -7,6 +7,9 @@ The proposed source viewer, review workflow, and comparison interface are in [th
 The React workspace includes the Waves WebGL background, a document library,
 PDF upload and Docling processing, source inspection, and evidence/RAG exports.
 See [GUI setup and usage](docs/GUI_USAGE.md).
+It now also includes model-assisted paper overviews, cited semantic relationships,
+and retrieval-backed questions. NVIDIA is the default connection preset;
+see [paper understanding and model setup](docs/PAPER_UNDERSTANDING.md).
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -e ".[gui,docling]"
@@ -16,7 +19,7 @@ npm run dev
 
 Open `http://127.0.0.1:5173` to upload PDFs and inspect original pages, source-linked results,
 figures, equation regions, and extraction issues. The UI can export evidence
-and RAG chunks; saved review decisions, automatic semantic result extraction,
+and RAG chunks; saved review decisions, automatic structured experiment extraction,
 and compatibility-based rankings are pending. For a single Python service:
 `npm run build`, then `.\.venv\Scripts\python.exe -m pbl_docintel.gui.cli --workspace C:\Santio`
 serves the built app at `http://127.0.0.1:8765`.
