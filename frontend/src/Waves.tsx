@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import fragment from './shaders/waves.frag?raw';
-import { AnimationClock, shouldAnimate } from './animation';
+import { AnimationClock, artworkResolution, shouldAnimate } from './animation';
 import type { MotionPreference } from './animation';
 
 export function Waves({ motion }: { motion: MotionPreference }) {
@@ -11,6 +11,8 @@ export function Waves({ motion }: { motion: MotionPreference }) {
     const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false });
     if (!gl) { canvas.dataset.status = 'unavailable'; return; }
     let frame = 0, frames = 0, program: WebGLProgram | null = null;
+    let inView = false;
+    let size = artworkResolution(canvas.clientWidth, canvas.clientHeight);
     let buffer: WebGLBuffer | null = null;
     const shaders: WebGLShader[] = [];
     let scene: WebGLUniformLocation | null = null;
@@ -42,8 +44,8 @@ export function Waves({ motion }: { motion: MotionPreference }) {
         gl!.enableVertexAttribArray(position); gl!.vertexAttribPointer(position, 2, gl!.FLOAT, false, 0, 0);
         gl!.uniform3fv(gl!.getUniformLocation(program, 'u_colors[0]'), new Float32Array([.102,.078,.137,.718,.365,.412,.918,.804,.761,1,.961,.922,1,.961,.922,1,.961,.922,1,.961,.922,1,.961,.922]));
         const uniforms: Record<string, number[]> = {
-          u_shape:[1.32,.49,.84,.01], u_surface:[1.73,1.08,.07,2],
-          u_finish:[2.27,0,.040,.35], u_transform:[4984,3.37,.40,1],
+          u_shape:[1.32,.49,.84,.01], u_surface:[1.73,1.08,.07,1.15],
+          u_finish:[0,0,.025,.06], u_transform:[4984,3.37,.40,1],
           u_space:[-.13,.05,0,0], u_cursor:[0,3,.54,.56],
         };
         Object.entries(uniforms).forEach(([name,value]) => gl!.uniform4fv(gl!.getUniformLocation(program!, name), value));
@@ -55,11 +57,10 @@ export function Waves({ motion }: { motion: MotionPreference }) {
     }
     function draw(now: number) {
       frame = 0;
-      if (!program || document.hidden || gl!.isContextLost()) return;
+      if (!program || document.hidden || !inView || gl!.isContextLost()) return;
       const animate = shouldAnimate(motion, reduced.matches);
       const elapsed = clock.tick(now, animate);
-      const rect = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
-      const width = Math.max(1, Math.round(rect.width * dpr)), height = Math.max(1, Math.round(rect.height * dpr));
+      const {width, height} = size;
       if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
       gl!.viewport(0, 0, width, height);
       gl!.uniform4f(scene, width, height, elapsed * -.67, 4);
@@ -72,18 +73,25 @@ export function Waves({ motion }: { motion: MotionPreference }) {
     function schedule() {
       halt();
       if (document.hidden) canvas.dataset.motion = 'hidden';
+      else if (!inView) canvas.dataset.motion = 'offscreen';
       else if (program) frame = requestAnimationFrame(draw);
     }
     const lost = (event: Event) => { event.preventDefault(); halt(); canvas.dataset.status = 'lost'; };
     const restored = () => { cleanupGL(); setup(); };
-    const observer = new ResizeObserver(schedule); observer.observe(canvas);
+    const observer = new ResizeObserver(entries => {
+      const {width, height} = entries[0].contentRect;
+      size = artworkResolution(width, height); schedule();
+    }); observer.observe(canvas);
+    const visibility = new IntersectionObserver(entries => {
+      inView = entries[0].isIntersecting; schedule();
+    }); visibility.observe(canvas);
     document.addEventListener('visibilitychange', schedule);
     reduced.addEventListener('change', schedule);
     canvas.addEventListener('webglcontextlost', lost);
     canvas.addEventListener('webglcontextrestored', restored);
     setup();
     return () => {
-      halt(); observer.disconnect(); document.removeEventListener('visibilitychange', schedule);
+      halt(); observer.disconnect(); visibility.disconnect(); document.removeEventListener('visibilitychange', schedule);
       reduced.removeEventListener('change', schedule);
       canvas.removeEventListener('webglcontextlost', lost); canvas.removeEventListener('webglcontextrestored', restored);
       cleanupGL();

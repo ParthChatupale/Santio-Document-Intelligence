@@ -36,7 +36,7 @@ export default function App() {
   const [route, setRoute] = useState(readRoute);
   const [data, setData] = useState<DocumentData | null>(null);
   const [error, setError] = useState('');
-  const [modal, setModal] = useState<'import' | 'exports' | null>(null);
+  const [modal, setModal] = useState<'import' | 'imports' | 'exports' | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [motion, setMotion] = useState<MotionPreference>(() => {
     const saved = localStorage.getItem('santio-motion');
@@ -96,29 +96,33 @@ export default function App() {
     history.replaceState({}, '', '?' + query);
   }, [route]);
   return <div className={'app-shell ' + (route.paper ? 'reading' : '')}>
-    <Waves motion={motion}/>
     <aside className="rail">
       <button className="brand-mark" aria-label="Santio library" onClick={() => navigate('')}><span>S</span><i/></button>
       <button className={!route.paper ? 'rail-button active' : 'rail-button'} title="Library" aria-label="Library" onClick={() => navigate('')}><Icon name="library"/></button>
-      <button className="rail-button" title="Upload PDF" aria-label="Upload PDF" onClick={() => setModal('import')}><Icon name="upload"/></button>
-      <div className="rail-bottom"><button className="rail-button" title={animating ? 'Pause background motion' : 'Enable background motion'} aria-label={animating ? 'Pause background motion' : 'Enable background motion'} aria-pressed={animating} onClick={() => {
+      <div className="rail-bottom">{!route.paper && <button className="rail-button" title={animating ? 'Pause background motion' : 'Enable background motion'} aria-label={animating ? 'Pause background motion' : 'Enable background motion'} aria-pressed={animating} onClick={() => {
         const next = animating ? 'off' : 'on';
         localStorage.setItem('santio-motion', next); setMotion(next);
-      }}><Icon name={animating ? 'pause' : 'play'}/></button><span className="avatar" title="Local workspace">L</span></div>
+      }}><Icon name={animating ? 'pause' : 'play'}/></button>}<span className="avatar" title="Local workspace">L</span></div>
     </aside>
     <div className="app-main">
       <header className="topbar"><button className="brand-name" onClick={() => navigate('')}>santio<span>RESEARCH WORKSPACE</span></button>
         <div className="topbar-actions"><span className="local-label"><span className="dot"/> Local workspace</span>
-          {activeJobs > 0 && <button className="job-indicator" onClick={() => setModal('import')}><span className="spinner"/>{activeJobs} processing</button>}
+          <button className="job-indicator" onClick={() => {refreshJobs(); setModal('imports');}}>{activeJobs > 0 ? <span className="spinner"/> : <Icon name="source" size={16}/>}Imports{activeJobs > 0 && <span> · {activeJobs} active</span>}</button>
           <button className="primary small" onClick={() => setModal('import')}><Icon name="upload" size={16}/><span>Add paper</span></button>
         </div>
       </header>
       {error && <div className="error" role="alert">{error}<button onClick={() => {setError(''); refresh();}}>Retry library</button></div>}
-      {!route.paper ? <Library papers={papers} open={navigate}/> : data ?
+      {!route.paper ? <Library papers={papers} open={navigate} motion={motion}/> : data ?
         <Workspace key={data.paper.paper_id} data={data} page={route.page} setPage={setPage} unitId={route.unit} resultId={route.result} select={select} back={() => navigate('')} exports={() => setModal('exports')}/> :
         !error && <div className="loading-screen" role="status"><span className="spinner"/> Opening source and evidence…</div>}
     </div>
-    {modal === 'import' && <ImportDialog jobs={jobs} update={refreshJobs} done={() => {refresh(); refreshJobs();}} open={id => {setModal(null); navigate(id);}} close={() => setModal(null)}/>}
+    {modal === 'import' && <ImportDialog jobs={jobs} update={refreshJobs} done={() => {refresh(); refreshJobs();}} open={id => {setModal(null); navigate(id);}} history={() => {refreshJobs(); setModal('imports');}} close={() => setModal(null)}/>}
+    {modal === 'imports' && <Dialog title="Your imports" close={() => setModal(null)}>
+      <p className="muted">Previously uploaded PDFs and their extraction status. These jobs are separate from choosing a new file.</p>
+      {!jobs.length && <div className="import-empty"><Icon name="source" size={28}/><h3>No uploads yet</h3><p>Choose a PDF in Add paper, then upload it to start extraction.</p></div>}
+      <div className="import-history">{jobs.map(job => <ImportJob key={job.job_id} job={job} update={refreshJobs} open={id => {setModal(null); navigate(id);}}/>)}</div>
+      <button className="primary import-button" onClick={() => setModal('import')}><Icon name="upload" size={16}/> Add a new PDF</button>
+    </Dialog>}
     {modal === 'exports' && data && <Dialog title="Export this paper" close={() => setModal(null)}>
       <p className="muted">Evidence and provenance from this document. Result annotations retain their review status.</p>
       <div className="export-list">{data.exports.map(kind => <a key={kind} href={paperUrl(data.paper.paper_id) + '/exports/' + kind} download><Icon name="export"/><span>{({rag:'RAG chunks · JSONL',evidence:'Evidence index · JSON',docling:'Docling document · JSON',results:'Result annotations · JSON',csv:'Result annotations · CSV',markdown:'Result annotations · Markdown',checks:'Attribution findings · JSON',fulltext:'Full Docling paper · Markdown',text:'Extracted prose · text'} as Record<string,string>)[kind]}</span><Icon name="arrow" size={16}/></a>)}</div>
@@ -126,60 +130,94 @@ export default function App() {
     </Dialog>}
   </div>;
 }
-function Library({papers, open}: {papers: Paper[]; open(id: string): void}) {
+function Library({papers, open, motion}: {papers: Paper[]; open(id: string): void; motion: MotionPreference}) {
   const [query, setQuery] = useState(''), [filter, setFilter] = useState('all');
   const visible = papers.filter(paper => (paper.title + ' ' + paper.paper_id).toLowerCase().includes(query.toLowerCase()) && (filter === 'all' || (filter === 'indexed' ? paper.processed : !paper.processed)));
   return <main className="library">
-    <section className="welcome"><div className="eyebrow">FROM PAPERS TO UNDERSTANDING</div><h1>Read deeper.<br/><em>Keep the evidence.</em></h1>
-      <p>A quieter place to explore research. Follow tables, figures, and<br className="desktop-break"/> results back to the exact page they came from.</p>
-      <div className="welcome-meta"><span><strong>{papers.length}</strong> papers in your library</span><span><strong>{papers.filter(p => p.processed).length}</strong> indexed documents</span><span><Icon name="layers" size={15}/> Provenance included</span></div>
-      <span className="hero-art" aria-hidden="true"><i/><i/><i/></span>
+    <div className="library-atmosphere" aria-hidden="true"><Waves motion={motion}/></div>
+    <section className="welcome">
+      <div className="welcome-copy"><div className="eyebrow"><span className="eyebrow-line"/> FROM PAPERS TO UNDERSTANDING</div><h1>Read deeper.<br/><em>Keep the evidence.</em></h1>
+        <p>A quieter place to explore research. Follow ideas, tables, and<br className="desktop-break"/> results back to the exact page they came from.</p>
+        <div className="welcome-actions"><a href="#collection">Explore your library <Icon name="arrow" size={16}/></a></div>
+      </div>
     </section>
-    <section className="library-content">
-      <div className="section-heading"><div><div className="eyebrow">YOUR COLLECTION</div><h2>Paper library <span>{papers.length}</span></h2></div>
+    <div className="welcome-meta"><span><Icon name="source" size={18}/><strong>{papers.length.toString().padStart(2,'0')}</strong> papers collected</span><span><Icon name="layers" size={18}/><strong>{papers.filter(p => p.processed).length.toString().padStart(2,'0')}</strong> indexed & ready</span><span><Icon name="check" size={18}/> Every insight, source-linked</span></div>
+    <section className="library-content" id="collection">
+      <div className="section-heading"><div><div className="eyebrow">THE RESEARCH SHELF</div><h2>Your research, collected.</h2></div>
         <label className="search"><Icon name="search" size={18}/><input aria-label="Search papers" placeholder="Search your papers…" value={query} onChange={event => setQuery(event.target.value)}/></label></div>
-      <div className="library-filters">{[['all','All papers'],['indexed','Indexed'],['source','Source only']].map(([value,label]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{label}</button>)}</div>
-      <div className="paper-grid">{visible.map(paper => <button className="paper-card" key={paper.paper_id} onClick={() => open(paper.paper_id)} disabled={!paper.source_available}>
-        <div className="cover-stage"><Cover id={paper.paper_id}/><span className="cover-open"><Icon name="arrow"/></span></div>
+      <div className="library-filters">{[['all','All papers'],['indexed','Indexed'],['source','Source only']].map(([value,label]) => <button key={value} className={filter === value ? 'active' : ''} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}<span>{papers.filter(paper => value === 'all' || (value === 'indexed' ? paper.processed : !paper.processed)).length}</span></button>)}<span className="collection-count">{visible.length} {visible.length === 1 ? 'paper' : 'papers'}</span></div>
+      <div className="paper-grid">{visible.map((paper,index) => <button className="paper-card" key={paper.paper_id} onClick={() => open(paper.paper_id)} disabled={!paper.source_available} title={paper.title}>
+        <div className="cover-stage"><span className="paper-number" aria-hidden="true">{(index + 1).toString().padStart(2,'0')}</span><span className="paper-format"><Icon name="source" size={12}/> PDF</span><Cover id={paper.paper_id}/><span className="cover-open"><Icon name="arrow"/></span></div>
         <div className="paper-card-body"><Badge warning={!paper.processed}>{paper.processed ? paper.status === 'partial_success' ? 'Partially indexed' : 'Indexed' : 'Source only'}</Badge>
           <h3>{paper.title}</h3><div className="paper-card-footer"><span>{paper.original_filename || paper.paper_id}</span><Icon name="arrow" size={16}/></div></div>
       </button>)}</div>
-      {!visible.length && <div className="empty"><Icon name="library" size={30}/><h3>{papers.length ? 'No papers match this search' : 'Your library starts here'}</h3><p>{papers.length ? 'Try a different title or filter.' : 'Use Add paper to upload your first PDF.'}</p></div>}
-      <div className="library-note"><Icon name="source" size={17}/><span>Original documents stay at the center. Machine detections and curated annotations remain distinguishable.</span></div>
+      {!visible.length && <div className="empty"><Icon name="library" size={30}/><h3>{papers.length ? 'No papers match this search' : 'A new chapter starts here.'}</h3><p>{papers.length ? 'Try a different title or filter.' : 'Use Add paper in the header to start your collection.'}</p></div>}
+      <div className="library-note"><span><Icon name="source" size={15}/> Every insight begins with a source.</span><span>A quieter way to research.</span></div>
     </section>
   </main>;
 }
-function ImportDialog({jobs, update, done, open, close}: {jobs: Job[]; update(): void; done(): void; open(id: string): void; close(): void}) {
+function ImportDialog({jobs, update, done, open, history, close}: {jobs: Job[]; update(): void; done(): void; open(id: string): void; history(): void; close(): void}) {
   const [file, setFile] = useState<File | null>(null), [title, setTitle] = useState(''), [ocr, setOcr] = useState(false);
   const [error, setError] = useState(''), [busy, setBusy] = useState(false);
-  const choose = (next?: File) => {if (next) {setFile(next); setTitle(next.name.replace(/\.pdf$/i, '')); setError('');}};
+  const [accepted, setAccepted] = useState<Job | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const choose = (next?: File) => {
+    if (!next || busy) return;
+    setError('');
+    if (!next.name.toLowerCase().endsWith('.pdf')) {setError('Choose a PDF file.'); return;}
+    if (!next.size || next.size > 100 * 1024 * 1024) {setError(next.size ? 'Maximum file size is 100 MB.' : 'This file is empty. Choose a PDF with content.'); return;}
+    setFile(next); setTitle(next.name.replace(/\.pdf$/i, ''));
+  };
+  const clearFile = () => {setFile(null); setTitle(''); setError(''); if(inputRef.current) inputRef.current.value='';};
   const upload = async () => {
     if (!file) return;
     if (file.size > 100 * 1024 * 1024) {setError('Maximum file size is 100 MB.'); return;}
     setBusy(true); setError('');
     try {
       const query = new URLSearchParams({filename: file.name, title, ocr: String(ocr)});
-      await json<Job>('/api/imports?' + query, {method:'POST', headers:{'Content-Type':'application/pdf'}, body:file});
-      setFile(null); setTitle(''); done();
+      const received = await json<Job>('/api/imports?' + query, {method:'POST', headers:{'Content-Type':'application/pdf'}, body:file});
+      setAccepted(received); done();
     } catch (error) {setError(String(error));}
     finally {setBusy(false);}
   };
-  return <Dialog title="Add a research paper" close={close}>
-    <p className="muted">Upload a PDF. Docling extracts its structure, then Santio creates source-linked evidence and RAG chunks.</p>
-    <label className="drop-zone" onDragOver={event => event.preventDefault()} onDrop={event => {event.preventDefault(); choose(event.dataTransfer.files[0]);}}>
-      <Icon name="upload" size={30}/><strong>{file?.name || 'Drop your PDF here'}</strong><span>or choose a file · up to 100 MB</span><input aria-label="Choose PDF" type="file" accept=".pdf,application/pdf" disabled={busy} onChange={event => choose(event.target.files?.[0])}/>
-    </label>
-    <label className="field">Paper title<input value={title} onChange={event => setTitle(event.target.value)} placeholder="Use the filename or enter a title" maxLength={500}/></label>
-    <label className="checkbox"><input type="checkbox" checked={ocr} onChange={event => setOcr(event.target.checked)}/> Enable OCR for scanned pages</label>
+  const current = accepted && (jobs.find(job => job.job_id === accepted.job_id) || accepted);
+  return <Dialog title={current?.status === 'completed' ? 'Paper ready' : current ? 'PDF uploaded' : 'Add a research paper'} close={close}>
+    {current ? <>
+      <div className="upload-confirmation" role="status"><Icon name="check" size={24}/><div><strong>Your PDF was uploaded successfully</strong><p>{current.filename}</p><span>{file && formatFileSize(file.size)} · Saved in this workspace</span></div></div>
+      <ImportJob job={current} update={update} open={open}/>
+      <p className="muted fine">The upload is complete. Extraction prepares the paper for reading and evidence exploration; AI analysis is a separate action after you open it. Follow this import from Imports if you close this window.</p>
+      <div className="import-actions"><button className="secondary" onClick={() => {setAccepted(null); clearFile(); setOcr(false);}}>Add another PDF</button><button className="secondary" onClick={history}>View all imports</button></div>
+    </> : <>
+    <p className="muted">Choose a PDF, review the file below, then upload it. Extraction starts only after the upload is accepted.</p>
+    {!file && <label className="drop-zone" onDragOver={event => event.preventDefault()} onDrop={event => {event.preventDefault(); choose(event.dataTransfer.files[0]);}}>
+      <Icon name="upload" size={30}/><strong>Drop your PDF here</strong><span>or choose a file · up to 100 MB</span><input ref={inputRef} aria-label="Choose PDF" type="file" accept=".pdf,application/pdf" disabled={busy} onChange={event => choose(event.target.files?.[0])}/>
+    </label>}
+    {file && <div className="selected-upload"><Icon name="source" size={28}/><div><span className="eyebrow">{busy ? 'UPLOADING' : error ? 'UPLOAD NOT CONFIRMED' : 'SELECTED · NOT UPLOADED YET'}</span><strong>{file.name}</strong><span>{formatFileSize(file.size)} · PDF</span></div><button className="icon-button" aria-label="Remove selected PDF" disabled={busy} onClick={clearFile}><Icon name="close" size={18}/></button></div>}
+    <label className="field">Paper title<input value={title} disabled={busy} onChange={event => setTitle(event.target.value)} placeholder="Use the filename or enter a title" maxLength={500}/></label>
+    <label className="checkbox"><input type="checkbox" disabled={busy} checked={ocr} onChange={event => setOcr(event.target.checked)}/> Enable OCR for scanned pages</label>
+    {busy && <p role="status" className="upload-transfer"><span className="spinner"/> Uploading {file?.name}… Waiting for the server to confirm receipt.</p>}
     {error && <p className="error" role="alert">{error}</p>}
-    <button className="primary import-button" disabled={!file || busy} onClick={() => void upload()}>{busy ? <span className="spinner"/> : <Icon name="upload" size={18}/>} {busy ? 'Uploading PDF…' : 'Upload & process'}</button>
-    <p className="muted fine">Processing continues when this window closes. First use may download Docling models. Detected equations and figures are not automatically interpreted.</p>
-    {jobs.length > 0 && <div className="job-list"><h3>Imports</h3>{jobs.slice(0,8).map(job => <div className="job-row" key={job.job_id}>
-      <div><strong>{job.title}</strong><span>{job.stage}{job.conversion_status === 'partial_success' ? ' · partial conversion' : ''}</span>{job.error && <details><summary>Processing error · upload again to retry</summary><pre>{job.error}</pre></details>}</div>
-      {job.status === 'completed' && job.paper_id ? <button onClick={() => open(job.paper_id!)}>Open <Icon name="arrow" size={15}/></button> :
-        ['queued','processing'].includes(job.status) ? <button onClick={() => void json('/api/imports/' + job.job_id + '/cancel', {method:'POST'}).then(update).catch(error => setError(String(error)))}>Cancel</button> : <Badge warning>{job.status}</Badge>}
-    </div>)}</div>}
+    <button className="primary import-button" disabled={!file || busy} onClick={() => void upload()}>{busy ? <span className="spinner"/> : <Icon name="upload" size={18}/>} {busy ? 'Uploading PDF…' : 'Upload PDF'}</button>
+    <p className="muted fine">After upload, we extract the paper’s text, tables and visual regions. First-time extraction can take longer while models download.</p>
+    </>}
   </Dialog>;
+}
+function formatFileSize(bytes: number) {
+  return bytes >= 1024 * 1024 ? (bytes / (1024 * 1024)).toFixed(1) + ' MB' : Math.max(1, Math.ceil(bytes / 1024)) + ' KB';
+}
+function ImportJob({job, update, open}: {job: Job; update(): void; open(id: string): void}) {
+  const [error,setError] = useState('');
+  const active = ['queued','processing'].includes(job.status);
+  const complete = job.status === 'completed';
+  return <article className="import-job">
+    <div className="import-job-heading"><div><strong>{job.title}</strong><span>{job.filename}</span></div><Badge warning={['failed','cancelled'].includes(job.status)}>{complete ? 'Ready' : job.status === 'queued' ? 'Queued' : job.status === 'processing' ? 'Extracting' : friendly(job.status)}</Badge></div>
+    <ol className="import-steps" aria-label="Import progress"><li className="complete"><Icon name="check" size={16}/><span>PDF uploaded</span></li><li className={complete ? 'complete' : active ? 'current' : 'stopped'}>{job.status === 'processing' ? <span className="spinner"/> : <Icon name={complete ? 'check' : 'layers'} size={16}/>}<span>{job.status === 'queued' ? 'Waiting to extract' : job.status === 'failed' ? 'Extraction failed' : job.status === 'cancelled' ? 'Extraction cancelled' : complete ? 'Content extracted' : 'Extracting content'}</span></li><li className={complete ? 'complete' : ''}><Icon name={complete ? 'check' : 'library'} size={16}/><span>{complete ? 'Ready in library' : 'Library · pending'}</span></li></ol>
+    {job.conversion_status === 'partial_success' && <p className="notice">Partial extraction: some content may be missing. You can open the available output.</p>}
+    {job.error && <div className="notice"><strong>The upload succeeded, but extraction failed.</strong><p>You can upload the PDF again to retry.</p><details><summary>Error details</summary><pre>{job.error}</pre></details></div>}
+    {active && <details className="source-details"><summary>Extraction details</summary><p>{job.stage}</p></details>}
+    {error && <p className="error" role="alert">{error}</p>}
+    {complete && job.paper_id ? <button className="primary" onClick={() => open(job.paper_id!)}>Open paper <Icon name="arrow" size={15}/></button> : active && <button className="secondary" onClick={() => void json('/api/imports/' + job.job_id + '/cancel', {method:'POST'}).then(update).catch(error => setError(String(error)))}>Cancel extraction</button>}
+  </article>;
 }
 function Workspace({data, page, setPage, unitId, resultId, select, back, exports}: {
   data: DocumentData; page: number; setPage(page: number): void; unitId: string; resultId: string;

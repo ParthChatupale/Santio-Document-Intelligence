@@ -43,10 +43,20 @@ not a hosted multi-user service. The CLI binds to 127.0.0.1.
 
 ## Add a paper
 
-1. Click **Add paper**; choose or drop a PDF up to 100 MB.
+1. Click **Add paper**; choose or drop a PDF up to 100 MB. The file card shows
+   its filename, size and **Selected · not uploaded yet**. You can remove it.
 2. Edit the title if desired. Enable OCR for scanned pages.
-3. Click **Upload & process**. The Imports list shows actual processing stages.
-4. Open the completed paper. It is registered automatically and survives a restart.
+3. Click **Upload PDF**. The UI shows uploading until the server confirms receipt.
+4. The form is replaced by **PDF uploaded**, preserving the filename and size,
+   with separate **Uploaded / Extracting / Ready in library** steps for this job.
+5. When extraction finishes, choose **Open paper**. It is registered automatically
+   and survives a restart. AI paper analysis starts separately in Overview.
+
+**Imports** in the top bar opens a separate view of other uploaded files and their
+jobs. The new-file form never mixes those jobs into its upload state. Upload or
+validation errors retain the selected file for retry and do not show a success
+receipt. A failed extraction still acknowledges the completed upload and reports
+the extraction error.
 
 Conversion jobs run one at a time in a separate Python process. You may close
 the dialog while conversion continues. Pending/running jobs can be cancelled.

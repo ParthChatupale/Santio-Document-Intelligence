@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { AnimationClock, shouldAnimate } from '../src/animation.ts';
+import { AnimationClock, artworkResolution, shouldAnimate } from '../src/animation.ts';
 
 test('low frame rates preserve elapsed seconds instead of slowing the shader', () => {
   const clock = new AnimationClock();
@@ -25,4 +25,14 @@ test('reduced motion applies by default and explicit play/pause takes precedence
   assert.equal(shouldAnimate('system',false),true);
   assert.equal(shouldAnimate('on',true),true);
   assert.equal(shouldAnimate('off',false),false);
+});
+
+test('artwork preserves small panel resolution and bounds large panels', () => {
+  assert.deepEqual(artworkResolution(420,300), {width:420, height:300});
+  for (const [width,height] of [[1920,1080],[3840,2160],[300,1600]]) {
+    const size = artworkResolution(width,height);
+    assert.ok(size.width * size.height <= 240_000);
+    assert.ok(Math.abs(size.width / size.height - width / height) < .01);
+  }
+  assert.deepEqual(artworkResolution(0,0), {width:1, height:1});
 });
