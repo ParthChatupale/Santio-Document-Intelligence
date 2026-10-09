@@ -2,9 +2,35 @@
 
 import json
 import os
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
+
+DEFAULT_NVIDIA_MODEL = "nvidia/nemotron-3-super-120b-a12b"
+CONFIG_NAMES = ("PBL_MODEL_PROVIDER", "PBL_MODEL_URL", "PBL_MODEL_NAME", "PBL_MODEL_API_KEY", "NVIDIA_API_KEY")
+
+
+def model_configuration(workspace=None):
+    """Load owner configuration as data; never execute or interpolate .env."""
+    values = {}
+    path = Path(workspace) / ".env" if workspace is not None else None
+    if path is not None and path.is_file():
+        for line in path.read_text(encoding="utf-8-sig").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            name, separator, value = line.partition("=")
+            name, value = name.strip(), value.strip()
+            if name not in CONFIG_NAMES:
+                continue
+            if not separator:
+                raise ValueError("Invalid model configuration in .env; use NAME=value")
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+                value = value[1:-1]
+            values[name] = value
+    values.update({name: os.environ[name] for name in CONFIG_NAMES if name in os.environ})
+    return values
 
 
 class HTTPJSONModel:
@@ -23,11 +49,19 @@ class HTTPJSONModel:
         self.provider, self.url, self.name, self.key = provider, url.rstrip("/"), model.strip(), key
 
     @classmethod
-    def from_env(cls):
-        provider = os.getenv("PBL_MODEL_PROVIDER", "nvidia")
+    def from_env(cls, workspace=None):
+        config = model_configuration(workspace)
+        provider = config.get("PBL_MODEL_PROVIDER", "nvidia")
         url = "https://integrate.api.nvidia.com/v1" if provider == "nvidia" else "http://127.0.0.1:11434"
-        return cls(provider, os.getenv("PBL_MODEL_URL", url),
-                   os.getenv("PBL_MODEL_NAME", ""), os.getenv("PBL_MODEL_API_KEY", os.getenv("NVIDIA_API_KEY", "")))
+        return cls(provider, config.get("PBL_MODEL_URL", url),
+                   config.get("PBL_MODEL_NAME", DEFAULT_NVIDIA_MODEL if provider == "nvidia" else ""),
+                   config.get("PBL_MODEL_API_KEY", config.get("NVIDIA_API_KEY", "")))
+
+    @property
+    def analysis_batch_chars(self):
+        # Conservative request size for the default long-context model. Other
+        # providers retain the smaller bound because their context varies.
+        return 96000 if self.provider == "nvidia" and self.name == DEFAULT_NVIDIA_MODEL else 24000
 
     def public(self):
         return {"provider": self.provider, "url": self.url, "model": self.name,
@@ -46,9 +80,12 @@ class HTTPJSONModel:
         else:
             endpoint = self.url + "/chat/completions"
             body = {"model": self.name, "messages": messages,
-                    "max_tokens": 4096}
+                    "max_tokens": 4096, "stream": False}
             if self.provider == "compatible":
                 body["response_format"] = {"type": "json_object"}
+            if self.provider == "nvidia" and self.name == DEFAULT_NVIDIA_MODEL:
+                body.update(max_tokens=8192, temperature=1.0, top_p=0.95,
+                            reasoning_effort="none")
         headers = {"Content-Type": "application/json"}
         if self.key:
             headers["Authorization"] = "Bearer " + self.key
@@ -59,6 +96,11 @@ class HTTPJSONModel:
                 raise ValueError("Model response exceeds the configured size limit")
             data = json.loads(raw)
             content = data["message"]["content"] if self.provider == "ollama" else data["choices"][0]["message"]["content"]
+            content = content.strip()
+            # Accept a complete Markdown JSON wrapper, not partial output or
+            # arbitrary prose around a guessed JSON substring.
+            if content.startswith(("```json\n", "```\n")) and content.endswith("\n```"):
+                content = content.split("\n", 1)[1][:-4]
             return json.loads(content)
         except HTTPError as error:
             # Do not echo provider response bodies: they can contain credentials
@@ -66,5 +108,5 @@ class HTTPJSONModel:
             raise ValueError(f"Model endpoint returned HTTP {error.code}. Check the endpoint, model, key and JSON-output support.") from None
         except (URLError, TimeoutError) as error:
             raise ValueError("Cannot reach the configured model endpoint, or the model request timed out.") from None
-        except (KeyError, IndexError, TypeError, json.JSONDecodeError):
+        except (KeyError, IndexError, TypeError, AttributeError, json.JSONDecodeError):
             raise ValueError("Model returned an unexpected response or invalid JSON.") from None

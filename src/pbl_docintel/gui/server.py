@@ -329,7 +329,12 @@ def create_app(root: Path, *, allowed_hosts: list[str] | None = None,
 
     @app.get("/api/model")
     def model_state():
-        return intelligence.model.public()
+        return intelligence.connection_state()
+
+    @app.post("/api/model/default")
+    def default_connection(request: Request):
+        same_origin(request)
+        return intelligence.use_default()
 
     @app.post("/api/model")
     def model_connection(body: ModelConnection, request: Request):

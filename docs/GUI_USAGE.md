@@ -64,9 +64,12 @@ User filenames are display metadata; storage paths use generated identifiers.
 
 ## Understand and read a paper
 
-Open a paper to see **Overview**. Choose **Connect NVIDIA API**, enter your key
-and a model ID from NVIDIA Build, and save/test the connection. The test sends no
-paper content. **Analyze this paper** then reads the extracted text in batches
+Open a paper to see **Overview** and its selected filename/page count. The app uses
+the owner's server-configured NVIDIA Nemotron 3 Super connection by default.
+The owner sets `NVIDIA_API_KEY` in the workspace's ignored `.env` file or backend
+environment before startup. **AI settings · optional** permits a custom connection;
+ordinary users do not need their own keys. Its connection test sends no
+paper content. **Analyze this paper** then reads the extracted text in segments
 and saves cited statements and semantic relationships. Generation sends the
 excerpts to the configured provider; local Ollama is available as an alternative.
 
@@ -143,7 +146,7 @@ npm run build
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-The 74 Python tests cover the SDK, attribution, source identity, local HTTP
+The 81 Python tests cover the SDK, attribution, source identity, local HTTP
 boundaries, persistent registrations/jobs, invalid/oversized uploads and foreign
 origins, model request contracts, citation validation, question search rounds,
 generation failures and report persistence. Five frontend tests cover animation timing, pause/resume, explicit

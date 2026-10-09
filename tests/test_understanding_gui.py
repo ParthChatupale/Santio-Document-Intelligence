@@ -40,6 +40,26 @@ class UnderstandingHTTPTests(unittest.TestCase):
         self.assertIsNone(self.client.get(self.endpoint).json()["report"])
         self.assertEqual(self.client.post(self.endpoint).status_code, 409)
 
+    def test_owner_default_needs_no_user_connection_and_can_be_restored(self):
+        from pbl_docintel.models import HTTPJSONModel
+        owner = HTTPJSONModel('nvidia', 'https://integrate.api.nvidia.com/v1', 'owner-model', 'owner-fixture-key')
+        self.service.default_model = self.service.model = owner
+        self.assertEqual(self.client.get('/api/model').json()['mode'], 'app_default')
+        self.assertTrue(self.client.get('/api/model').json()['configured'])
+        self.client.post('/api/model', json={'provider':'nvidia', 'url':owner.url, 'model':'personal-model', 'key':'personal-fixture-key'})
+        self.assertEqual(self.client.get('/api/model').json()['mode'], 'override')
+        self.assertEqual(self.client.post('/api/model/default', headers={'Origin':'https://foreign.example'}).status_code, 403)
+        restored = self.client.post('/api/model/default').json()
+        self.assertEqual(restored['mode'], 'app_default')
+        self.assertEqual(restored['model'], 'owner-model')
+        self.assertNotIn('fixture-key', json.dumps(restored))
+        self.assertIs(self.service.model, owner)
+
+    def test_opening_paper_does_not_start_analysis(self):
+        self.client.get('/api/papers/fixture:v1')
+        self.client.get(self.endpoint)
+        self.assertFalse(self.service.jobs)
+
     def test_model_key_never_round_trips_and_cross_origin_writes_fail(self):
         body = {"provider": "nvidia", "url": "https://integrate.api.nvidia.com/v1", "model": "fixture", "key": "secret-fixture"}
         result = self.client.post("/api/model", json=body)

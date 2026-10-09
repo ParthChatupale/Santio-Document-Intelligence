@@ -17,7 +17,8 @@ class Intelligence:
         self.directory = workspace.path("data/understanding")
         self.directory.mkdir(parents=True, exist_ok=True)
         self.lock = RLock()
-        self.model = HTTPJSONModel.from_env()
+        self.default_model = HTTPJSONModel.from_env(workspace.root)
+        self.model = self.default_model
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="paper-understanding")
         self.jobs = {}
         for path in self.directory.glob("job-*.json"):
@@ -32,7 +33,16 @@ class Intelligence:
             if keep_key and (provider != self.model.provider or url.rstrip("/") != self.model.url):
                 raise ValueError("Enter a new key when changing the model destination")
             self.model = HTTPJSONModel(provider, url, model, self.model.key if keep_key else key)
-            return self.model.public()
+            return self.connection_state()
+
+    def connection_state(self):
+        return {**self.model.public(), "mode": "app_default" if self.model is self.default_model else "override",
+                "default": self.default_model.public()}
+
+    def use_default(self):
+        with self.lock:
+            self.model = self.default_model
+            return self.connection_state()
 
     def report_path(self, index):
         return self.directory / (index.document.document_id + ".json")
@@ -51,7 +61,7 @@ class Intelligence:
         with self.lock:
             jobs = [dict(j) for j in self.jobs.values() if j["paper_id"] == key and
                     loaded.index and j["document_id"] == loaded.index.document.document_id]
-            return {"model": self.model.public(), "report": report,
+            return {"model": self.connection_state(), "report": report,
                     "jobs": sorted(jobs, key=lambda j: j["created_at"], reverse=True)[:30]}
 
     def update(self, job_id, **fields):
@@ -66,7 +76,7 @@ class Intelligence:
             raise ValueError("Convert this PDF before running paper understanding")
         with self.lock:
             if not self.model.public()["configured"]:
-                raise ValueError("Connect a model and API key before generating understanding")
+                raise ValueError("The app's AI service is not configured. The app owner must set NVIDIA_API_KEY on the backend, or you can use an optional custom connection.")
             active = [j for j in self.jobs.values() if j["status"] in {"queued", "processing"}]
             if len(active) >= 5:
                 raise ValueError("Five requests are already queued. Wait for them to finish.")
@@ -76,6 +86,7 @@ class Intelligence:
             model = self.model  # Capture configuration for this run.
             job_id = uuid.uuid4().hex
             job = {"job_id": job_id, "paper_id": paper_id, "document_id": loaded.index.document.document_id,
+                   "paper_title": loaded.paper["title"], "source_filename": loaded.pdf.name,
                    "kind": kind, "question": question, "status": "queued", "stage": "Waiting for analysis",
                    "created_at": datetime.now(timezone.utc).isoformat(), "model": model.name,
                    "error": None, "result": None}

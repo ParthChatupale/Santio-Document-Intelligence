@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 from test_intelligence import make_document
 from pbl_docintel.evidence import build_index_from_bytes
-from pbl_docintel.models import HTTPJSONModel
+from pbl_docintel.models import HTTPJSONModel, DEFAULT_NVIDIA_MODEL
 from pbl_docintel.understanding import (
     Statement, UnderstandingDraft, allowed_ids, analyze, answer, batches,
     checked, retrieve, source_entries, validate_citations,
@@ -118,6 +118,52 @@ class UnderstandingTests(unittest.TestCase):
 
 
 class ModelTests(unittest.TestCase):
+    def test_app_default_model_uses_owner_key_from_workspace_env(self):
+        with tempfile.TemporaryDirectory() as directory, patch.dict('os.environ', {}, clear=True):
+            Path(directory, '.env').write_text('NVIDIA_API_KEY="owner-test-key"\nIGNORED=anything\n')
+            model = HTTPJSONModel.from_env(directory)
+            self.assertEqual(model.name, DEFAULT_NVIDIA_MODEL)
+            self.assertEqual(model.key, 'owner-test-key')
+            self.assertTrue(model.public()['configured'])
+            self.assertNotIn('owner-test-key', json.dumps(model.public()))
+            self.assertEqual(model.analysis_batch_chars, 96000)
+
+    def test_environment_overrides_workspace_key_and_missing_key_is_unavailable(self):
+        with tempfile.TemporaryDirectory() as directory, patch.dict('os.environ', {}, clear=True):
+            self.assertEqual(HTTPJSONModel.from_env(directory).name, DEFAULT_NVIDIA_MODEL)
+            self.assertFalse(HTTPJSONModel.from_env(directory).public()['configured'])
+            Path(directory, '.env').write_text('NVIDIA_API_KEY=file-fixture\n')
+            with patch.dict('os.environ', {'NVIDIA_API_KEY': 'env-fixture'}):
+                self.assertEqual(HTTPJSONModel.from_env(directory).key, 'env-fixture')
+
+    def test_nemotron_request_disables_thinking_and_uses_documented_sampling(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *args): return False
+            def read(self, size): return b'{"choices":[{"message":{"content":"{\\"ok\\":true}"}}]}'
+        model = HTTPJSONModel('nvidia', 'https://integrate.api.nvidia.com/v1', DEFAULT_NVIDIA_MODEL, 'fixture')
+        with patch('pbl_docintel.models.urlopen', return_value=Response()) as opened:
+            model.generate('JSON please', {}, {})
+            body = json.loads(opened.call_args.args[0].data)
+            self.assertEqual(body['reasoning_effort'], 'none')
+            self.assertFalse(body['stream'])
+            self.assertEqual(body['max_tokens'], 8192)
+            self.assertEqual(body['temperature'], 1.0)
+
+    def test_complete_json_wrapper_is_accepted_but_partial_output_is_rejected(self):
+        class Response:
+            content = '```json\n{"ok":true}\n```'
+            def __enter__(self): return self
+            def __exit__(self, *args): return False
+            def read(self, size): return json.dumps({'choices':[{'message':{'content':self.content}}]}).encode()
+        model = HTTPJSONModel('nvidia', 'https://integrate.api.nvidia.com/v1', DEFAULT_NVIDIA_MODEL, 'fixture')
+        response = Response()
+        with patch('pbl_docintel.models.urlopen', return_value=response):
+            self.assertEqual(model.generate('JSON', {}, {}), {'ok': True})
+            response.content = '```json\n{"ok":true'
+            with self.assertRaisesRegex(ValueError, 'invalid JSON'):
+                model.generate('JSON', {}, {})
+
     def test_nvidia_key_is_not_exposed_and_destination_is_fixed(self):
         model = HTTPJSONModel("nvidia", "https://integrate.api.nvidia.com/v1", "fixture", "secret-test-value")
         self.assertNotIn("secret-test-value", json.dumps(model.public()))

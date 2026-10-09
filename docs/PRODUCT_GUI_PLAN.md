@@ -13,7 +13,7 @@ were included. Run instructions and verification are in [GUI usage](GUI_USAGE.md
 The local app supports uploads and processing with read-only evidence review;
 it remains a prototype, not a finished hosted product. The
 Python package is version 0.3.0. The service responds at
-`http://127.0.0.1:8765`. The current implementation passes 74 Python tests, five frontend tests and browser
+`http://127.0.0.1:8765`. The current implementation passes 81 Python tests, five frontend tests and browser
 checks. Those checks cover implemented behavior, not product readiness or
 scientific extraction accuracy.
 
@@ -33,6 +33,7 @@ scientific extraction accuracy.
 | Automatic semantic experiment extraction | Not implemented |
 | Figure interpretation and equation transcription | Not implemented; region detection exists |
 | Cited paper overview and semantic relationships | Implemented with a pluggable model; NVIDIA preset, compatible APIs and local Ollama |
+| Default AI service | Server-configured NVIDIA Nemotron 3 Super; optional runtime custom connection; requires app-owner credentials |
 | Extracted reading view and full Markdown download | Implemented without a model dependency |
 | Retrieval-backed question answering | Implemented per paper with up to three search rounds; real model quality remains unevaluated |
 | Hosted multi-user product | Not implemented |

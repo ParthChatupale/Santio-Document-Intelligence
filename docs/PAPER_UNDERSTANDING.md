@@ -23,20 +23,23 @@ Open http://127.0.0.1:8765. Use one backend per workspace for jobs. If a server
 was already running before these changes, restart it to load the new Python routes.
 Install dependencies with the commands in [GUI usage](GUI_USAGE.md) if needed.
 
+The app owner configures NVIDIA once on the backend; ordinary users do not need
+to enter a personal API key. The default is **NVIDIA Nemotron 3 Super**,
+`nvidia/nemotron-3-super-120b-a12b`. NVIDIA lists a free prototype endpoint and
+long-context/RAG capabilities in its [model page](https://build.nvidia.com/nvidia/nemotron-3-super-120b-a12b/build).
+This is a starting selection, not a measured accuracy winner on this corpus.
+
 1. Open an indexed paper, or upload a PDF and wait for conversion.
-2. In Overview, choose **Connect NVIDIA API**.
-3. Enter a key obtained from [NVIDIA Build](https://build.nvidia.com) and the
-   exact model ID. The editable starter is `meta/llama-3.3-70b-instruct`.
-4. Choose **Save & test connection**. This sends a small JSON instruction, no
-   document content. A successful test checks connectivity and JSON output only.
-5. Choose **Analyze this paper**. Watch the actual evidence-reading and synthesis
+2. Overview identifies the selected filename, title and page count. The model
+   defaults to the app's server-configured connection.
+3. Choose **Analyze this paper**. Watch the actual evidence-reading and synthesis
    stages. When complete, Overview and Relationships display the saved outputs.
-6. Use Ask for questions about this paper. Every retained answer statement links
+4. Use Ask for questions about this paper. Every retained answer statement links
    to an original evidence region. Use Read for searchable Docling prose, and
    Evidence for tables, figure crops, equation regions and source inspection.
 
 NVIDIA's preset sends requests to `https://integrate.api.nvidia.com/v1`.
-The model and API contract are documented in the [official inference reference](https://docs.api.nvidia.com/nim/reference/meta-llama-3_3-70b-instruct-infer).
+The model and API contract are documented in the [official inference reference](https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-super-120b-a12b-infer).
 Free access, model availability and rate limits depend on the account and endpoint;
 the application makes no promise of unlimited free processing. Analysis can make
 many requests for a long paper, rather than compressing it into a single top-k
@@ -44,7 +47,16 @@ retrieval result. Rate-limit errors stop the job and leave any prior saved repor
 
 ## Credentials and alternatives
 
-UI keys live only in backend memory for the running session. The backend does not
+For a one-time app-owner setup, copy `.env.example` to `.env` in the workspace and
+fill `NVIDIA_API_KEY` locally. The backend reads that file at startup. Keep the file
+private and out of Git. Existing process environment variables take precedence.
+Changing the file requires a backend restart. An empty key shows the service as
+unavailable; the UI does not claim an anonymous NVIDIA connection works.
+
+**AI settings · optional** lets a user override the app default for this local
+workspace, or return using **Use app default**. Overrides apply to this local
+backend instance; per-user account/session isolation is not implemented.
+Optional UI keys live only in backend memory for the running session. The backend does not
 return them, write them to its report files, or store them in browser storage.
 After restarting, reconnect or configure environment variables before launch.
 Do not put a key in frontend Vite variables or a tracked source file.
@@ -53,13 +65,14 @@ For NVIDIA, this PowerShell setup avoids putting a literal key in command histor
 
 ```powershell
 $env:PBL_MODEL_PROVIDER = 'nvidia'
-$env:PBL_MODEL_NAME = 'meta/llama-3.3-70b-instruct'
+$env:PBL_MODEL_NAME = 'nvidia/nemotron-3-super-120b-a12b'
 $env:NVIDIA_API_KEY = [System.Net.NetworkCredential]::new('', (Read-Host 'NVIDIA API key' -AsSecureString)).Password
 npm run dev
 ```
 
 The key is still an ordinary environment variable available to this process and
-its children. The app does not automatically load `.env` files. Supported variables:
+its children. The backend loads the supported model variables from the workspace's
+`.env` without executing or interpolating its contents. Supported variables:
 `PBL_MODEL_PROVIDER`, `PBL_MODEL_URL`, `PBL_MODEL_NAME`, `PBL_MODEL_API_KEY`, and
 the fallback `NVIDIA_API_KEY`. The NVIDIA preset fixes its URL to the NVIDIA host.
 
@@ -67,6 +80,12 @@ the fallback `NVIDIA_API_KEY`. The NVIDIA preset fixes its URL to the NVIDIA hos
 Enter an installed model's exact name and, by default, `http://127.0.0.1:11434`.
 **Compatible API** uses `/chat/completions`, bearer authentication when supplied,
 and `response_format: {"type":"json_object"}`. Remote endpoints require HTTPS.
+Opening a paper never starts analysis. A saved paper can be analyzed without being
+uploaded again. Progress segments are pieces of one paper's text and tables, not
+counts of PDFs. The old 24,000-character limit produced 24 segments for Tetris3D;
+the new default model's conservative 96,000-character limit produces six, followed
+by synthesis. Other models retain the smaller bound for context compatibility.
+
 The selected provider receives extracted excerpts and questions when generation
 starts. The uploaded PDF and Docling conversion remain local.
 
@@ -101,7 +120,7 @@ from pathlib import Path
 index = EvidenceIndex.model_validate_json(
     Path('outputs/intelligence/evidence.index.json').read_text(encoding='utf-8')
 )
-model = HTTPJSONModel.from_env()
+model = HTTPJSONModel.from_env(Path.cwd())
 report = analyze(index, model, progress=print)
 response = answer(index, model, 'What problem does the proposed method address?')
 ```
@@ -117,6 +136,7 @@ Local HTTP routes:
 |---|---|---|
 | GET / POST | `/api/model` | Read public connection metadata / configure the runtime connection |
 | POST | `/api/model/test` | Test JSON output without sending document content |
+| POST | `/api/model/default` | Restore the app-owner connection, discarding the runtime override |
 | GET | `/api/papers/{paper_id}/understanding` | Saved report, current model metadata and recent jobs |
 | POST | `/api/papers/{paper_id}/understanding` | Queue analysis; returns a job with HTTP 202 |
 | POST | `/api/papers/{paper_id}/questions` | Queue a question using `{"question":"..."}` |
@@ -133,9 +153,11 @@ search loop have automated tests with explicit model fixtures. Browser checks
 cover the real setup, reading and source navigation, plus generated overview,
 relationship and answer rendering with an explicitly labeled fixture provider
 in an isolated workspace. No API key was available
-during implementation, so real NVIDIA inference and corpus-level answer quality
-are **not yet evaluated**. Connecting a key and inspecting outputs on unfamiliar
-papers is the next validation step.
+during the initial implementation. A key was subsequently configured in the
+running UI session, but two GLM analysis requests failed and no successful real
+paper analysis was saved. Real Nemotron inference and corpus-level answer quality
+are **not yet evaluated**. Configure the app-owner key persistently and inspect
+outputs on unfamiliar papers as the next validation step.
 
 This version does not interpret diagram pixels, transcribe empty formula regions,
 repair merged numeric cells, populate structured experimental ResultRecords,
