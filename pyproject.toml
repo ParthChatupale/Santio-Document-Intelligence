@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pbl-document-intelligence"
+version = "0.3.0"
+description = "Evidence indexing, attribution checks, and provenance-aware RAG exports"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2.13.5,<3"]
+
+[project.optional-dependencies]
+docling = ["docling==2.135.0"]
+langchain = ["langchain-core>=1,<2"]
+gui = ["fastapi==0.143.0", "uvicorn==0.54.0"]
+test = ["httpx>=0.28,<1"]
+
+[project.scripts]
+pbl-docintel = "pbl_docintel.cli:main"
+pbl-arxiv = "pbl_docintel.arxiv:main"
+pbl-gui = "pbl_docintel.gui.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pbl_docintel*"]
+
+[tool.setuptools.package-data]
+"pbl_docintel.gui" = ["static/*", "static/react/*", "static/react/assets/*", "static/vendor/*", "static/vendor/cmaps/*", "static/vendor/standard_fonts/*", "static/vendor/wasm/*"]

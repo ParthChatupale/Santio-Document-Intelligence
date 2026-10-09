@@ -1,0 +1,673 @@
+{
+  "schema_version": "0.1.0",
+  "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+  "run": {
+    "extractor": "codex_manual_annotation",
+    "model": null,
+    "created_at": "2026-10-08T15:33:22.306220+00:00",
+    "configuration": {
+      "source_check": "Rendered source PDF pages 6 and 7",
+      "purpose": "Provisional reference sample; independent human review pending"
+    }
+  },
+  "records": [
+    {
+      "result_id": "toys4k-ours-cd-s",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "Ours",
+        "normalized": "Tetris3D"
+      },
+      "role": "main",
+      "benchmark": {
+        "dataset": {
+          "reported": "Toys4K"
+        },
+        "split": null,
+        "subset": "Scenes composed with the ComOb generator from Toys4K objects",
+        "evidence": [
+          {
+            "evidence_id": "#/texts/146",
+            "quote": "Toys4K"
+          },
+          {
+            "evidence_id": "#/texts/155",
+            "quote": "with our ComOb generator"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "CD-S"
+        },
+        "direction": "lower",
+        "unit": null,
+        "reported_scale": "displayed CD = underlying CD x 100",
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "3.68",
+        "numeric": 3.68
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/0::cell:96"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/0::cell:95"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/0::cell:4"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "ground-truth depth maps",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "all methods receive the ground-truth depth maps"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "note": "Curated by Codex against original PDF pages 6 and 7; independent human review pending."
+      },
+      "notes": [
+        "Normalized method name Ours -> Tetris3D is a manual interpretation of this paper."
+      ]
+    },
+    {
+      "result_id": "toys4k-ours-cd-o",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "Ours",
+        "normalized": "Tetris3D"
+      },
+      "role": "main",
+      "benchmark": {
+        "dataset": {
+          "reported": "Toys4K"
+        },
+        "split": null,
+        "subset": "Scenes composed with the ComOb generator from Toys4K objects",
+        "evidence": [
+          {
+            "evidence_id": "#/texts/146",
+            "quote": "Toys4K"
+          },
+          {
+            "evidence_id": "#/texts/155",
+            "quote": "with our ComOb generator"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "CD-O"
+        },
+        "direction": "lower",
+        "unit": null,
+        "reported_scale": "displayed CD = underlying CD x 100",
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "0.97",
+        "numeric": 0.97
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/0::cell:97"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/0::cell:95"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/0::cell:5"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "ground-truth depth maps",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "all methods receive the ground-truth depth maps"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "note": "Curated by Codex against original PDF pages 6 and 7; independent human review pending."
+      },
+      "notes": [
+        "Normalized method name Ours -> Tetris3D is a manual interpretation of this paper."
+      ]
+    },
+    {
+      "result_id": "toys4k-ours-f1-s",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "Ours",
+        "normalized": "Tetris3D"
+      },
+      "role": "main",
+      "benchmark": {
+        "dataset": {
+          "reported": "Toys4K"
+        },
+        "split": null,
+        "subset": "Scenes composed with the ComOb generator from Toys4K objects",
+        "evidence": [
+          {
+            "evidence_id": "#/texts/146",
+            "quote": "Toys4K"
+          },
+          {
+            "evidence_id": "#/texts/155",
+            "quote": "with our ComOb generator"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "F1-S"
+        },
+        "direction": "higher",
+        "unit": null,
+        "reported_scale": null,
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "0.8407",
+        "numeric": 0.8407
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/0::cell:98"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/0::cell:95"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/0::cell:6"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "ground-truth depth maps",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "all methods receive the ground-truth depth maps"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "note": "Curated by Codex against original PDF pages 6 and 7; independent human review pending."
+      },
+      "notes": [
+        "Normalized method name Ours -> Tetris3D is a manual interpretation of this paper."
+      ]
+    },
+    {
+      "result_id": "toys4k-ours-f1-o",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "Ours",
+        "normalized": "Tetris3D"
+      },
+      "role": "main",
+      "benchmark": {
+        "dataset": {
+          "reported": "Toys4K"
+        },
+        "split": null,
+        "subset": "Scenes composed with the ComOb generator from Toys4K objects",
+        "evidence": [
+          {
+            "evidence_id": "#/texts/146",
+            "quote": "Toys4K"
+          },
+          {
+            "evidence_id": "#/texts/155",
+            "quote": "with our ComOb generator"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "F1-O"
+        },
+        "direction": "higher",
+        "unit": null,
+        "reported_scale": null,
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "0.8084",
+        "numeric": 0.8084
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/0::cell:99"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/0::cell:95"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/0::cell:7"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "ground-truth depth maps",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "all methods receive the ground-truth depth maps"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "note": "Curated by Codex against original PDF pages 6 and 7; independent human review pending."
+      },
+      "notes": [
+        "Normalized method name Ours -> Tetris3D is a manual interpretation of this paper."
+      ]
+    },
+    {
+      "result_id": "toys4k-ours-cov",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "Ours",
+        "normalized": "Tetris3D"
+      },
+      "role": "main",
+      "benchmark": {
+        "dataset": {
+          "reported": "Toys4K"
+        },
+        "split": null,
+        "subset": "Scenes composed with the ComOb generator from Toys4K objects",
+        "evidence": [
+          {
+            "evidence_id": "#/texts/146",
+            "quote": "Toys4K"
+          },
+          {
+            "evidence_id": "#/texts/155",
+            "quote": "with our ComOb generator"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "COV"
+        },
+        "direction": "higher",
+        "unit": "percent",
+        "reported_scale": null,
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "83.11",
+        "numeric": 83.11
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/0::cell:103"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/0::cell:95"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/0::cell:11"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "ground-truth depth maps",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "all methods receive the ground-truth depth maps"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "note": "Curated by Codex against original PDF pages 6 and 7; independent human review pending."
+      },
+      "notes": [
+        "Normalized method name Ours -> Tetris3D is a manual interpretation of this paper."
+      ]
+    },
+    {
+      "result_id": "toys4k-sam3d-cd-s",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "SAM-3D",
+        "normalized": "SAM-3D"
+      },
+      "role": "baseline",
+      "benchmark": {
+        "dataset": {
+          "reported": "Toys4K"
+        },
+        "split": null,
+        "subset": "Scenes composed with the ComOb generator from Toys4K objects",
+        "evidence": [
+          {
+            "evidence_id": "#/texts/146",
+            "quote": "Toys4K"
+          },
+          {
+            "evidence_id": "#/texts/155",
+            "quote": "with our ComOb generator"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "CD-S"
+        },
+        "direction": "lower",
+        "unit": null,
+        "reported_scale": "displayed CD = underlying CD x 100",
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "25.19",
+        "numeric": 25.19
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/0::cell:20"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/0::cell:19"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/0::cell:4"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "ground-truth depth maps",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "all methods receive the ground-truth depth maps"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "note": "Curated by Codex against original PDF pages 6 and 7; independent human review pending."
+      },
+      "notes": []
+    },
+    {
+      "result_id": "toys4k-shaper-cd-s",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "ShapeR",
+        "normalized": "ShapeR"
+      },
+      "role": "baseline",
+      "benchmark": {
+        "dataset": {
+          "reported": "Toys4K"
+        },
+        "split": null,
+        "subset": "Scenes composed with the ComOb generator from Toys4K objects",
+        "evidence": [
+          {
+            "evidence_id": "#/texts/146",
+            "quote": "Toys4K"
+          },
+          {
+            "evidence_id": "#/texts/155",
+            "quote": "with our ComOb generator"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "CD-S"
+        },
+        "direction": "lower",
+        "unit": null,
+        "reported_scale": "displayed CD = underlying CD x 100",
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "5.72",
+        "numeric": 5.72
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/0::cell:35"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/0::cell:34"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/0::cell:4"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "ground-truth depth maps",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "all methods receive the ground-truth depth maps"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "note": "Curated by Codex against original PDF pages 6 and 7; independent human review pending."
+      },
+      "notes": []
+    },
+    {
+      "result_id": "messykitchens-ours-merged-f1",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "Ours",
+        "normalized": "Tetris3D"
+      },
+      "role": "main",
+      "benchmark": {
+        "dataset": {
+          "reported": "MessyKitchens"
+        },
+        "evidence": [
+          {
+            "evidence_id": "#/tables/1::cell:1",
+            "quote": "MessyKitchens"
+          },
+          {
+            "evidence_id": "#/texts/147",
+            "quote": "MessyKitchens"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "F1-S / F1-O"
+        },
+        "direction": "higher",
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "0.9620 0.8284",
+        "numeric": null,
+        "uncertainty": "Two distinct metric values merged into one extracted cell."
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/1::cell:157"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/1::cell:154"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/1"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "estimated depth from MoGe3",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "estimated depth from MoGe3"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "needs_review",
+        "note": "Preserve the merged cell; do not assign a scalar until the source layout is reviewed."
+      },
+      "notes": [
+        "Source PDF visual check gives F1-S=0.9620; F1-O=0.8284. These are reference notes, not automatically recovered scalar values.",
+        "Metric header extraction is damaged; cite the whole table for layout review, rather than invent a precise header association."
+      ]
+    },
+    {
+      "result_id": "picasso-ours-merged-f1",
+      "document_id": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+      "method": {
+        "reported": "Ours",
+        "normalized": "Tetris3D"
+      },
+      "role": "main",
+      "benchmark": {
+        "dataset": {
+          "reported": "Picasso"
+        },
+        "evidence": [
+          {
+            "evidence_id": "#/tables/1::cell:2",
+            "quote": "Picasso"
+          },
+          {
+            "evidence_id": "#/texts/147",
+            "quote": "Picasso"
+          }
+        ]
+      },
+      "metric": {
+        "name": {
+          "reported": "F1-S / F1-O"
+        },
+        "direction": "higher",
+        "definition_evidence": [
+          {
+            "evidence_id": "#/texts/156"
+          }
+        ]
+      },
+      "value": {
+        "raw": "0.9053 0.7325",
+        "numeric": null,
+        "uncertainty": "Two distinct metric values merged into one extracted cell."
+      },
+      "value_evidence": {
+        "evidence_id": "#/tables/1::cell:165"
+      },
+      "method_evidence": {
+        "evidence_id": "#/tables/1::cell:154"
+      },
+      "metric_evidence": [
+        {
+          "evidence_id": "#/tables/1"
+        }
+      ],
+      "conditions": [
+        {
+          "key": "depth_input",
+          "value": "estimated depth from MoGe3",
+          "basis": "reported",
+          "evidence": [
+            {
+              "evidence_id": "#/texts/155",
+              "quote": "estimated depth from MoGe3"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "needs_review",
+        "note": "Preserve the merged cell; do not assign a scalar until the source layout is reviewed."
+      },
+      "notes": [
+        "Source PDF visual check gives F1-S=0.9053; F1-O=0.7325. These are reference notes, not automatically recovered scalar values.",
+        "Metric header extraction is damaged; cite the whole table for layout review, rather than invent a precise header association."
+      ]
+    }
+  ]
+}

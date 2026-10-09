@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+outputs/
+tmp/
+.env
+*.egg-info/
+build/
+dist/
+data/pdfs/
+node_modules/
+data/uploads/
+data/gui-library.json
+data/import-jobs/

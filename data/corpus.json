@@ -1,0 +1,55 @@
+{
+  "domain": "3D scene generation (provisional)",
+  "target_initial_papers": 5,
+  "selection_status": "One experiment-comparison seed, two heterogeneous integration tests, and one downloaded parser reference; additional comparable papers still to select",
+  "selection_criteria": [
+    "Shared dataset and metric definitions, with enough overlapping results to compare",
+    "Accessible full text and identifiable evaluation protocol",
+    "Include at least one difficult table and a comparison with differing experimental conditions"
+  ],
+  "papers": [
+    {
+      "paper_id": "arxiv:2610.10539v1",
+      "title": "Tetris3D: 3D Scene Generation With Objects That Fit Together",
+      "source_pdf": "2610.10539v1.pdf",
+      "source_sha256": "acb7f9888d6680be702bbe5af3af29b8edeed5c05e97ba017c1fd842ead945fc",
+      "docling_json": "outputs/2610.10539v1.json",
+      "evidence_index": "outputs/intelligence/evidence.index.json",
+      "rag_chunks": "outputs/intelligence/rag_chunks.jsonl",
+      "annotations": "data/annotations/tetris3d.sample.json",
+      "status": "converted_with_provisional_reference_annotations",
+      "role": "experiment_comparison_seed"
+    },
+    {
+      "paper_id": "arxiv:2307.06435v10",
+      "title": "A Comprehensive Overview of Large Language Models",
+      "source_pdf": "2307.06435v10.pdf",
+      "source_sha256": "297d2f021f5d4aef40b0e4fa25ae29fd5a92cbf5182ed776eb8973c68a64725a",
+      "docling_json": "outputs/2307.06435v10.json",
+      "evidence_index": "outputs/intelligence/2307.06435v10/evidence.index.json",
+      "rag_chunks": "outputs/intelligence/2307.06435v10/rag_chunks.jsonl",
+      "role": "integration_stress_test",
+      "status": "converted_and_indexed_without_result_annotations"
+    },
+    {
+      "paper_id": "arxiv:2610.10538v1",
+      "title": "Never Look Back: Understanding Persistence in 3D Object Memory from Egocentric Videos",
+      "source_pdf": "2610.10538v1.pdf",
+      "source_sha256": "0b87f936f5c43e43943d23cdbc397752ce68860301cbed318b65d6b07141f1c1",
+      "docling_json": "outputs/2610.10538v1.json",
+      "evidence_index": "outputs/intelligence/2610.10538v1/evidence.index.json",
+      "rag_chunks": "outputs/intelligence/2610.10538v1/rag_chunks.jsonl",
+      "role": "integration_stress_test",
+      "status": "converted_and_indexed_without_result_annotations"
+    },
+    {
+      "paper_id": "arxiv:2501.17887v1",
+      "title": "Docling: An Efficient Open-Source Toolkit for AI-driven Document Conversion",
+      "source_pdf": "data/pdfs/2501.17887v1.pdf",
+      "source_sha256": "f555f6260be1de6cd8f75addca4edc3c4456b2d5f3bf01a115942cb81396208a",
+      "download_receipt": "data/pdfs/2501.17887v1.download.json",
+      "role": "parser_reference",
+      "status": "downloaded_not_converted"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research evidence workspace</title>
+  <link rel="stylesheet" href="/static/vendor/pdf_viewer.css">
+  <link rel="stylesheet" href="/static/app.css">
+  <script type="module" src="/static/app.js?v=1"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">R</span><div><strong>Research workspace</strong><span class="muted small">Source-backed document intelligence</span></div></div>
+    <nav aria-label="Workspace task" id="workspace-nav">
+      <button data-mode="inspect" aria-pressed="true">Inspect</button>
+      <button data-mode="review" aria-pressed="false">Review <span id="review-count" class="count">0</span></button>
+      <button data-mode="compare" aria-pressed="false">Compare</button>
+    </nav>
+    <button id="export-open" class="primary" disabled>Export data ↗</button>
+  </header>
+  <div id="app-error" role="alert" hidden></div>
+  <div class="mobile-picker"><label for="paper-picker">Paper</label><select id="paper-picker"></select></div>
+  <div class="workspace">
+    <aside class="library" aria-label="Document library">
+      <div class="section-heading"><h1>Documents</h1><span id="paper-count" class="muted small"></span></div>
+      <div id="papers" class="paper-list"></div>
+      <div class="library-note"><span class="eyebrow">LOCAL WORKSPACE</span><p>Browse saved conversions and their original PDFs.</p><p>Comparison seeds, ingestion tests and parser references retain separate roles.</p></div>
+      <a class="quiet-link" href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noreferrer">Viewer powered by PDF.js ↗</a>
+    </aside>
+    <main class="source-area">
+      <div class="document-heading"><div><span class="eyebrow" id="paper-role">DOCUMENT</span><h2 id="paper-title">Choose a paper</h2><span id="document-summary" class="muted small"></span></div><span class="badge neutral">Read-only</span></div>
+      <section id="comparison" hidden aria-label="Provisional experiment comparison"></section>
+      <section id="source" aria-label="Original PDF viewer">
+        <div class="viewer-toolbar">
+          <div class="page-controls"><button id="page-prev" aria-label="Previous page" disabled>←</button><label for="page-number" class="small">Page</label><input id="page-number" type="number" min="1" value="1" aria-label="PDF page" disabled><span id="page-total" class="muted small">/ —</span><button id="page-next" aria-label="Next page" disabled>→</button></div>
+          <label class="small zoom-label">Zoom<select id="zoom" aria-label="PDF zoom" disabled><option value="fit">Fit width</option><option value="0.75">75%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option></select></label>
+          <label class="switch-label"><input id="overlays" type="checkbox" checked> Show detections</label>
+        </div>
+        <div class="overlay-filters" aria-label="Visible detection categories">
+          <label><input type="checkbox" data-layer="table" checked><span class="swatch table-color"></span> Tables</label>
+          <label><input type="checkbox" data-layer="picture" checked><span class="swatch picture-color"></span> Pictures</label>
+          <label><input type="checkbox" data-layer="formula" checked><span class="swatch formula-color"></span> Equations</label>
+          <label><input type="checkbox" data-layer="text"><span class="swatch text-color"></span> Text</label>
+        </div>
+        <div id="viewer-message" class="viewer-message" role="status">Loading the document library…</div>
+        <div id="pdf-scroll" class="pdf-scroll"><div id="pdf-page" class="pdf-page" hidden><canvas id="pdf-canvas" aria-label="Original PDF page"></canvas><div id="text-layer" class="textLayer"></div><div id="region-layer" class="region-layer" aria-label="Selectable evidence regions"></div></div></div>
+        <div class="source-footer"><span id="selection-location">Select a result or detection to inspect its evidence.</span><a id="original-link" target="_blank" rel="noreferrer" hidden>Open original PDF ↗</a></div>
+      </section>
+    </main>
+    <aside class="inspector" aria-label="Evidence inspector">
+      <div class="inspector-heading"><span class="eyebrow">EVIDENCE INSPECTOR</span><h2 id="inspector-title">Inspect the source</h2></div>
+      <div id="review-note" class="notice" hidden>Read-only review queue. Corrections and saved review decisions are the next milestone.</div>
+      <label class="small" for="evidence-category">Browse</label><select id="evidence-category" disabled><option value="results">Results</option><option value="table">Tables</option><option value="picture">Pictures</option><option value="formula">Equations</option><option value="text">Text</option></select>
+      <label class="small" for="evidence-picker">Selected evidence</label><select id="evidence-picker" disabled></select>
+      <div id="evidence-detail" aria-live="polite"><p class="muted">Every result stays linked to the original source.</p></div>
+    </aside>
+  </div>
+  <footer class="app-footer"><span><span class="local-dot" aria-hidden="true"></span> Local · Python / RAG library</span><span id="app-status" role="status">Loading…</span></footer>
+  <dialog id="export-dialog" aria-labelledby="export-title"><div class="dialog-heading"><h2 id="export-title">Export paper data</h2><button id="export-close" aria-label="Close export dialog">×</button></div><p id="export-description" class="muted"></p><div id="export-options"></div><p class="muted small">Original evidence stays unchanged. JSON preserves the exact reported values; CSV escapes potential spreadsheet formulas.</p></dialog>
+</body>
+</html>
