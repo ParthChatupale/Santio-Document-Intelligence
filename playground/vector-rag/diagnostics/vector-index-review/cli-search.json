@@ -1,0 +1,379 @@
+{
+  "query": "Which modules do tool-augmented language models use?",
+  "index_id": "r2-3c63988f65eaf71161dafedc",
+  "results": [
+    {
+      "chunk_id": "6f9b88342a6c29d8-00065",
+      "contextualized_text": "3.4.2. Tool Augmented LLMs\nTraining with Tool Augmentation: LLMs are trained to interact with diverse tools, enhancing planning abilities to overcome the limitations of zero-shot tool augmentation [221, 27, 222, 223]. Gorilla [221] instruction-tunes LLaMA with information retrieval fromAPI documentation. It uses the self-instruct [19] data generation pipeline with GPT-4 by providing in-context examples retrieved from API documentation. Tool augmented language model (TALM) [27] fine-tunes T5 [10] for tool use with a self-play approach, where it iteratively completes tool manipulation tasks and includes them back in the training set. ToolLLM [223] collects 16k APIs from RapidAPI. It samples APIs from the list to generate an instruction-tuning dataset using ChatGPT in single-tool and multi-tool scenarios. For highquality datasets, ToolLLM suggested a depth-first search-based decision tree (DFSDT) method to generate ground-truths with diverse reasoning and planning.\nMultimodal Tool Augmentation: The compositional reasoning capacity of LLMs allows them to manipulate tools in multimodal settings [215, 216, 224]. Following the pipeline shown in Figure 13, the LLM outlines a plan, generally executing in a sequence: Plan \u2192 Tool selection \u2192 Execute \u2192 Inspect \u2192 Generate, to respond to the user query. Here, the database of tools is rich in modalities, including text, images, etc. Many of the multimodal tool augmentation systems employ multimodal LLMs [31, 225, 224, 216], while others utilize single modality LLMs and generate a plan on using different modality tools to solve multimodal queries [226].",
+      "metadata": {
+        "pages": [
+          19,
+          20
+        ],
+        "headings": [
+          "3.4.2. Tool Augmented LLMs"
+        ],
+        "source_refs": [
+          "#/texts/341",
+          "#/texts/342"
+        ],
+        "source_items": [
+          {
+            "ref": "#/texts/341",
+            "label": "text",
+            "parent_ref": "#/body",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 186.64315320000014,
+                  "l": 306.6039999999999,
+                  "r": 557.6615199999998,
+                  "t": 374.99726880000014,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 19,
+                "charspan": [
+                  0,
+                  949
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/342",
+            "label": "text",
+            "parent_ref": "#/body",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 79.04715320000014,
+                  "l": 306.6039999999998,
+                  "r": 557.6634965999998,
+                  "t": 183.71426880000013,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 19,
+                "charspan": [
+                  0,
+                  543
+                ]
+              },
+              {
+                "bbox": {
+                  "b": 736.5811531999999,
+                  "l": 37.613,
+                  "r": 288.67108919999987,
+                  "t": 757.5124558,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 20,
+                "charspan": [
+                  544,
+                  637
+                ]
+              }
+            ]
+          }
+        ],
+        "text_sources": [
+          "extracted_document"
+        ],
+        "picture_links": []
+      },
+      "cosine_distance": 0.09865626986790466,
+      "cosine_similarity": 0.9013437301320953
+    },
+    {
+      "chunk_id": "6f9b88342a6c29d8-00064",
+      "contextualized_text": "3.4.2. Tool Augmented LLMs\nWhile RAG relies on the retriever to provide context to the LLM to answer queries, tool augmented LLMs capitalize on the reasoning abilities of LLMs to iteratively plan by dividing tasks into sub-tasks, selecting necessary tools, and taking actions to complete the task [215, 216, 217, 27]. A generic pipeline of tool-augmented LLMs is shown in Figure 13, where different modules in Figure 13 are selected in a loop until the task completion.\nZero-Shot Tool Augmentation: LLMs in-context learning and reasoning abilities enable them to interact with tools without training. Automatic reasoning and tool-use (ART) [217] builds a task library with demonstrations of reasoning steps and calling external tools. It retrieves similar task examples and provides the context to the LLM for inference. Aside from this, [218] shows tool documentation is enough to teach LLMs to use tools without demonstrations. RestGPT [219] integrates LLMs with RESTful APIs by decomposing tasks into planning and API selection steps. The API selector understands the API documentation to select a suitable API for the task and plan the execution. ToolkenGPT [220] uses tools as tokens by concatenating tool embeddings with other token embeddings. During inference, the LLM generates the tool tokens representing the tool call, stops text generation, and restarts using the tool execution output.\nFigure 13: A basic flow diagram of tool augmented LLMs. Given an input and a set of available tools, the model generates a plan to complete the task. The tool augmented LLMs utilize different modules iteratively, such as retriever, tool execution, read-write to memory, feedback, etc., depending on the task.",
+      "metadata": {
+        "pages": [
+          19
+        ],
+        "headings": [
+          "3.4.2. Tool Augmented LLMs"
+        ],
+        "source_refs": [
+          "#/texts/338",
+          "#/texts/339",
+          "#/texts/340"
+        ],
+        "source_items": [
+          {
+            "ref": "#/texts/338",
+            "label": "text",
+            "parent_ref": "#/body",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 186.64315319999935,
+                  "l": 37.61299999999997,
+                  "r": 288.67123739999994,
+                  "t": 279.22575499999937,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 19,
+                "charspan": [
+                  0,
+                  442
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/339",
+            "label": "text",
+            "parent_ref": "#/body",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 79.04715319999934,
+                  "l": 37.61299999999997,
+                  "r": 288.67119819999994,
+                  "t": 183.71426879999933,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 19,
+                "charspan": [
+                  0,
+                  542
+                ]
+              },
+              {
+                "bbox": {
+                  "b": 377.9261532000001,
+                  "l": 306.6039999999999,
+                  "r": 557.6615199999998,
+                  "t": 458.5537550000001,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 19,
+                "charspan": [
+                  543,
+                  929
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/340",
+            "label": "caption",
+            "parent_ref": "#/pictures/12",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 487.3835182,
+                  "l": 306.6039999999999,
+                  "r": 557.6629194999999,
+                  "t": 522.8938175,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 19,
+                "charspan": [
+                  0,
+                  308
+                ]
+              }
+            ]
+          }
+        ],
+        "text_sources": [
+          "extracted_document"
+        ],
+        "picture_links": [
+          {
+            "pages": [
+              19
+            ],
+            "picture_ref": "#/pictures/12",
+            "caption_refs": [
+              "#/texts/340"
+            ],
+            "ai_created_by": null,
+            "description_source": "extracted_caption",
+            "ai_description_included": false,
+            "ai_description_unverified": false
+          }
+        ]
+      },
+      "cosine_distance": 0.1037377180896829,
+      "cosine_similarity": 0.8962622819103171
+    },
+    {
+      "chunk_id": "6f9b88342a6c29d8-00206",
+      "contextualized_text": "References\n- [27] A. Parisi, Y. Zhao, N. Fiedel, Talm: Tool augmented language models, arXiv preprint arXiv:2205.12255 (2022). 2, 19, 20\n- [28] B. Zhang, H. Soh, Large language models as zero-shot human models for human-robot interaction, arXiv preprint arXiv:2303.03548 (2023). 2, 33\n- [29] Q. Ye, H. Xu, G. Xu, J. Ye, M. Yan, Y. Zhou, J. Wang, A. Hu, P. Shi, Y. Shi, et al., mplug-owl: Modularization empowers large language models with multimodality, arXiv preprint arXiv:2304.14178 (2023). 2, 22\n- [30] W. Wang, Z. Chen, X. Chen, J. Wu, X. Zhu, G. Zeng, P. Luo, T. Lu, J. Zhou, Y. Qiao, et al., Visionllm: Large language model is also an open-ended decoder for vision-centric tasks, arXiv preprint arXiv:2305.11175 (2023). 2, 22\n- [31] R. Yang, L. Song, Y. Li, S. Zhao, Y. Ge, X. Li, Y. Shan, Gpt4tools: Teaching large language model to use tools via self-instruction, arXiv preprint arXiv:2305.18752 (2023). 2, 19, 22, 23\n- [32] E. Saravia, Prompt Engineering Guide, https://github.com/dairai/Prompt-Engineering-Guide (12 2022). 2, 7, 18, 34\n- [33] A. Zeng, X. Liu, Z. Du, Z. Wang, H. Lai, M. Ding, Z. Yang, Y. Xu, W. Zheng, X. Xia, et al., Glm-130b: An open bilingual pre-trained model, arXiv preprint arXiv:2210.02414 (2022). 2, 10, 23, 24, 25",
+      "metadata": {
+        "pages": [
+          36
+        ],
+        "headings": [
+          "References"
+        ],
+        "source_refs": [
+          "#/texts/560",
+          "#/texts/561",
+          "#/texts/562",
+          "#/texts/563",
+          "#/texts/564",
+          "#/texts/565",
+          "#/texts/566"
+        ],
+        "source_items": [
+          {
+            "ref": "#/texts/560",
+            "label": "list_item",
+            "parent_ref": "#/groups/5",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 720.5775181999991,
+                  "l": 310.58900000000006,
+                  "r": 557.6621000000001,
+                  "t": 737.158817499999,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 36,
+                "charspan": [
+                  0,
+                  123
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/561",
+            "label": "list_item",
+            "parent_ref": "#/groups/5",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 692.183518199999,
+                  "l": 310.58900000000006,
+                  "r": 557.6626009000001,
+                  "t": 718.229817499999,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 36,
+                "charspan": [
+                  0,
+                  145
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/562",
+            "label": "list_item",
+            "parent_ref": "#/groups/5",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 654.3255181999988,
+                  "l": 310.58900000000006,
+                  "r": 557.6626009000001,
+                  "t": 689.8368174999988,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 36,
+                "charspan": [
+                  0,
+                  212
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/563",
+            "label": "list_item",
+            "parent_ref": "#/groups/5",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 616.4675181999986,
+                  "l": 310.58900000000006,
+                  "r": 557.6626009,
+                  "t": 651.9788174999986,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 36,
+                "charspan": [
+                  0,
+                  230
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/564",
+            "label": "list_item",
+            "parent_ref": "#/groups/5",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 588.0745181999985,
+                  "l": 310.58900000000006,
+                  "r": 557.6626008999999,
+                  "t": 614.1208174999985,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 36,
+                "charspan": [
+                  0,
+                  191
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/565",
+            "label": "list_item",
+            "parent_ref": "#/groups/5",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 569.1455181999984,
+                  "l": 310.58900000000006,
+                  "r": 557.6621468,
+                  "t": 585.7507277999983,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 36,
+                "charspan": [
+                  0,
+                  117
+                ]
+              }
+            ]
+          },
+          {
+            "ref": "#/texts/566",
+            "label": "list_item",
+            "parent_ref": "#/groups/5",
+            "provenance": [
+              {
+                "bbox": {
+                  "b": 540.7515181999983,
+                  "l": 310.589,
+                  "r": 557.6626008999998,
+                  "t": 566.7978174999982,
+                  "coord_origin": "BOTTOMLEFT"
+                },
+                "page_no": 36,
+                "charspan": [
+                  0,
+                  201
+                ]
+              }
+            ]
+          }
+        ],
+        "text_sources": [
+          "extracted_document"
+        ],
+        "picture_links": []
+      },
+      "cosine_distance": 0.12020805119847744,
+      "cosine_similarity": 0.8797919488015226
+    }
+  ]
+}

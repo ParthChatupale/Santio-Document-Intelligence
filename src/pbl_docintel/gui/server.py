@@ -15,7 +15,8 @@ import importlib.util
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, JSONResponse
+from pydantic import BaseModel, Field, ConfigDict
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
@@ -23,6 +24,20 @@ from .. import DoclingAdapter, EvidenceAdapter, index_document, rag_chunks, vali
 from ..schema import EvidenceIndex, Location, ResultCollection
 
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024
+
+
+class UploadDetails(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    filename: str = Field(min_length=1, max_length=240)
+    title: str = Field(default="", max_length=500)
+    ocr: bool = False
+    size: int = Field(gt=0)
+
+
+class QuestionDetails(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    question: str = Field(min_length=1, max_length=4000)
+    context_question_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{32}$")
 
 
 def fingerprint(path: Path) -> str:
@@ -84,6 +99,14 @@ class Workspace:
                 if paper.get(field):
                     self.path(paper[field])
             self.papers[key] = paper
+        overrides = self.path("data/gui-overrides.json")
+        if overrides.exists():
+            for key, fields in json.loads(overrides.read_text(encoding="utf-8")).items():
+                if key in self.papers:
+                    for field in ("docling_json", "evidence_index", "rag_chunks"):
+                        if fields.get(field):
+                            self.path(fields[field])
+                    self.papers[key].update(fields)
 
     def path(self, value: str) -> Path:
         path = (self.root / value).resolve()
@@ -94,8 +117,37 @@ class Workspace:
     def list_papers(self):
         with self.lock:
             return [{**p, "processed": bool(p.get("docling_json")),
+                     "rag": self.rag_status(p["paper_id"]),
                      "source_available": self.path(p["source_pdf"]).is_file()}
                     for p in self.papers.values()]
+
+    def rag_state_path(self, key):
+        return self.path("data/rag-state/" + hashlib.sha256(key.encode()).hexdigest() + ".json")
+
+    def rag_status(self, key):
+        path = self.rag_state_path(key)
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"status": "not_ready"}
+
+    def set_rag_status(self, key, **fields):
+        from .imports import atomic_json
+        with self.lock:
+            state = {**self.rag_status(key), "paper_id": key, **fields}
+            atomic_json(self.rag_state_path(key), state)
+            return state
+
+    def attach_extraction(self, key, **fields):
+        """Persist derived files without rewriting the original corpus manifest."""
+        from .imports import atomic_json
+        with self.lock:
+            for name in ("docling_json", "evidence_index", "rag_chunks"):
+                if fields.get(name):
+                    self.path(fields[name]).resolve(strict=True)
+            overrides = self.path("data/gui-overrides.json")
+            saved = json.loads(overrides.read_text(encoding="utf-8")) if overrides.exists() else {}
+            saved[key] = {**saved.get(key, {}), **fields}
+            atomic_json(overrides, saved)
+            self.papers[key].update(fields)
+            self.cache.pop(key, None)
 
     def register(self, paper):
         from .imports import atomic_json
@@ -167,9 +219,12 @@ class Workspace:
                     location["display_rect"] = display_rect(original, index.document.pages)
                 units[key] = data
         exports = ["evidence", "rag", "docling"] if index else []
+        rag_state = self.rag_status(loaded.paper["paper_id"])
+        if rag_state.get("status") == "ready" and rag_state.get("chunks_file"):
+            exports.append("search_chunks")
         if loaded.results:
             exports += ["results", "csv", "markdown", "checks"]
-        return {"paper": loaded.paper, "source_sha256": loaded.source_hash,
+        return {"paper": {**loaded.paper, "rag": self.rag_status(loaded.paper["paper_id"])}, "source_sha256": loaded.source_hash,
                 "source_status": loaded.source_status,
                 "document": index.document.model_dump(mode="json") if index else None,
                 "units": units, "records": [r.model_dump(mode="json") for r in loaded.results.records]
@@ -242,13 +297,17 @@ def create_app(root: Path) -> FastAPI:
     workspace = Workspace(root)
     from .imports import Imports, new_upload_id
     imports = Imports(workspace)
+    from .questions import Questions
+    questions = Questions(workspace, imports.executor)
     @asynccontextmanager
     async def lifespan(app):
         yield
+        questions.close()
         imports.close()
     app = FastAPI(title="Research evidence workspace", docs_url=None, redoc_url=None, lifespan=lifespan)
     app.state.workspace = workspace
     app.state.imports = imports
+    app.state.questions = questions
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
     static = Path(__file__).parent / "static"
 
@@ -288,6 +347,129 @@ def create_app(root: Path) -> FastAPI:
     @app.get("/api/imports")
     def jobs():
         return imports.list()
+
+    @app.post("/api/imports/start", status_code=202)
+    def start_upload(details: UploadDetails, request: Request):
+        same_origin(request)
+        if importlib.util.find_spec("docling") is None:
+            raise HTTPException(503, 'PDF processing requires the Docling extra: pip install -e ".[gui,docling,vector]"')
+        filename = details.filename.replace("\\", "/").rsplit("/", 1)[-1]
+        if not filename.lower().endswith(".pdf"):
+            raise HTTPException(400, "Choose a PDF file")
+        if details.size > MAX_UPLOAD_BYTES:
+            raise HTTPException(413, "Maximum upload size is 100 MB")
+        job = imports.start_upload(new_upload_id(), filename, details.title or Path(filename).stem, details.ocr, details.size)
+        return JSONResponse(job, status_code=202, headers={"Location": f"/api/imports/{job['job_id']}", "Retry-After": "2"})
+
+    @app.get("/api/imports/{job_id}")
+    def job_status(job_id: str):
+        try:
+            return imports.get(job_id)
+        except KeyError:
+            raise HTTPException(404, "Import not found") from None
+
+    @app.put("/api/imports/{job_id}/file", status_code=202)
+    async def upload_file(job_id: str, request: Request):
+        same_origin(request)
+        try:
+            job = imports.get(job_id)
+        except KeyError:
+            raise HTTPException(404, "Import not found") from None
+        if job["status"] != "uploading":
+            raise HTTPException(409, "This upload is no longer active")
+        directory = workspace.path(f"data/uploads/{job_id}")
+        partial, source = directory / "source.pdf.part", directory / "source.pdf"
+        created, total = False, 0
+        try:
+            try:
+                stream = partial.open("xb")
+            except FileExistsError:
+                raise HTTPException(409, "An upload for this job is already in progress") from None
+            created = True
+            with stream:
+                async for block in request.stream():
+                    if imports.get(job_id)["status"] != "uploading":
+                        raise HTTPException(409, "Upload cancelled")
+                    total += len(block)
+                    if total > MAX_UPLOAD_BYTES:
+                        raise HTTPException(413, "Maximum upload size is 100 MB")
+                    stream.write(block)
+            with partial.open("rb") as stream:
+                if not stream.read(1024).lstrip().startswith(b"%PDF-"):
+                    raise HTTPException(400, "The file does not contain a PDF signature")
+            if total != job["size_bytes"]:
+                raise HTTPException(400, "The upload was incomplete. Choose the PDF again.")
+            with imports.lock:
+                if imports.get(job_id)["status"] != "uploading":
+                    raise HTTPException(409, "Upload cancelled")
+                partial.replace(source)
+                job = imports.finish_upload(job_id)
+            return JSONResponse(job, status_code=202, headers={"Location": f"/api/imports/{job_id}", "Retry-After": "2"})
+        except BaseException as error:
+            if created:
+                partial.unlink(missing_ok=True)
+                if imports.get(job_id)["status"] == "uploading":
+                    imports.update(job_id, status="failed", stage="Upload failed",
+                                   error=error.detail if isinstance(error, HTTPException) else "Upload interrupted. Choose the PDF again.")
+            raise
+
+    @app.post("/api/imports/{job_id}/retry", status_code=202)
+    def retry_import(job_id: str, request: Request):
+        same_origin(request)
+        try:
+            return imports.retry(job_id)
+        except KeyError:
+            raise HTTPException(404, "Import not found") from None
+        except ValueError as error:
+            raise HTTPException(409, str(error)) from None
+
+    @app.post("/api/papers/{paper_id}/prepare", status_code=202)
+    def prepare(paper_id: str, request: Request):
+        same_origin(request)
+        try:
+            return imports.prepare(paper_id)
+        except KeyError:
+            raise HTTPException(404, "Paper not found") from None
+        except (ValueError, OSError) as error:
+            raise HTTPException(409, str(error)) from None
+
+    @app.get("/api/papers/{paper_id}/rag")
+    def rag_status(paper_id: str):
+        if paper_id not in workspace.papers:
+            raise HTTPException(404, "Paper not found")
+        return workspace.rag_status(paper_id)
+
+    @app.get("/api/papers/{paper_id}/questions")
+    def question_history(paper_id: str):
+        if paper_id not in workspace.papers:
+            raise HTTPException(404, "Paper not found")
+        return questions.list(paper_id)
+
+    @app.post("/api/papers/{paper_id}/questions", status_code=202)
+    def ask(paper_id: str, details: QuestionDetails, request: Request):
+        same_origin(request)
+        try:
+            job = questions.create(paper_id, details.question, details.context_question_id)
+            return JSONResponse(job, status_code=202, headers={"Location": f"/api/questions/{job['question_id']}", "Retry-After": "2"})
+        except KeyError:
+            raise HTTPException(404, "Paper not found") from None
+        except (ValueError, OSError) as error:
+            raise HTTPException(409, str(error)) from None
+
+    @app.get("/api/questions/{question_id}")
+    def question_status(question_id: str):
+        try:
+            return questions.get(question_id)
+        except KeyError:
+            raise HTTPException(404, "Question not found") from None
+
+    @app.post("/api/questions/{question_id}/cancel")
+    def cancel_question(question_id: str, request: Request):
+        same_origin(request)
+        try:
+            return questions.cancel(question_id)
+        except KeyError:
+            raise HTTPException(404, "Question not found") from None
 
     @app.post("/api/imports", status_code=202)
     async def upload(request: Request, filename: str, title: str = "", ocr: bool = False):
@@ -345,6 +527,16 @@ def create_app(root: Path) -> FastAPI:
     @app.get("/api/papers/{paper_id}/exports/{kind}")
     def download(paper_id: str, kind: str):
         loaded = load(paper_id)
+        if kind == "search_chunks":
+            state = workspace.rag_status(paper_id)
+            if state.get("status") != "ready" or not state.get("chunks_file"):
+                raise HTTPException(404, "No prepared search passages")
+            if not loaded.docling or fingerprint(loaded.docling) != state["document_sha256"]:
+                raise HTTPException(409, "The extraction changed. Prepare this paper again.")
+            path = workspace.path(state["chunks_file"])
+            if not path.is_file():
+                raise HTTPException(404, "Prepared passages are missing. Prepare this paper again.")
+            return FileResponse(path, media_type="application/x-ndjson", filename="indexed-passages.jsonl")
         try:
             data, mime, suffix = export(loaded, kind)
         except KeyError as error:

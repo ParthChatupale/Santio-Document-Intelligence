@@ -1,0 +1,57 @@
+{
+  "kind": "picture",
+  "document": "playground\\vector-rag\\outputs\\2307.06435v10-20261016T144018745283Z\\document.json",
+  "pdf": "2307.06435v10.pdf",
+  "model": "HuggingFaceTB/SmolVLM-256M-Instruct",
+  "device": "cpu",
+  "dtype": "float32",
+  "threads": 4,
+  "model_load_seconds": 9.55,
+  "max_new_tokens": 200,
+  "max_generation_seconds": 45,
+  "cases": [
+    {
+      "ref": "#/pictures/0",
+      "page": 1,
+      "scale": 1.0,
+      "margin": 0.0,
+      "image_size": [
+        242,
+        186
+      ],
+      "seconds": 37.95,
+      "raw_text": " The image is a bar chart that shows the number of papers released over the years. The x-axis represents the years, while the y-axis represents the number of papers released. The bars are colored in blue, red, green, and orange, with the blue color representing the number of papers released in 2018, the red color representing the number of papers released in 2019, the green color representing the number of papers released in 2020, and the orange color representing the number of papers released in 2021.\n\n### Description of the Bar Chart:\n1. **Title**: The title of the chart is \"Paper Released Over Years.\"\n2. **X-Axis**: The x-axis is labeled \"Years.\"\n3. **Y-Axis**: The y-axis is labeled \"Number of Papers.\"\n4. **Bars**:\n   - **Blue Bar**: The bar representing 20",
+      "cleaned_text": " The image is a bar chart that shows the number of papers released over the years. The x-axis represents the years, while the y-axis represents the number of papers released. The bars are colored in blue, red, green, and orange, with the blue color representing the number of papers released in 2018, the red color representing the number of papers released in 2019, the green color representing the number of papers released in 2020, and the orange color representing the number of papers released in 2021.\n\n### Description of the Bar Chart:\n1. **Title**: The title of the chart is \"Paper Released Over Years.\"\n2. **X-Axis**: The x-axis is labeled \"Years.\"\n3. **Y-Axis**: The y-axis is labeled \"Number of Papers.\"\n4. **Bars**:\n   - **Blue Bar**: The bar representing 20",
+      "metadata": {
+        "generation_time": 37.78243637084961,
+        "num_tokens": 200,
+        "batch_size": 1
+      },
+      "stop_reason": "unspecified",
+      "original_text": null,
+      "note": "Generation is capped; reaching the cap is not a complete transcription."
+    },
+    {
+      "ref": "#/pictures/0",
+      "page": 1,
+      "scale": 2.0,
+      "margin": 0.0,
+      "image_size": [
+        484,
+        371
+      ],
+      "seconds": 37.21,
+      "raw_text": " The image is a bar chart that shows the percentage of papers released over the years. The x-axis represents the years, while the y-axis represents the percentage of papers released. The bars are color-coded to represent the following categories:\n- LLMS (Longitudinal Study)\n- Fine-Tuning\n- Alignment\n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- ",
+      "cleaned_text": " The image is a bar chart that shows the percentage of papers released over the years. The x-axis represents the years, while the y-axis represents the percentage of papers released. The bars are color-coded to represent the following categories:\n- LLMS (Longitudinal Study)\n- Fine-Tuning\n- Alignment\n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- \n- ",
+      "metadata": {
+        "generation_time": 37.095996618270874,
+        "num_tokens": 200,
+        "batch_size": 1
+      },
+      "stop_reason": "unspecified",
+      "original_text": null,
+      "note": "Generation is capped; reaching the cap is not a complete transcription."
+    }
+  ],
+  "scope": "Selected crops, not a whole-document evaluation."
+}

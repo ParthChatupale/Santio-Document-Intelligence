@@ -1,0 +1,26 @@
+[
+  {
+    "question": "In retrieval-augmented LLMs, how does retrieved context reach the language model?",
+    "expected_ref": "#/texts/326",
+    "source_passage": "Figure 12: A flow diagram of Retrieval Augmented LLMs. The retriever extracts a similar context to the input and forwards it to the LLM either in simple language or encoded through Fusion-in-Decoder (FiD). Depending on the task, retrieval and generation may repeat multiple times.",
+    "pages": [
+      18
+    ]
+  },
+  {
+    "question": "Which modules does a tool-augmented LLM use when executing a plan?",
+    "expected_ref": "#/texts/340",
+    "source_passage": "Figure 13: A basic flow diagram of tool augmented LLMs. Given an input and a set of available tools, the model generates a plan to complete the task. The tool augmented LLMs utilize different modules iteratively, such as retriever, tool execution, read-write to memory, feedback, etc., depending on the task.",
+    "pages": [
+      19
+    ]
+  },
+  {
+    "question": "Which parameter-efficient fine-tuning methods fall in the adapter-tuning category?",
+    "expected_ref": "#/texts/359",
+    "source_passage": "Figure 14: Illustration of parameter-efficient fine-tuning paradigms, where x is input and h is hidden state, figure courtesy [38]. Parallel adapter and LoRA fall in the adapter tuning category.",
+    "pages": [
+      21
+    ]
+  }
+]

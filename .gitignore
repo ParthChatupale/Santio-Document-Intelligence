@@ -14,3 +14,7 @@ data/uploads/
 data/gui-library.json
 data/import-jobs/
 data/understanding/
+data/rag-state/
+data/question-jobs/
+data/preparations/
+data/gui-overrides.json

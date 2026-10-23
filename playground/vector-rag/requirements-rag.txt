@@ -1,0 +1,4 @@
+# Existing Docling/Transformers/PyTorch environment is reused.
+-r requirements-db.txt
+openai==2.54.0
+pydantic>=2.13.5,<3

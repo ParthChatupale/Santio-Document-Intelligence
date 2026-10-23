@@ -1,22 +1,25 @@
 import { useEffect, useRef } from 'react';
 import fragment from './shaders/waves.frag?raw';
-import { AnimationClock, shouldAnimate } from './animation';
-import type { MotionPreference } from './animation';
+import { AnimationClock, BACKGROUND_FPS, drawingSize, FrameLimiter, shouldAnimate } from './animation';
 
-export function Waves({ motion }: { motion: MotionPreference }) {
+export function Waves({ paused = false }: { paused?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const clockRef = useRef(new AnimationClock());
+  const pausedRef = useRef(paused);
+  const updateRef = useRef<() => void>(() => {});
+  useEffect(() => { pausedRef.current = paused; updateRef.current(); }, [paused]);
   useEffect(() => {
     const canvas = ref.current!;
-    const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false });
+    const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' });
     if (!gl) { canvas.dataset.status = 'unavailable'; return; }
-    let frame = 0, frames = 0, program: WebGLProgram | null = null;
+    let frame = 0, frames = 0, inView = false, dirty = true;
+    let program: WebGLProgram | null = null;
     let buffer: WebGLBuffer | null = null;
     const shaders: WebGLShader[] = [];
     let scene: WebGLUniformLocation | null = null;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-    const clock = clockRef.current;
-    const halt = () => { cancelAnimationFrame(frame); frame = 0; clock.pause(); };
+    const clock = new AnimationClock(), limiter = new FrameLimiter();
+    canvas.dataset.fpsLimit = String(BACKGROUND_FPS);
+    const halt = () => { cancelAnimationFrame(frame); frame = 0; clock.pause(); limiter.reset(); };
     function cleanupGL() {
       shaders.splice(0).forEach(shader => gl!.deleteShader(shader));
       gl!.deleteProgram(program); gl!.deleteBuffer(buffer);
@@ -48,46 +51,60 @@ export function Waves({ motion }: { motion: MotionPreference }) {
         };
         Object.entries(uniforms).forEach(([name,value]) => gl!.uniform4fv(gl!.getUniformLocation(program!, name), value));
         scene = gl!.getUniformLocation(program, 'u_scene');
-        canvas.dataset.status = 'ready'; schedule();
+        canvas.dataset.status = 'ready'; resize();
       } catch (error) {
         console.error('Waves background:', error); canvas.dataset.status = 'unavailable'; cleanupGL();
       }
     }
     function draw(now: number) {
       frame = 0;
-      if (!program || document.hidden || gl!.isContextLost()) return;
-      const animate = shouldAnimate(motion, reduced.matches);
+      if (!program || document.hidden || !inView || gl!.isContextLost()) return;
+      const animate = shouldAnimate(reduced.matches, pausedRef.current);
+      if (!limiter.shouldRender(now, dirty)) { frame = requestAnimationFrame(draw); return; }
       const elapsed = clock.tick(now, animate);
-      const rect = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
-      const width = Math.max(1, Math.round(rect.width * dpr)), height = Math.max(1, Math.round(rect.height * dpr));
-      if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
-      gl!.viewport(0, 0, width, height);
-      gl!.uniform4f(scene, width, height, elapsed * -.67, 4);
+      gl!.uniform4f(scene, canvas.width, canvas.height, elapsed * -.67, 4);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
-      canvas.dataset.motion = animate ? 'running' : 'still';
+      dirty = false;
+      canvas.dataset.motion = animate ? 'running' : reduced.matches ? 'reduced' : 'paused';
       // Low-frequency diagnostics let browser QA verify real time advances.
-      if (++frames === 1 || frames % 15 === 0) canvas.dataset.time = elapsed.toFixed(3);
+      if (++frames === 1 || frames % 12 === 0) {
+        canvas.dataset.time = elapsed.toFixed(3); canvas.dataset.frames = String(frames);
+      }
       if (animate) frame = requestAnimationFrame(draw);
     }
     function schedule() {
-      halt();
+      halt(); dirty = true;
       if (document.hidden) canvas.dataset.motion = 'hidden';
+      else if (!inView) canvas.dataset.motion = 'offscreen';
       else if (program) frame = requestAnimationFrame(draw);
+    }
+    function resize() {
+      // Layout and buffer allocation happen on size changes, not on every frame.
+      const rect = canvas.getBoundingClientRect();
+      const [width, height] = drawingSize(rect.width, rect.height, devicePixelRatio);
+      if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+      gl!.viewport(0, 0, width, height); schedule();
     }
     const lost = (event: Event) => { event.preventDefault(); halt(); canvas.dataset.status = 'lost'; };
     const restored = () => { cleanupGL(); setup(); };
-    const observer = new ResizeObserver(schedule); observer.observe(canvas);
+    const observer = new ResizeObserver(resize); observer.observe(canvas);
+    const intersection = new IntersectionObserver(entries => {
+      inView = entries.some(entry => entry.isIntersecting); schedule();
+    }, { rootMargin: '-84px 0px 0px 0px' });
+    intersection.observe(canvas);
+    updateRef.current = schedule;
     document.addEventListener('visibilitychange', schedule);
     reduced.addEventListener('change', schedule);
     canvas.addEventListener('webglcontextlost', lost);
     canvas.addEventListener('webglcontextrestored', restored);
     setup();
     return () => {
-      halt(); observer.disconnect(); document.removeEventListener('visibilitychange', schedule);
+      halt(); observer.disconnect(); intersection.disconnect(); updateRef.current = () => {};
+      document.removeEventListener('visibilitychange', schedule);
       reduced.removeEventListener('change', schedule);
       canvas.removeEventListener('webglcontextlost', lost); canvas.removeEventListener('webglcontextrestored', restored);
       cleanupGL();
     };
-  }, [motion]);
+  }, []);
   return <div className="waves-backdrop" aria-hidden="true"><canvas ref={ref} className="waves" /></div>;
 }

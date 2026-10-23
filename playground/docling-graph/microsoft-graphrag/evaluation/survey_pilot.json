@@ -1,0 +1,25 @@
+{
+  "version": "survey-pilot-development-1",
+  "reference_kind": "AI-prepared source-backed development checks; previously inspected section, not held-out ground truth",
+  "source_sha256": "7a1c9a584fd8586a8623b6d3fbfa36808368985cccf90ad5dff75ce1b0fc0532",
+  "relationships": [
+    {"subject":"Alpaca","predicate":"fine-tuned from","object":"LLaMA","refs":["#/texts/302"],"expected":"The opening LLaMA Tuned sentence scopes the following general-purpose models."},
+    {"subject":"Vicuna","predicate":"fine-tuned from","object":"LLaMA","refs":["#/texts/302"]},
+    {"subject":"LLaMA-GPT-4","predicate":"fine-tuned from","object":"LLaMA","refs":["#/texts/302"]},
+    {"subject":"Goat","predicate":"fine-tuned from","object":"LLaMA","refs":["#/texts/302"]},
+    {"subject":"WizardLM","predicate":"fine-tuned from","object":"LLaMA","refs":["#/texts/303"],"quote":"WizardLM [163] (finetuned LLaMA on 250k instructions)"},
+    {"subject":"WizardCoder","predicate":"fine-tuned from","object":"StarCoder","refs":["#/texts/303"],"quote":"WizardCoder [164] (fine-tuned StarCoder)"},
+    {"subject":"Vicuna","predicate":"instruction-tuned using samples from","object":"ShareGPT.com","refs":["#/texts/302"],"quote":"Vicuna on 70k samples from ShareGPT.com"}
+  ],
+  "forbidden": [
+    {"subject":"Alpaca","predicate":"trained on","object":"ShareGPT.com","reason":"The cited paragraph assigns those samples to Vicuna."},
+    {"subject":"WizardLM","predicate":"trained on","object":"SUPER-NATURALINSTRUCTIONS","reason":"The passage does not establish this assignment."},
+    {"subject":"LLaMA","predicate":"fine-tuned from","object":"WizardCoder","reason":"The direction and base model are incorrect."}
+  ],
+  "questions": [
+    {"id":"bases","category":"two_passages","question":"Which base models are Vicuna and WizardCoder fine-tuned from?","required_evidence_groups":[["#/texts/302"],["#/texts/303"]],"expected":"Vicuna from LLaMA; WizardCoder from StarCoder."},
+    {"id":"ownership","category":"wrong_premise","question":"Was Alpaca trained on the ShareGPT samples, or was that Vicuna? Explain what the paper says.","required_evidence_groups":[["#/texts/302"]],"expected":"ShareGPT samples belong to Vicuna; Alpaca uses generated textdavinci-003 samples in the cited paragraph."},
+    {"id":"plain_language","category":"paraphrase","question":"Which of these chat models started from the same underlying model as Vicuna?","required_evidence_groups":[["#/texts/302"],["#/texts/303"]],"expected":"Identify explicitly supported LLaMA-derived models; qualify HuaTuo if its base is only implied."},
+    {"id":"unsupported","category":"unsupported","question":"What warranty duration does the paper promise for deploying Vicuna in our Santio application?","required_evidence_groups":[],"expected":"Abstain; no such warranty is established by this paper."}
+  ]
+}

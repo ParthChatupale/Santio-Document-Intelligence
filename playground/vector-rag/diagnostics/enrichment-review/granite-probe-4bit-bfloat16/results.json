@@ -1,0 +1,55 @@
+{
+  "model": "ibm-granite/granite-vision-3.3-2b",
+  "revision": "bf66a8244401a8e26d2ff429aa82df8550a289e5",
+  "image": "C:\\Santio\\playground\\vector-rag\\diagnostics\\enrichment-review\\picture-probe\\crop-1.png",
+  "status": "completed",
+  "quantization": "bitsandbytes 4-bit NF4 with double quantization",
+  "compute_dtype": "bfloat16",
+  "device": "cuda:0",
+  "max_new_tokens": 200,
+  "keep_vision_full_precision": false,
+  "generation_time_budget_seconds": 120,
+  "prompt": "Describe this image in a few sentences.",
+  "scope": "Single image model probe. Not a full-document or retrieval accuracy benchmark.",
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "transformers": "5.19.0",
+    "accelerate": "1.15.0",
+    "bitsandbytes": "0.50.2"
+  },
+  "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+  "vram_free_gib_before": 5.033,
+  "vram_total_gib": 6.0,
+  "ram_available_gib_before": 1.663,
+  "model_load_seconds": 11.88,
+  "model_footprint_gib": 1.537,
+  "parameter_devices": [
+    "cuda:0"
+  ],
+  "image_size": [
+    484,
+    371
+  ],
+  "input_tokens": 1785,
+  "generation_seconds": 4.73,
+  "generated_tokens": 13,
+  "text": "The graph shows the number of papers released over the years.",
+  "generated_token_ids": [
+    1318,
+    3996,
+    9830,
+    322,
+    1451,
+    432,
+    38453,
+    12546,
+    2288,
+    322,
+    11274,
+    32,
+    0
+  ],
+  "hit_token_cap": false,
+  "peak_gpu_allocated_gib": 2.848,
+  "peak_gpu_reserved_gib": 2.947
+}

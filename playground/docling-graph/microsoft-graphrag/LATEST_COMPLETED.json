@@ -1,0 +1,11 @@
+{
+  "run_directory": "C:\\Santio\\playground\\docling-graph\\microsoft-graphrag\\runs\\tetris-full-validated-v14",
+  "report": "C:\\Santio\\playground\\docling-graph\\microsoft-graphrag\\VALIDATED_REBUILD_RESULTS.md",
+  "paper": "Tetris3D, arxiv:2610.10539v1, 30 pages",
+  "status": "completed",
+  "semantic_quality": "mixed; experimental sandbox only",
+  "graph_url": "http://127.0.0.1:8775/",
+  "entities": 334,
+  "relationships": 425,
+  "main_website_integrated": false
+}

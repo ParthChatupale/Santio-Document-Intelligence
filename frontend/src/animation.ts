@@ -1,7 +1,28 @@
-export type MotionPreference = 'system' | 'on' | 'off';
+export const BACKGROUND_FPS = 24;
 
-export function shouldAnimate(preference: MotionPreference, reduced: boolean) {
-  return preference === 'on' || (preference === 'system' && !reduced);
+export function shouldAnimate(reduced: boolean, paused: boolean) {
+  return !reduced && !paused;
+}
+
+/** Decorative rendering does not need retina resolution or an unbounded buffer. */
+export function drawingSize(width: number, height: number, deviceRatio: number) {
+  const ratio = Math.min(Math.max(deviceRatio || 1, 0.1), 1,
+    Math.sqrt(600_000 / Math.max(1, width * height)));
+  return [Math.max(1, Math.floor(width * ratio)), Math.max(1, Math.floor(height * ratio))] as const;
+}
+
+/** Limit GPU draws while retaining wall-time animation speed on any refresh rate. */
+export class FrameLimiter {
+  private previous: number | null = null;
+  shouldRender(now: number, force = false) {
+    const interval = 1000 / BACKGROUND_FPS;
+    if (force || this.previous === null) { this.previous = now; return true; }
+    const delta = now - this.previous;
+    if (delta < interval) return false;
+    this.previous = now - delta % interval;
+    return true;
+  }
+  reset() { this.previous = null; }
 }
 
 /** Active wall time: slow frames keep recipe speed; hidden time is excluded. */

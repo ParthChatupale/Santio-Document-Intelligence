@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "host": "127.0.0.1",
+  "port": 5432,
+  "database": "santio_vector_sandbox",
+  "user": "santio_vector_app",
+  "default_schema": "rag",
+  "server": "PostgreSQL 18.6 (Ubuntu 18.6-0ubuntu0.26.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0, 64-bit",
+  "pgvector_version": "0.8.1",
+  "application_role": {
+    "superuser": false,
+    "create_database": false,
+    "create_role": false
+  },
+  "checks": [
+    "Windows Python TCP connection to WSL PostgreSQL",
+    "384-dimensional vector insert/read",
+    "JSON source metadata round-trip",
+    "exact cosine-distance ranking with known synthetic vectors"
+  ],
+  "test_rows": [
+    {
+      "id": "same",
+      "cosine_distance": 0.0
+    },
+    {
+      "id": "orthogonal",
+      "cosine_distance": 1.0
+    },
+    {
+      "id": "opposite",
+      "cosine_distance": 2.0
+    }
+  ],
+  "temporary_test_table_only": true,
+  "real_chunks_indexed": 0,
+  "embedding_model_loaded": false
+}

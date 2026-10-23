@@ -1,0 +1,44 @@
+{
+  "model": "ibm-granite/granite-embedding-small-english-r2",
+  "revision": "2ab6fa8ea2d674564defd37171ae19079b864b33",
+  "pooling": "CLS token",
+  "normalization": "L2",
+  "dtype": "float32",
+  "status": "PASS",
+  "database_rows_written": 0,
+  "scope": "Synthetic model execution/similarity check, not research-paper accuracy",
+  "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+  "load_seconds": 3.321,
+  "embedding_shape": [
+    4,
+    384
+  ],
+  "input_tokens": [
+    11,
+    8,
+    26,
+    24
+  ],
+  "compute_seconds": 1.028,
+  "model_footprint_mib": 181.82,
+  "peak_gpu_allocated_mib": 196.23,
+  "batch_vs_single_max_absolute_difference": 6.705522537231445e-08,
+  "synthetic_cosine_similarities": [
+    [
+      0.9453984498977661,
+      0.7709640264511108
+    ],
+    [
+      0.7464331984519958,
+      0.9315589070320129
+    ]
+  ],
+  "synthetic_expected_top_passages": [
+    0,
+    1
+  ],
+  "synthetic_actual_top_passages": [
+    0,
+    1
+  ]
+}

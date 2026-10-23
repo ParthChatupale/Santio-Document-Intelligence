@@ -1,0 +1,10 @@
+{
+  "output": "C:\\Santio\\playground\\vector-rag\\diagnostics\\retrieval-recovery-20261023T152018456140Z",
+  "answer_status": "insufficient_evidence",
+  "recovery_status": "failed",
+  "search_rounds": 1,
+  "answer_requests": 0,
+  "new_source_count": null,
+  "seconds": 28.661,
+  "claims": []
+}

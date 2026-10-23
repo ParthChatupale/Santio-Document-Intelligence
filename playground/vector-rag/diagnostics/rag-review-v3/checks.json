@@ -1,0 +1,39 @@
+{
+  "scope": "Four live smoke cases; status expectations are AI-prepared, not an answer-accuracy benchmark.",
+  "checks": [
+    {
+      "case": "forgetting",
+      "expected_status": "answered",
+      "actual_status": "answered",
+      "status_check_passed": true,
+      "claim_count": 1,
+      "provider_requests": 1
+    },
+    {
+      "case": "bloomberg",
+      "expected_status": "answered",
+      "actual_status": "answered",
+      "status_check_passed": true,
+      "claim_count": 1,
+      "provider_requests": 2
+    },
+    {
+      "case": "unsupported",
+      "expected_status": "insufficient_evidence",
+      "actual_status": "insufficient_evidence",
+      "status_check_passed": true,
+      "claim_count": 0,
+      "provider_requests": 1
+    },
+    {
+      "case": "two_passages",
+      "expected_status": "partial",
+      "actual_status": "partial",
+      "status_check_passed": true,
+      "claim_count": 1,
+      "provider_requests": 1
+    }
+  ],
+  "database_rows_unchanged": true,
+  "all_status_checks_passed": true
+}

@@ -1,0 +1,78 @@
+{
+  "kind": "formula",
+  "document": "playground\\vector-rag\\outputs\\2307.06435v10-20261016T144018745283Z\\document.json",
+  "pdf": "2307.06435v10.pdf",
+  "model": "docling-project/CodeFormulaV2",
+  "device": "cpu",
+  "dtype": "float32",
+  "threads": 4,
+  "model_load_seconds": 6.68,
+  "max_new_tokens": 256,
+  "max_generation_seconds": 45,
+  "cases": [
+    {
+      "ref": "#/texts/136",
+      "page": 4,
+      "scale": 1.67,
+      "margin": 0.18,
+      "image_size": [
+        382,
+        20
+      ],
+      "seconds": 8.92,
+      "raw_text": " <loc_0><loc_0><loc_500><loc_500>R e L U ( x ) = \\max ( 0 , x )</formula><end_of_utterance>",
+      "cleaned_text": "R e L U ( x ) = \\max ( 0 , x )",
+      "metadata": {
+        "generation_time": 8.819824695587158,
+        "num_tokens": 31,
+        "batch_size": 1
+      },
+      "stop_reason": "unspecified",
+      "original_text": "ReLU(x) = max(0, x) (1)",
+      "note": "Generation is capped; reaching the cap is not a complete transcription."
+    },
+    {
+      "ref": "#/texts/264",
+      "page": 10,
+      "scale": 1.67,
+      "margin": 0.18,
+      "image_size": [
+        541,
+        169
+      ],
+      "seconds": 30.16,
+      "raw_text": " <loc_0><loc_0><loc_500><loc_500>\\begin{array} { c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c",
+      "cleaned_text": "\\begin{array} { c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c c",
+      "metadata": {
+        "generation_time": 30.091384172439575,
+        "num_tokens": 256,
+        "batch_size": 1
+      },
+      "stop_reason": "unspecified",
+      "original_text": "Bopt = 0.2920.C 0.3271 \u03b7opt = 0.3118.C -0.1250 Mopt = Mbase.C a Dopt = Dbase.C b Mbase = 0.1715, Dbase = 5.8316, a = 0.5243, b = 0.4757 (5)",
+      "note": "Generation is capped; reaching the cap is not a complete transcription."
+    },
+    {
+      "ref": "#/texts/264",
+      "page": 10,
+      "scale": 1.67,
+      "margin": 0.02,
+      "image_size": [
+        420,
+        129
+      ],
+      "seconds": 27.07,
+      "raw_text": " <loc_0><loc_0><loc_500><loc_500>B _ { o p t } & = 0 . 2 9 2 0 . C ^ { 0 . 3 2 7 1 } \\\\ \\eta _ { o p t } & = 0 . 3 1 1 8 . C ^ { - 0 . 1 2 5 0 } \\\\ M _ { o p t } & = M _ { b a s e } . C ^ { a } \\\\ D _ { o p t } & = D _ { b a s e } . C ^ { b } \\\\ M _ { b a s e } & = 0 . 1 7 1 5 , D _ { b a s e } = 5 . 8 3 1 6 , a = 0 . 5 2 4 3 , b = 0 . 4 7 5 7</formula><end_of_utterance>",
+      "cleaned_text": "B _ { o p t } & = 0 . 2 9 2 0 . C ^ { 0 . 3 2 7 1 } \\\\ \\eta _ { o p t } & = 0 . 3 1 1 8 . C ^ { - 0 . 1 2 5 0 } \\\\ M _ { o p t } & = M _ { b a s e } . C ^ { a } \\\\ D _ { o p t } & = D _ { b a s e } . C ^ { b } \\\\ M _ { b a s e } & = 0 . 1 7 1 5 , D _ { b a s e } = 5 . 8 3 1 6 , a = 0 . 5 2 4 3 , b = 0 . 4 7 5 7",
+      "metadata": {
+        "generation_time": 27.040060997009277,
+        "num_tokens": 209,
+        "batch_size": 1
+      },
+      "stop_reason": "unspecified",
+      "original_text": "Bopt = 0.2920.C 0.3271 \u03b7opt = 0.3118.C -0.1250 Mopt = Mbase.C a Dopt = Dbase.C b Mbase = 0.1715, Dbase = 5.8316, a = 0.5243, b = 0.4757 (5)",
+      "note": "Generation is capped; reaching the cap is not a complete transcription."
+    }
+  ],
+  "scope": "Selected crops, not a whole-document evaluation."
+}

@@ -1,0 +1,190 @@
+{
+  "source_pdf": "C:\\Santio\\2307.06435v10.pdf",
+  "original_run": "2307.06435v10-20261016T143319043497Z",
+  "enriched_run": "2307.06435v10-20261016T144018745283Z",
+  "picture_count": 14,
+  "described_picture_count": 11,
+  "changed_text_refs": [
+    "#/texts/136",
+    "#/texts/139",
+    "#/texts/141",
+    "#/texts/223",
+    "#/texts/234",
+    "#/texts/264"
+  ],
+  "table_data_identical": true,
+  "description_cap_tokens": 200,
+  "reencoded_descriptions_exactly_at_cap": [
+    "#/pictures/0",
+    "#/pictures/11",
+    "#/pictures/12",
+    "#/pictures/13"
+  ],
+  "scope": "Manual review of selected figures and formulas, structural comparison of saved exports; not a document-wide accuracy score.",
+  "pictures": [
+    {
+      "ref": "#/pictures/0",
+      "page": 1,
+      "page_area_fraction": 0.08963437101664358,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "The image is a bar chart that shows the number of papers released over the years. The chart is titled \"Paper Released Over Years.\" The x-axis represents the years, while the y-axis represents the number of papers released. The bars are color-coded to represent different types of papers: red for \"LMS,\" blue for \"Fine-Tuning,\" green for \"LMS + Alignment,\" and red for \"LMS + Alignment.\"\n\nHere is a detailed description of the chart:\n\n### Chart Description:\n1. **X-Axis (Years)**: The x-axis is labeled \"Years\" and is divided into four distinct years: 2018, 2019, 2020, and 2021.\n2. **Y-Axis (Number of Papers)**: The y-axis is labeled \"Number of Papers\" and is divided into four categories: \"LMS,\" \""
+      ]
+    },
+    {
+      "ref": "#/pictures/1",
+      "page": 2,
+      "page_area_fraction": 0.16598777688900537,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "In this image, we can see a chart with some text and numbers.<end_of_utterance>"
+      ]
+    },
+    {
+      "ref": "#/pictures/2",
+      "page": 3,
+      "page_area_fraction": 0.43125300072858913,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "In this image there is a table with some text and some images.<end_of_utterance>"
+      ]
+    },
+    {
+      "ref": "#/pictures/3",
+      "page": 5,
+      "page_area_fraction": 0.041104694101063044,
+      "below_default_area_threshold": true,
+      "descriptions": []
+    },
+    {
+      "ref": "#/pictures/4",
+      "page": 5,
+      "page_area_fraction": 0.035777385155986906,
+      "below_default_area_threshold": true,
+      "descriptions": []
+    },
+    {
+      "ref": "#/pictures/5",
+      "page": 6,
+      "page_area_fraction": 0.32318147611070175,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "In the given image, we can see a diagram with some text and a few lines of code. The diagram is labeled as \"LMRF\" and it is connected with \"Prompting\". Prompting is connected with \"LMRF\" and \"Data Training\". Data Training is connected with \"Instruction-Tuning\" and \"LRF\". \"LRF\" is connected with \"Data Training\" and \"Instruction-Tuning\". \"LRF\" is connected with \"Data Training\" and \"Instruction-Tuning\". \"LRF\" is connected with \"Instruction-Tuning\" and \"Output\". \"LRF\" is connected with \"Instruction-Tuning\" and \"Reward\". \"LRF\" is connected with \"Instruction-Tuning\" and \"Reward\". \"LRF\" is connected with \"Instruction-Tuning\" and \"Reward\". \"LRF\" is connected with \"Instruction-"
+      ]
+    },
+    {
+      "ref": "#/pictures/6",
+      "page": 8,
+      "page_area_fraction": 0.03960879906779232,
+      "below_default_area_threshold": true,
+      "descriptions": []
+    },
+    {
+      "ref": "#/pictures/7",
+      "page": 8,
+      "page_area_fraction": 0.07185450137586107,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "In this image we can see a graph. On the graph we can see some text.<end_of_utterance>"
+      ]
+    },
+    {
+      "ref": "#/pictures/8",
+      "page": 9,
+      "page_area_fraction": 0.05791658046328544,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "In this image there are few tables. On the left side of the image there is a box. In the box there are few names. On the right side of the image there are few boxes.<end_of_utterance>"
+      ]
+    },
+    {
+      "ref": "#/pictures/9",
+      "page": 16,
+      "page_area_fraction": 0.07673162232893167,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "In the image there is a table with some data in it. The table has the following headers: H PFE UPS, Asistance, and N PFE UPS. The H PFE UPS is connected with Asistance. Also, there is a row for Data for Date and Data for Date.<end_of_utterance>"
+      ]
+    },
+    {
+      "ref": "#/pictures/10",
+      "page": 16,
+      "page_area_fraction": 0.05883127999385556,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "In this image, we can see a diagram with some text and some images.<end_of_utterance>"
+      ]
+    },
+    {
+      "ref": "#/pictures/11",
+      "page": 18,
+      "page_area_fraction": 0.05043013276723503,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "The image depicts a block diagram of a computer system, specifically focusing on the input and output of a system. The system is divided into three main components: Input, Output, and LLM.\n\n### Input:\n- The Input is represented by a green box with the text \"Input\" written on it.\n- The Output is represented by a blue box with the text \"Output\" written on it.\n- The LLM is represented by a blue box with the text \"Lm\" written on it.\n\n### Output:\n- The Output is represented by a green box with the text \"Output\" written on it.\n- The LLM is represented by a blue box with the text \"Lm\" written on it.\n\n### LLM:\n- The LLM is represented by a blue box with the text \"Lm\" written on it.\n\n### Storage:\n- The Storage is represented by a blue cylinder with the text \""
+      ]
+    },
+    {
+      "ref": "#/pictures/12",
+      "page": 19,
+      "page_area_fraction": 0.09577314394981629,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "The image is a diagram that shows a flowchart or a flowchart. The flowchart is labeled with the following components: Input, Output, Planning, Retrieval, Memory, Observation, and Feedback.\n\n### Flowchart Components:\n1. **Input**: This is the starting point of the flowchart. It is represented by a yellow box with the text \"Input\".\n2. **Output**: This is the endpoint of the flowchart. It is represented by a blue box with the text \"Output\".\n3. **Planning**: This is the process that takes place after the input. It is represented by a green box with the text \"Planning\".\n4. **Retrieval**: This is the process that takes place after the output. It is represented by a blue box with the text \"Retrieval\".\n5. **Memory**: This is the process that takes place after the output. It is represented by a blue box with the text \"Memory\"."
+      ]
+    },
+    {
+      "ref": "#/pictures/13",
+      "page": 21,
+      "page_area_fraction": 0.11214774705945986,
+      "below_default_area_threshold": false,
+      "descriptions": [
+        "The image is a diagrammatic representation of a process flowchart. The diagram is structured in a hierarchical manner, with each step represented by a node and its corresponding function. The nodes are labeled with the names of the components involved in the process.\n\n### Detailed Description of the Process Flowchart\n\n#### Top-Level Node:\n- **Add**\n  - **Add** is connected to the **PML Module** which is connected to the **Relu Module**.\n\n#### Middle-Level Node:\n- **Add**\n  - **Add** is connected to the **PML Module** which is connected to the **Relu Module**.\n\n#### Middle-Level Node:\n- **Add**\n  - **Add** is connected to the **PML Module** which is connected to the **Relu Module**.\n\n#### Middle-Level Node:\n- **Add**\n  - **Add** is connected to the **PML Module** which is connected"
+      ]
+    }
+  ],
+  "formulas": [
+    {
+      "ref": "#/texts/136",
+      "page": 4,
+      "before_text": "",
+      "after_text": "R e L U ( x ) = \\max ( 0 , x )",
+      "original_text": "ReLU(x) = max(0, x) (1)"
+    },
+    {
+      "ref": "#/texts/139",
+      "page": 4,
+      "before_text": "",
+      "after_text": "G L U ( x , W , V , b , c ) = ( x W + b ) \\otimes \\sigma ( x V + c ) ,",
+      "original_text": "GLU(x, W, V, b, c) = (xW + b) \u2297 \u03c3(xV + c), (2)"
+    },
+    {
+      "ref": "#/texts/141",
+      "page": 4,
+      "before_text": "",
+      "after_text": "\\begin{array} { r l } { s - } & R e G L U ( x , W , V , b , c ) = n a x ( 0 , x W + b ) \\otimes , } \\\\ { t o } & G E G L U ( x , W , V , b , c ) = G E L U ( x W + b ) \\otimes ( x V + c ) , } \\\\ { d e } & S w i G L U ( x , W , V , b , c , \\beta ) = S w i s h \\beta ( x W + b ) \\otimes ( x V + c ) . } \\end{array}",
+      "original_text": "ReGLU(x, W, V, b, c) = max(0, xW + b)\u2297, GEGLU(x, W, V, b, c) = GELU(xW + b) \u2297 (xV + c), S wiGLU(x, W, V, b, c, \u03b2) = S wish\u03b2(xW + b) \u2297 (xV + c)."
+    },
+    {
+      "ref": "#/texts/223",
+      "page": 8,
+      "before_text": "",
+      "after_text": "a = p _ { n } W _ { h } ^ { q } W _ { h } ^ { k } T H _ { L } ^ { T }",
+      "original_text": "a = pnW q h W k h T H T L (3)"
+    },
+    {
+      "ref": "#/texts/234",
+      "page": 9,
+      "before_text": "",
+      "after_text": "x + A t t n ( L N _ { 1 } ( x ) ) + F F ( L N _ { 2 } ( x ) ) & & ( 4 ) & & \\intertext { x + A t t n ( L N _ { 1 } ( x ) ) + F F ( L N _ { 2 } ( x ) ) } & & ( 4 ) & & \\intertext { ( 4 ) }",
+      "original_text": "x + Attn(LN1(x)) + FF(LN2(x)) (4)"
+    },
+    {
+      "ref": "#/texts/264",
+      "page": 10,
+      "before_text": "",
+      "after_text": "\\begin{array} {",
+      "original_text": "Bopt = 0.2920.C 0.3271 \u03b7opt = 0.3118.C -0.1250 Mopt = Mbase.C a Dopt = Dbase.C b Mbase = 0.1715, Dbase = 5.8316, a = 0.5243, b = 0.4757 (5)"
+    }
+  ]
+}

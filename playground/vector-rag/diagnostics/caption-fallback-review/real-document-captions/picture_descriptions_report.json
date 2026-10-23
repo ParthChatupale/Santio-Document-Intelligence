@@ -1,0 +1,191 @@
+{
+  "model": "ibm-granite/granite-vision-3.3-2b",
+  "revision": "bf66a8244401a8e26d2ff429aa82df8550a289e5",
+  "device": "cuda:0",
+  "quantization": "4-bit NF4 language layers; bfloat16 vision/projector/output layers",
+  "prompt": "Describe this figure in at most 90 words using only visible evidence. For a chart, state the axes, legend categories, colors and overall trend. For a diagram, describe the labeled components and visible arrows. Do not invent missing labels, numeric values, comparisons or explanations. If text is unreadable, say so.",
+  "max_new_tokens": 200,
+  "generation_time_budget_seconds": 120,
+  "minimum_picture_page_area": 0.0,
+  "local_files_only": true,
+  "status": "failed",
+  "items": [
+    {
+      "source_ref": "#/pictures/0",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/27"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 1: The trend of papers released over the years containing keywords \"Large Language Model\", \"Large Language Model + Fine-Tuning\", and \"Large Language Model + Alignment\".",
+      "page": 1,
+      "page_area_fraction": 0.08963
+    },
+    {
+      "source_ref": "#/pictures/1",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/30"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 2: Chronological display of LLM releases: blue cards represent 'pre-trained' models, while orange cards correspond to 'instruction-tuned' models. Models on the upper half signify open-source availability, whereas those on the bottom are closed-source. The chart illustrates the increasing trend towards instruction-tuned and open-source models, highlighting the evolving landscape and trends in natural language processing research.",
+      "page": 2,
+      "page_area_fraction": 0.16598
+    },
+    {
+      "source_ref": "#/pictures/2",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/114"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 3: A broader overview of LLMs, dividing LLMs into seven branches: 1. Pre-Training 2. Fine-Tuning 3. Efficient 4. Inference 5. Evaluation 6. Applications 7. Challenges",
+      "page": 3,
+      "page_area_fraction": 0.4313
+    },
+    {
+      "source_ref": "#/pictures/3",
+      "status": "failed",
+      "text_source": null,
+      "caption_refs": [],
+      "caption_resolution_errors": [],
+      "fallback_reason": "no_nonempty_caption_detected",
+      "page": 5,
+      "page_area_fraction": 0.04111,
+      "error": "AssertionError: Caption reuse unexpectedly imported a model dependency"
+    },
+    {
+      "source_ref": "#/pictures/4",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/172"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 4: An example of attention patterns in language models, image is taken from [93].",
+      "page": 5,
+      "page_area_fraction": 0.03578
+    },
+    {
+      "source_ref": "#/pictures/5",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/183"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 6: A basic flow diagram depicting various stages of LLMs from pre-training to prompting/utilization. Prompting LLMs to generate responses is possible at different training stages like pre-training, instruction-tuning, or alignment tuning. \"RL\" stands for reinforcement learning, \"RM\" represents reward-modeling, and \"RLHF\" represents reinforcement learning with human feedback.",
+      "page": 6,
+      "page_area_fraction": 0.32318
+    },
+    {
+      "source_ref": "#/pictures/6",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/219"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 7: Unified text-to-text training example, source image from [10].",
+      "page": 8,
+      "page_area_fraction": 0.03961
+    },
+    {
+      "source_ref": "#/pictures/7",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/220"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 8: The image is the article of [108], showing an example of PanGu-α architecture.",
+      "page": 8,
+      "page_area_fraction": 0.07186
+    },
+    {
+      "source_ref": "#/pictures/8",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/241"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 9: The BLOOM architecture example sourced from [13].",
+      "page": 9,
+      "page_area_fraction": 0.05792
+    },
+    {
+      "source_ref": "#/pictures/9",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/294"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 10: This example illustrates the PanGu- � architecture, as depicted in the image sourced from [92].",
+      "page": 16,
+      "page_area_fraction": 0.07673
+    },
+    {
+      "source_ref": "#/pictures/10",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/301"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 11: An example image shows an instance of the Flan training paradigm, taken from [16].",
+      "page": 16,
+      "page_area_fraction": 0.05883
+    },
+    {
+      "source_ref": "#/pictures/11",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/326"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 12: A flow diagram of Retrieval Augmented LLMs. The retriever extracts a similar context to the input and forwards it to the LLM either in simple language or encoded through Fusion-in-Decoder (FiD). Depending on the task, retrieval and generation may repeat multiple times.",
+      "page": 18,
+      "page_area_fraction": 0.05043
+    },
+    {
+      "source_ref": "#/pictures/12",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/340"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 13: A basic flow diagram of tool augmented LLMs. Given an input and a set of available tools, the model generates a plan to complete the task. The tool augmented LLMs utilize different modules iteratively, such as retriever, tool execution, read-write to memory, feedback, etc., depending on the task.",
+      "page": 19,
+      "page_area_fraction": 0.09577
+    },
+    {
+      "source_ref": "#/pictures/13",
+      "status": "caption_reused",
+      "text_source": "extracted_caption",
+      "caption_refs": [
+        "#/texts/359"
+      ],
+      "caption_resolution_errors": [],
+      "text": "Figure 14: Illustration of parameter-efficient fine-tuning paradigms, where x is input and h is hidden state, figure courtesy [38]. Parallel adapter and LoRA fall in the adapter tuning category.",
+      "page": 21,
+      "page_area_fraction": 0.11214
+    }
+  ],
+  "policy": "extracted caption first; Granite only when no nonempty caption resolves",
+  "model_loaded": false,
+  "descriptions_are_model_generated_and_unverified": true,
+  "versions": {},
+  "error": "AssertionError: Caption reuse unexpectedly imported a model dependency",
+  "captions_reused": 13,
+  "generated": 0,
+  "failed": 1,
+  "skipped": 0,
+  "needs_review": 0
+}

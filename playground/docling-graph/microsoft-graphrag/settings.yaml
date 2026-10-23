@@ -1,0 +1,72 @@
+# Microsoft GraphRAG 3.3.0. The runners resolve paths inside each experiment.
+# No secrets in this file. Completion credentials are read by the private bridge.
+completion_models:
+  default_completion_model:
+    type: santio_nvidia
+    model_provider: openai
+    model: nvidia/nemotron-3.5-super-vl-120b-a12b
+embedding_models:
+  default_embedding_model:
+    type: santio_granite
+    model_provider: local
+    model: ibm-granite/granite-embedding-small-english-r2
+concurrent_requests: 3
+async_mode: asyncio
+input:
+  type: json
+  title_column: title
+  text_column: text
+  id_column: id
+input_storage:
+  type: file
+  base_dir: input
+output_storage:
+  type: file
+  base_dir: output
+update_output_storage:
+  type: file
+  base_dir: update_output
+reporting:
+  type: file
+  base_dir: logs
+cache:
+  type: json
+  storage:
+    type: file
+    base_dir: cache
+chunking:
+  type: tokens
+  size: 600
+  overlap: 60
+  encoding_model: cl100k_base
+  prepend_metadata: [paper_id, source_record_id]
+vector_store:
+  type: lancedb
+  db_uri: vectors
+  vector_size: 384
+extract_graph:
+  entity_types: [Method, Dataset, Concept, Metric, Experiment, Tool, Platform]
+  max_gleanings: 0
+summarize_descriptions:
+  max_length: 250
+  max_input_tokens: 6000
+community_reports:
+  max_length: 1000
+  max_input_length: 6000
+cluster_graph:
+  use_lcc: false
+extract_claims:
+  enabled: false
+embed_text:
+  batch_size: 4
+  batch_max_tokens: 6000
+  names: [entity_description, text_unit_text, community_full_content]
+local_search:
+  max_context_tokens: 6000
+  top_k_entities: 8
+  top_k_relationships: 12
+global_search:
+  max_context_tokens: 6000
+  data_max_tokens: 6000
+  map_max_length: 500
+  reduce_max_length: 700

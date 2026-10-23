@@ -1,6 +1,6 @@
 export interface Paper {
   paper_id: string; title: string; source_pdf: string; role: string; status: string;
-  processed: boolean; source_available: boolean; original_filename?: string;
+  processed: boolean; source_available: boolean; original_filename?: string; rag?: RagState;
 }
 export interface Rect { left: number; top: number; right: number; bottom: number }
 export interface Location { page_no: number; granularity: string; display_rect: Rect | null; bbox: unknown }
@@ -27,13 +27,23 @@ export interface DocumentData {
 export interface Job {
   job_id: string; filename: string; title: string; status: string; stage: string;
   paper_id: string | null; error: string | null; conversion_status?: string;
+  phase?: string; completed_stages?: string[]; size_bytes?: number; done?: number; total?: number;
+}
+export interface RagState {status: string; job_id?: string; error?: string; chunk_count?: number}
+export interface Evidence {source_id: string; quote: string; pages: number[]; source_refs: string[]}
+export interface QuestionJob {
+  question_id: string; paper_id: string; question: string; status: string; stage: string; error: string | null;
+  result: {answer: {status: string; claims: {text: string; evidence: Evidence[]}[]; missing_information: string};
+    retrieval_info?: {method: string; intent?: string; reranking_status?: string; warnings?: string[]};
+    sources: {source_id: string; text: string; pages: number[]; source_refs: string[]}[]; elapsed_seconds: number} | null;
 }
 export const paperUrl = (id: string) => '/api/papers/' + encodeURIComponent(id);
 export async function json<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, options);
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    throw new Error(body.detail || response.statusText);
+    const detail = Array.isArray(body.detail) ? body.detail.map((item: {msg: string}) => item.msg).join('; ') : body.detail;
+    throw new Error(detail || response.statusText);
   }
   return response.json();
 }

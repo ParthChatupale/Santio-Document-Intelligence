@@ -10,7 +10,7 @@ if (!existsSync(python)) {
   process.exit(1);
 }
 process.env.SANTIO_API_PORT ||= '8766';
-const child = spawn(python, ['-m', 'pbl_docintel.gui.cli', '--workspace', root, '--port', process.env.SANTIO_API_PORT], { cwd: root, stdio: 'inherit', windowsHide: true });
+const child = spawn(python, ['-m', 'pbl_docintel.gui.cli', '--workspace', root, '--port', process.env.SANTIO_API_PORT, '--no-startup-url'], { cwd: root, stdio: 'inherit', windowsHide: true });
 let server;
 let stopping = false;
 async function stop(code = 0) {
@@ -45,5 +45,5 @@ try {
   }
   server = await createServer({ configFile: fileURLToPath(new URL('../frontend/vite.config.ts', import.meta.url)) });
   await server.listen();
-  console.log('\nSantio: http://127.0.0.1:5173 · Ctrl+C stops both services\n');
+  console.log(`\nOpen Santio: http://127.0.0.1:5173\nPython API connected internally on port ${process.env.SANTIO_API_PORT}.\nCtrl+C stops both services.\n`);
 } catch (error) { console.error(error); await stop(1); }

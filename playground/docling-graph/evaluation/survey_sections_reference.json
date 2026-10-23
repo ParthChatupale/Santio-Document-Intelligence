@@ -1,0 +1,20 @@
+{
+  "version": "survey-sections-development-1",
+  "source_sha256": "7a1c9a584fd8586a8623b6d3fbfa36808368985cccf90ad5dff75ce1b0fc0532",
+  "note": "AI-prepared source-backed pilot reference frozen before section calls. Not independent ground truth or exhaustive recall.",
+  "checks": [
+    {"kind":"edge","source":"Alpaca","relation":"BUILT_ON","target":"LLaMA","refs":["#/texts/302"]},
+    {"kind":"edge","source":"Vicuna","relation":"BUILT_ON","target":"LLaMA","refs":["#/texts/302"]},
+    {"kind":"edge","source":"WizardCoder","relation":"BUILT_ON","target":"StarCoder","refs":["#/texts/303"]},
+    {"kind":"node","type":"Method","name":"REPLUG","refs":["#/texts/333"]},
+    {"kind":"node","type":"Method","name":"RETRO","refs":["#/texts/331"]},
+    {"kind":"node","type":"Method","name":"BM25","refs":["#/texts/329"]},
+    {"kind":"node","type":"Dataset","name":"MassiveText","refs":["#/texts/331"]},
+    {"kind":"finding","finding_kind":"limitation","words":["privacy"],"refs":["#/texts/523"]},
+    {"kind":"finding","finding_kind":"limitation","words":["hallucinat"],"refs":["#/texts/509"]},
+    {"kind":"finding","finding_kind":"limitation","words":["long-term"],"refs":["#/texts/525"]}
+  ],
+  "forbidden": [
+    {"kind":"edge","source":"RETRO","relation":"TRAINED_ON","target":"MassiveText","refs":["#/texts/331"],"reason":"The selected passage identifies MassiveText as a retrieval database, not explicitly as the model training corpus."}
+  ]
+}

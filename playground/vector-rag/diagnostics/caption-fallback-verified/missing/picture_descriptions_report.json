@@ -1,0 +1,37 @@
+{
+  "model": "ibm-granite/granite-vision-3.3-2b",
+  "revision": "bf66a8244401a8e26d2ff429aa82df8550a289e5",
+  "device": "cuda:0",
+  "quantization": "4-bit NF4 language layers; bfloat16 vision/projector/output layers",
+  "prompt": "Describe this figure in at most 90 words using only visible evidence. For a chart, state the axes, legend categories, colors and overall trend. For a diagram, describe the labeled components and visible arrows. Do not invent missing labels, numeric values, comparisons or explanations. If text is unreadable, say so.",
+  "max_new_tokens": 200,
+  "generation_time_budget_seconds": 120,
+  "minimum_picture_page_area": 0.0,
+  "local_files_only": true,
+  "status": "failed",
+  "items": [
+    {
+      "source_ref": "#/pictures/0",
+      "status": "failed",
+      "text_source": null,
+      "caption_refs": [],
+      "caption_resolution_errors": [],
+      "fallback_reason": "no_nonempty_caption_detected",
+      "error": "RuntimeError: Granite's tested configuration requires CUDA-enabled PyTorch and an NVIDIA GPU."
+    }
+  ],
+  "policy": "extracted caption first; Granite only when no nonempty caption resolves",
+  "model_loaded": false,
+  "descriptions_are_model_generated_and_unverified": true,
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "transformers": "5.19.0",
+    "bitsandbytes": "0.50.2"
+  },
+  "error": "RuntimeError: Granite's tested configuration requires CUDA-enabled PyTorch and an NVIDIA GPU.",
+  "captions_reused": 0,
+  "generated": 0,
+  "failed": 1,
+  "skipped": 0,
+  "needs_review": 0
+}

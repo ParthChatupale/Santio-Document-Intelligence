@@ -1,0 +1,38 @@
+{
+  "actual_source_policy_checks": "passed",
+  "source_json_and_indexed_text_unchanged": true,
+  "sources": [
+    {
+      "chunk_id": "6f9b88342a6c29d8-00011",
+      "transformations": [
+        {
+          "action": "used_original_formula_text",
+          "ref": "#/texts/136",
+          "original": "ReLU(x) = max(0, x) (1)",
+          "enriched": "R e L U ( x ) = \\max ( \\hat { 0 } , x )"
+        },
+        {
+          "action": "used_original_formula_text",
+          "ref": "#/texts/139",
+          "original": "GLU(x, W, V, b, c) = (xW + b) ⊗ σ(xV + c), (2)",
+          "enriched": "G L U ( x , W , V , b , c ) = ( x W + b ) \\otimes \\sigma ( x V + c ) ,"
+        },
+        {
+          "action": "used_original_formula_text",
+          "ref": "#/texts/141",
+          "original": "ReGLU(x, W, V, b, c) = max(0, xW + b)⊗, GEGLU(x, W, V, b, c) = GELU(xW + b) ⊗ (xV + c), S wiGLU(x, W, V, b, c, β) = S wishβ(xW + b) ⊗ (xV + c).",
+          "enriched": "R e G L U ( x , W , V , b , c ) & = \\max ( 0 , x W + b ) \\otimes , \\\\ G E G L U ( x , W , V , b , c ) & = G E L U ( x W + b ) \\otimes ( x V + c ) , \\\\ S w i G L U ( x , W , V , b , c , \\beta ) & = S w i s h \\beta ( x W + b ) \\otimes ( x V + c ) ."
+        }
+      ]
+    },
+    {
+      "chunk_id": "6f9b88342a6c29d8-00016",
+      "transformations": [
+        {
+          "action": "removed_unverified_ai_description",
+          "ref": "#/pictures/3"
+        }
+      ]
+    }
+  ]
+}

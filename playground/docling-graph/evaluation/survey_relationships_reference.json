@@ -1,0 +1,16 @@
+{
+  "version": "survey-relationship-regressions-2",
+  "source_sha256": "7a1c9a584fd8586a8623b6d3fbfa36808368985cccf90ad5dff75ce1b0fc0532",
+  "note": "AI-prepared development regressions. Extends the original frozen dependencies with observed clause-ownership failures, frozen before semantic-review calls. Not independent ground truth or exhaustive recall.",
+  "checks": [
+    {"kind":"edge","source":"Alpaca","relation":"BUILT_ON","target":"LLaMA","refs":["#/texts/302"]},
+    {"kind":"edge","source":"Vicuna","relation":"BUILT_ON","target":"LLaMA","refs":["#/texts/302"]},
+    {"kind":"edge","source":"WizardCoder","relation":"BUILT_ON","target":"StarCoder","refs":["#/texts/303"]},
+    {"kind":"edge","source":"Vicuna","relation":"TRAINED_ON","target":"ShareGPT.com","refs":["#/texts/302"]}
+  ],
+  "forbidden": [
+    {"kind":"edge","source":"Alpaca","relation":"TRAINED_ON","target":"ShareGPT.com","refs":["#/texts/302"],"reason":"The paragraph assigns ShareGPT.com samples to Vicuna, not Alpaca."},
+    {"kind":"edge","source":"RETRO","relation":"TRAINED_ON","target":"MassiveText","refs":["#/texts/331"],"reason":"Retrieval database does not establish a training corpus."},
+    {"kind":"edge","source":"WizardLM","relation":"TRAINED_ON","target":"SUPER-NATURALINSTRUCTIONS","refs":["#/texts/300"],"reason":"The passage does not assign this dataset to WizardLM."}
+  ]
+}

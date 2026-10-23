@@ -1,0 +1,4 @@
+docling-graph==1.9.1
+docling==2.135.0
+docling-core==2.101.0
+python-dotenv==1.2.2

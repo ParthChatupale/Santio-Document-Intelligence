@@ -1,0 +1,9 @@
+{
+  "version": "tetris-posthoc-diagnostic-1",
+  "reference_kind": "Post-hoc diagnostic motivated by a source-reviewed graph error; excluded from the frozen development-question tally.",
+  "source_sha256": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+  "relationships": [],
+  "questions": [
+    {"id":"worldsculpt_role","category":"posthoc_type_conflict","question":"Is WorldSculpt a dataset used to evaluate Tetris3D, or is it a baseline method? Which evaluation datasets does the paper actually use?","required_evidence_groups":[["#/texts/154"],["#/texts/155"]],"expected":"WorldSculpt is a baseline scene-generation method. Evaluation datasets: Toys4K, Picasso and MessyKitchens. Do not repeat the erroneous WorldSculpt-is-a-dataset graph claim."}
+  ]
+}

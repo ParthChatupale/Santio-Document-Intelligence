@@ -1,0 +1,27 @@
+{
+  "interactive_template.html": {
+    "source": "https://raw.githubusercontent.com/docling-project/docling-graph/v1.9.1/docling_graph/core/visualizers/assets/interactive_template.html",
+    "sha256": "a2561603674a03c1d3af2213ea615957086b4fde63eda0a752c6b0a92a88c886",
+    "bytes": 23686
+  },
+  "cytoscape.min.js": {
+    "source": "https://raw.githubusercontent.com/docling-project/docling-graph/v1.9.1/docling_graph/core/visualizers/assets/cytoscape.min.js",
+    "sha256": "92d752b48ea949720675865197fd2a0001c95bc5888545e990af60321712d4c6",
+    "bytes": 365827
+  },
+  "dagre.min.js": {
+    "source": "https://raw.githubusercontent.com/docling-project/docling-graph/v1.9.1/docling_graph/core/visualizers/assets/dagre.min.js",
+    "sha256": "62eb9787ccfdbdf4148d4d99d31dbf9ee4770eafee81e637d759b52aac22cd51",
+    "bytes": 283803
+  },
+  "cytoscape-dagre.js": {
+    "source": "https://raw.githubusercontent.com/docling-project/docling-graph/v1.9.1/docling_graph/core/visualizers/assets/cytoscape-dagre.js",
+    "sha256": "bf70fe402991dcbff33e05a7e4a5271c78020bb75e85d1c80ab7538e4157112e",
+    "bytes": 12665
+  },
+  "LICENSE": {
+    "source": "https://raw.githubusercontent.com/docling-project/docling-graph/v1.9.1/LICENSE",
+    "sha256": "1cee981f9a09f58ce811ee27dcbd08798f0ab95335aa593854d130dba540d6a0",
+    "bytes": 1087
+  }
+}

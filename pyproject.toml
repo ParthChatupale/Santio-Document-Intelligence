@@ -15,6 +15,7 @@ docling = ["docling==2.135.0"]
 langchain = ["langchain-core>=1,<2"]
 gui = ["fastapi==0.143.0", "uvicorn==0.54.0"]
 test = ["httpx>=0.28,<1"]
+vector = ["psycopg[binary]==3.3.6", "pgvector==0.5.1", "python-dotenv>=1.2,<2", "openai==2.54.0"]
 
 [project.scripts]
 pbl-docintel = "pbl_docintel.cli:main"
@@ -26,4 +27,5 @@ where = ["src"]
 include = ["pbl_docintel*"]
 
 [tool.setuptools.package-data]
+"pbl_docintel.vector_rag" = ["vector_schema.sql"]
 "pbl_docintel.gui" = ["static/*", "static/react/*", "static/react/assets/*", "static/vendor/*", "static/vendor/cmaps/*", "static/vendor/standard_fonts/*", "static/vendor/wasm/*"]

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode, CSSProperties } from 'react';
+import { Processing, active } from './Processing';
+import type { Transfer } from './Processing';
+import { AskPanel } from './AskPanel';
 import { Waves } from './Waves';
-import { shouldAnimate } from './animation';
-import type { MotionPreference } from './animation';
 import { Icon } from './Icons';
 import { Cover } from './Cover';
 import { PdfViewer } from './PdfViewer';
@@ -18,7 +19,7 @@ const inCategory = (unit: Unit, category: Category) => category === 'Tables' ? u
   category === 'Text' ? unit.kind === 'text' && unit.label !== 'formula' : false;
 function readRoute() {
   const query = new URLSearchParams(location.search);
-  return {paper: query.get('paper') || '', page: Math.max(1, Number(query.get('page')) || 1), result: query.get('result') || '', unit: query.get('unit') || ''};
+  return {job: query.get('import') || '', task: query.get('task') || 'inspect', paper: query.get('paper') || '', page: Math.max(1, Number(query.get('page')) || 1), result: query.get('result') || '', unit: query.get('unit') || ''};
 }
 function Badge({children, warning = false}: {children: ReactNode; warning?: boolean}) {
   return <span className={'badge ' + (warning ? 'warning' : '')}>{children}</span>;
@@ -37,27 +38,17 @@ export default function App() {
   const [error, setError] = useState('');
   const [modal, setModal] = useState<'import' | 'exports' | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [motion, setMotion] = useState<MotionPreference>(() => {
-    const saved = localStorage.getItem('santio-motion');
-    return saved === 'on' || saved === 'off' ? saved : 'system';
-  });
-  const [reduced, setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
-  useEffect(() => {
-    const media = matchMedia('(prefers-reduced-motion: reduce)');
-    const changed = () => setReduced(media.matches);
-    media.addEventListener('change', changed);
-    return () => media.removeEventListener('change', changed);
-  }, []);
-  const animating = shouldAnimate(motion, reduced);
+  const [jobsLoaded,setJobsLoaded] = useState(false), [transfers,setTransfers] = useState<Record<string,Transfer>>({});
+  const uploadRequests = useRef(new Map<string,XMLHttpRequest>());
   const refresh = useCallback(() => {void json<Paper[]>('/api/papers').then(setPapers).catch(error => setError(String(error)));}, []);
-  const refreshJobs = useCallback(() => {void json<Job[]>('/api/imports').then(setJobs).catch(error => setError(String(error)));}, []);
+  const refreshJobs = useCallback(() => {void json<Job[]>('/api/imports').then(next => {setJobs(next); setJobsLoaded(true);}).catch(error => setError(String(error)));}, []);
   useEffect(() => {refresh(); refreshJobs();}, [refresh, refreshJobs]);
-  const activeJobs = jobs.filter(job => ['queued', 'processing'].includes(job.status)).length;
+  const activeJobs = jobs.filter(job => active(job.status)).length;
   useEffect(() => {
     if (!activeJobs) return;
     const timer = setInterval(() => {
       void json<Job[]>('/api/imports').then(next => {
-        if (next.some(job => job.status === 'completed' && jobs.find(old => old.job_id === job.job_id)?.status !== 'completed')) refresh();
+        if (next.some(job => job.paper_id !== jobs.find(old => old.job_id === job.job_id)?.paper_id || job.status === 'completed' && jobs.find(old => old.job_id === job.job_id)?.status !== 'completed')) refresh();
         setJobs(next);
       }).catch(error => setError(String(error)));
     }, 2000);
@@ -67,17 +58,37 @@ export default function App() {
     const pop = () => setRoute(readRoute()); window.addEventListener('popstate', pop);
     return () => window.removeEventListener('popstate', pop);
   }, []);
-  const navigate = useCallback((paper: string) => {
-    const next = {paper, page: 1, result: '', unit: ''};
-    history.pushState({}, '', paper ? '?paper=' + encodeURIComponent(paper) : '/');
-    setRoute(next); setError('');
+  const navigate = useCallback((paper: string, ask = false) => {
+    const next = {paper, job:'', task:ask ? 'ask' : 'inspect', page: 1, result: '', unit: ''};
+    history.pushState({}, '', paper ? '?paper=' + encodeURIComponent(paper) + (ask ? '&task=ask' : '') : '/');
+    setRoute(next); setError(''); window.scrollTo(0,0);
   }, []);
+  const openJob = useCallback((id: string) => {
+    history.pushState({}, '', '?import=' + encodeURIComponent(id));
+    setRoute({paper:'',job:id,task:'inspect',page:1,result:'',unit:''}); setError(''); window.scrollTo(0,0); refreshJobs();
+  }, [refreshJobs]);
+  const startUpload = async (file: File, title: string, ocr: boolean) => {
+    const job = await json<Job>('/api/imports/start', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:file.name,title,ocr,size:file.size})});
+    setJobs(old => [job,...old]); setModal(null); openJob(job.job_id);
+    const xhr = new XMLHttpRequest(); uploadRequests.current.set(job.job_id,xhr);
+    setTransfers(old => ({...old,[job.job_id]:{loaded:0,total:file.size}}));
+    xhr.open('PUT','/api/imports/' + job.job_id + '/file'); xhr.setRequestHeader('Content-Type','application/pdf');
+    xhr.upload.onprogress = event => setTransfers(old => ({...old,[job.job_id]:{loaded:event.loaded,total:event.total || file.size}}));
+    const failed = (message: string) => {setTransfers(old => ({...old,[job.job_id]:{...old[job.job_id],error:message}})); refreshJobs();};
+    xhr.onload = () => {if (xhr.status >= 200 && xhr.status < 300) refreshJobs(); else {let message = 'Upload was not accepted. Choose the PDF again.'; try {message = JSON.parse(xhr.responseText).detail || message;} catch {} failed(message);}};
+    xhr.onerror = () => failed('Upload connection interrupted. Choose the PDF again.');
+    xhr.onloadend = () => uploadRequests.current.delete(job.job_id);
+    xhr.send(file);
+  };
+  const cancelJob = (id: string) => {void json('/api/imports/' + id + '/cancel',{method:'POST'}).then(() => {uploadRequests.current.get(id)?.abort(); refreshJobs();}).catch(e => setError(String(e)));};
+  const retryJob = (id: string) => {void json('/api/imports/' + id + '/retry',{method:'POST'}).then(refreshJobs).catch(e => setError(String(e)));};
   const setPage = useCallback((page: number) => setRoute(old => old.page === page ? old : {...old, page}), []);
   const select = useCallback((unit: string, result = '', page = 1) => setRoute(old => ({...old, unit, result, page})), []);
   useEffect(() => {
     if (!route.paper) { setData(null); return; }
     const controller = new AbortController(); setData(null); setError('');
     void json<DocumentData>(paperUrl(route.paper), {signal: controller.signal}).then(loaded => {
+      if (controller.signal.aborted) return;
       setData(loaded);
       setRoute(old => {
         if (old.paper !== loaded.paper.paper_id || old.unit) return old;
@@ -90,57 +101,53 @@ export default function App() {
   useEffect(() => {
     if (!route.paper) return;
     const query = new URLSearchParams({paper: route.paper, page: String(route.page)});
+    if (route.task === 'ask') query.set('task','ask');
     if (route.result) query.set('result', route.result);
     if (route.unit && !route.result) query.set('unit', route.unit);
     history.replaceState({}, '', '?' + query);
   }, [route]);
   return <div className={'app-shell ' + (route.paper ? 'reading' : '')}>
-    <Waves motion={motion}/>
     <aside className="rail">
       <button className="brand-mark" aria-label="Santio library" onClick={() => navigate('')}><span>S</span><i/></button>
-      <button className={!route.paper ? 'rail-button active' : 'rail-button'} title="Library" aria-label="Library" onClick={() => navigate('')}><Icon name="library"/></button>
-      <button className="rail-button" title="Upload PDF" aria-label="Upload PDF" onClick={() => setModal('import')}><Icon name="upload"/></button>
-      <div className="rail-bottom"><button className="rail-button" title={animating ? 'Pause background motion' : 'Enable background motion'} aria-label={animating ? 'Pause background motion' : 'Enable background motion'} aria-pressed={animating} onClick={() => {
-        const next = animating ? 'off' : 'on';
-        localStorage.setItem('santio-motion', next); setMotion(next);
-      }}><Icon name={animating ? 'pause' : 'play'}/></button><span className="avatar" title="Local workspace">L</span></div>
+      <button className={!route.paper && !route.job ? 'rail-button active' : 'rail-button'} title="Library" aria-label="Library" onClick={() => navigate('')}><Icon name="library"/></button>
+      <div className="rail-bottom"><span className="avatar" title="Local workspace">L</span></div>
     </aside>
     <div className="app-main">
       <header className="topbar"><button className="brand-name" onClick={() => navigate('')}>santio<span>RESEARCH WORKSPACE</span></button>
         <div className="topbar-actions"><span className="local-label"><span className="dot"/> Local workspace</span>
-          {activeJobs > 0 && <button className="job-indicator" onClick={() => setModal('import')}><span className="spinner"/>{activeJobs} processing</button>}
+          {jobs.length > 0 && <button className="job-indicator" onClick={() => openJob('all')}>{activeJobs > 0 && <span className="spinner"/>}Imports{activeJobs > 0 ? ` · ${activeJobs} active` : ''}</button>}
           <button className="primary small" onClick={() => setModal('import')}><Icon name="upload" size={16}/><span>Add paper</span></button>
         </div>
       </header>
       {error && <div className="error" role="alert">{error}<button onClick={() => {setError(''); refresh();}}>Retry library</button></div>}
-      {!route.paper ? <Library papers={papers} open={navigate}/> : data ?
-        <Workspace key={data.paper.paper_id} data={data} page={route.page} setPage={setPage} unitId={route.unit} resultId={route.result} select={select} back={() => navigate('')} exports={() => setModal('exports')}/> :
+      {route.job ? <Processing id={route.job} jobs={jobs} loaded={jobsLoaded} transfer={transfers[route.job]} openJob={openJob} openPaper={navigate} back={() => navigate('')} retry={retryJob} cancel={cancelJob} add={() => setModal('import')}/> : !route.paper ? <Library papers={papers} open={navigate} pauseBackground={activeJobs > 0 || modal !== null}/> : data && data.paper.paper_id === route.paper ?
+        <Workspace initialTask={route.task} onTask={task => setRoute(old => ({...old,task}))} onPrepare={openJob} key={data.paper.paper_id} data={data} page={route.page} setPage={setPage} unitId={route.unit} resultId={route.result} select={select} back={() => navigate('')} exports={() => setModal('exports')}/> :
         !error && <div className="loading-screen" role="status"><span className="spinner"/> Opening source and evidence…</div>}
     </div>
-    {modal === 'import' && <ImportDialog jobs={jobs} update={refreshJobs} done={() => {refresh(); refreshJobs();}} open={id => {setModal(null); navigate(id);}} close={() => setModal(null)}/>}
+    {modal === 'import' && <ImportDialog upload={startUpload} close={() => setModal(null)}/>}
     {modal === 'exports' && data && <Dialog title="Export this paper" close={() => setModal(null)}>
       <p className="muted">Evidence and provenance from this document. Result annotations retain their review status.</p>
-      <div className="export-list">{data.exports.map(kind => <a key={kind} href={paperUrl(data.paper.paper_id) + '/exports/' + kind} download><Icon name="export"/><span>{({rag:'RAG chunks · JSONL',evidence:'Evidence index · JSON',docling:'Docling document · JSON',results:'Result annotations · JSON',csv:'Result annotations · CSV',markdown:'Result annotations · Markdown',checks:'Attribution findings · JSON'} as Record<string,string>)[kind]}</span><Icon name="arrow" size={16}/></a>)}</div>
-      <p className="muted fine">RAG export provides chunks for your Python/retrieval system. It does not generate answers.</p>
+      <div className="export-list">{data.exports.map(kind => <a key={kind} href={paperUrl(data.paper.paper_id) + '/exports/' + kind} download><Icon name="export"/><span>{({rag:'Evidence SDK chunks · JSONL',search_chunks:'Indexed passages · JSONL',evidence:'Evidence index · JSON',docling:'Docling document · JSON',results:'Result annotations · JSON',csv:'Result annotations · CSV',markdown:'Result annotations · Markdown',checks:'Attribution findings · JSON'} as Record<string,string>)[kind]}</span><Icon name="arrow" size={16}/></a>)}</div>
+      <p className="muted fine">Indexed passages are the contextual chunks used for vector search. Evidence SDK chunks remain available as a separate integration export.</p>
     </Dialog>}
   </div>;
 }
-function Library({papers, open}: {papers: Paper[]; open(id: string): void}) {
+function Library({papers, open, pauseBackground}: {papers: Paper[]; open(id: string): void; pauseBackground: boolean}) {
   const [query, setQuery] = useState(''), [filter, setFilter] = useState('all');
   const visible = papers.filter(paper => (paper.title + ' ' + paper.paper_id).toLowerCase().includes(query.toLowerCase()) && (filter === 'all' || (filter === 'indexed' ? paper.processed : !paper.processed)));
   return <main className="library">
-    <section className="welcome"><div className="eyebrow">FROM PAPERS TO UNDERSTANDING</div><h1>Read deeper.<br/><em>Keep the evidence.</em></h1>
+    <section className="welcome"><Waves paused={pauseBackground}/><div className="eyebrow">FROM PAPERS TO UNDERSTANDING</div><h1>Read deeper.<br/><em>Keep the evidence.</em></h1>
       <p>A quieter place to explore research. Follow tables, figures, and<br className="desktop-break"/> results back to the exact page they came from.</p>
-      <div className="welcome-meta"><span><strong>{papers.length}</strong> papers in your library</span><span><strong>{papers.filter(p => p.processed).length}</strong> indexed documents</span><span><Icon name="layers" size={15}/> Provenance included</span></div>
+      <div className="welcome-meta"><span><strong>{papers.length}</strong> papers in your library</span><span><strong>{papers.filter(p => p.processed).length}</strong> extracted documents</span><span><Icon name="layers" size={15}/> Provenance included</span></div>
       <span className="hero-art" aria-hidden="true"><i/><i/><i/></span>
     </section>
     <section className="library-content">
       <div className="section-heading"><div><div className="eyebrow">YOUR COLLECTION</div><h2>Paper library <span>{papers.length}</span></h2></div>
         <label className="search"><Icon name="search" size={18}/><input aria-label="Search papers" placeholder="Search your papers…" value={query} onChange={event => setQuery(event.target.value)}/></label></div>
-      <div className="library-filters">{[['all','All papers'],['indexed','Indexed'],['source','Source only']].map(([value,label]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{label}</button>)}</div>
+      <div className="library-filters">{[['all','All papers'],['indexed','Extracted'],['source','Source only']].map(([value,label]) => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{label}</button>)}</div>
       <div className="paper-grid">{visible.map(paper => <button className="paper-card" key={paper.paper_id} onClick={() => open(paper.paper_id)} disabled={!paper.source_available}>
         <div className="cover-stage"><Cover id={paper.paper_id}/><span className="cover-open"><Icon name="arrow"/></span></div>
-        <div className="paper-card-body"><Badge warning={!paper.processed}>{paper.processed ? paper.status === 'partial_success' ? 'Partially indexed' : 'Indexed' : 'Source only'}</Badge>
+        <div className="paper-card-body"><Badge warning={!paper.processed || paper.status === 'partial_success'}>{paper.status === 'partial_success' ? 'Partial extraction' : paper.rag?.status === 'ready' ? 'Ready to ask' : paper.processed ? 'Extracted' : 'Source only'}</Badge>
           <h3>{paper.title}</h3><div className="paper-card-footer"><span>{paper.original_filename || paper.paper_id}</span><Icon name="arrow" size={16}/></div></div>
       </button>)}</div>
       {!visible.length && <div className="empty"><Icon name="library" size={30}/><h3>{papers.length ? 'No papers match this search' : 'Your library starts here'}</h3><p>{papers.length ? 'Try a different title or filter.' : 'Use Add paper to upload your first PDF.'}</p></div>}
@@ -148,47 +155,30 @@ function Library({papers, open}: {papers: Paper[]; open(id: string): void}) {
     </section>
   </main>;
 }
-function ImportDialog({jobs, update, done, open, close}: {jobs: Job[]; update(): void; done(): void; open(id: string): void; close(): void}) {
-  const [file, setFile] = useState<File | null>(null), [title, setTitle] = useState(''), [ocr, setOcr] = useState(false);
-  const [error, setError] = useState(''), [busy, setBusy] = useState(false);
-  const choose = (next?: File) => {if (next) {setFile(next); setTitle(next.name.replace(/\.pdf$/i, '')); setError('');}};
-  const upload = async () => {
-    if (!file) return;
-    if (file.size > 100 * 1024 * 1024) {setError('Maximum file size is 100 MB.'); return;}
-    setBusy(true); setError('');
-    try {
-      const query = new URLSearchParams({filename: file.name, title, ocr: String(ocr)});
-      await json<Job>('/api/imports?' + query, {method:'POST', headers:{'Content-Type':'application/pdf'}, body:file});
-      setFile(null); setTitle(''); done();
-    } catch (error) {setError(String(error));}
-    finally {setBusy(false);}
-  };
-  return <Dialog title="Add a research paper" close={close}>
-    <p className="muted">Upload a PDF. Docling extracts its structure, then Santio creates source-linked evidence and RAG chunks.</p>
-    <label className="drop-zone" onDragOver={event => event.preventDefault()} onDrop={event => {event.preventDefault(); choose(event.dataTransfer.files[0]);}}>
-      <Icon name="upload" size={30}/><strong>{file?.name || 'Drop your PDF here'}</strong><span>or choose a file · up to 100 MB</span><input aria-label="Choose PDF" type="file" accept=".pdf,application/pdf" disabled={busy} onChange={event => choose(event.target.files?.[0])}/>
-    </label>
-    <label className="field">Paper title<input value={title} onChange={event => setTitle(event.target.value)} placeholder="Use the filename or enter a title" maxLength={500}/></label>
-    <label className="checkbox"><input type="checkbox" checked={ocr} onChange={event => setOcr(event.target.checked)}/> Enable OCR for scanned pages</label>
+function ImportDialog({upload,close}: {upload(file: File,title: string,ocr: boolean): Promise<void>; close(): void}) {
+  const [file,setFile] = useState<File | null>(null), [title,setTitle] = useState(''), [ocr,setOcr] = useState(false);
+  const [error,setError] = useState(''), [busy,setBusy] = useState(false);
+  const choose = (next?: File) => {if (!next) return; if (!/\.pdf$/i.test(next.name) || next.size > 100*1024*1024 || !next.size) {setError('Choose a PDF between 1 byte and 100 MB.'); return;} setFile(next); setTitle(next.name.replace(/\.pdf$/i,'')); setError('');};
+  return <Dialog title="Add a research paper" close={close}><p className="muted">Choose your PDF. Upload and preparation progress will open on a separate page.</p>
+    <label className="drop-zone" onDragOver={e => e.preventDefault()} onDrop={e => {e.preventDefault(); if (!busy) choose(e.dataTransfer.files[0]);}}><Icon name="upload" size={30}/><strong>{file?.name || 'Drop your PDF here'}</strong><span>{file ? `${(file.size/1048576).toFixed(1)} MB · ready to upload` : 'or choose a file · up to 100 MB'}</span><input type="file" aria-label="Choose PDF" accept=".pdf,application/pdf" disabled={busy} onChange={e => choose(e.target.files?.[0])}/></label>
+    <label className="field">Paper title<input value={title} maxLength={500} onChange={e => setTitle(e.target.value)}/></label>
+    <label className="checkbox"><input type="checkbox" checked={ocr} onChange={e => setOcr(e.target.checked)}/> Enable OCR for scanned pages</label>
     {error && <p className="error" role="alert">{error}</p>}
-    <button className="primary import-button" disabled={!file || busy} onClick={() => void upload()}>{busy ? <span className="spinner"/> : <Icon name="upload" size={18}/>} {busy ? 'Uploading PDF…' : 'Upload & process'}</button>
-    <p className="muted fine">Processing continues when this window closes. First use may download Docling models. Detected equations and figures are not automatically interpreted.</p>
-    {jobs.length > 0 && <div className="job-list"><h3>Imports</h3>{jobs.slice(0,8).map(job => <div className="job-row" key={job.job_id}>
-      <div><strong>{job.title}</strong><span>{job.stage}{job.conversion_status === 'partial_success' ? ' · partial conversion' : ''}</span>{job.error && <details><summary>Processing error · upload again to retry</summary><pre>{job.error}</pre></details>}</div>
-      {job.status === 'completed' && job.paper_id ? <button onClick={() => open(job.paper_id!)}>Open <Icon name="arrow" size={15}/></button> :
-        ['queued','processing'].includes(job.status) ? <button onClick={() => void json('/api/imports/' + job.job_id + '/cancel', {method:'POST'}).then(update).catch(error => setError(String(error)))}>Cancel</button> : <Badge warning>{job.status}</Badge>}
-    </div>)}</div>}
+    <button className="primary import-button" disabled={!file || busy} onClick={() => {if (!file) return; setBusy(true); void upload(file,title,ocr).catch(e => {setError(String(e)); setBusy(false);});}}>{busy ? 'Starting upload…' : 'Upload & prepare'}</button>
+    <p className="muted fine">The PDF is saved first. Docling extraction, contextual chunking and search preparation follow.</p>
   </Dialog>;
 }
-function Workspace({data, page, setPage, unitId, resultId, select, back, exports}: {
+function Workspace({data, page, setPage, unitId, resultId, select, back, exports, initialTask, onTask, onPrepare}: {
+  initialTask: string; onTask(task: string): void; onPrepare(id: string): void;
   data: DocumentData; page: number; setPage(page: number): void; unitId: string; resultId: string;
   select(unit: string, result?: string, page?: number): void; back(): void; exports(): void;
 }) {
   const initialUnit = data.units[unitId];
   const unitCategory = (unit: Unit): Category => unit.label === 'formula' ? 'Equations' : unit.kind === 'picture' ? 'Figures' : unit.kind.startsWith('table') ? 'Tables' : 'Text';
   const [category, setCategory] = useState<Category>(resultId ? 'Results' : initialUnit ? unitCategory(initialUnit) : data.records.length ? 'Results' : data.counts.table ? 'Tables' : data.counts.picture ? 'Figures' : 'Text');
-  const [task, setTask] = useState<'inspect'|'review'|'compare'>('inspect');
-  const [tab, setTab] = useState('source'), [query, setQuery] = useState('');
+  const [task, setTask] = useState<'inspect'|'review'|'compare'|'ask'>(initialTask === 'ask' ? 'ask' : 'inspect');
+  const [tab, setTab] = useState(initialTask === 'ask' ? 'evidence' : 'source'), [query, setQuery] = useState('');
+  useEffect(() => {if (['inspect','review','compare','ask'].includes(initialTask)) setTask(initialTask as typeof task);}, [initialTask]);
   const [crop, setCrop] = useState<string | null>(null);
   const [panelWidth, setPanelWidth] = useState(400);
   const units = useMemo(() => Object.values(data.units), [data]);
@@ -212,21 +202,22 @@ function Workspace({data, page, setPage, unitId, resultId, select, back, exports
     <header className="document-header"><button className="icon-button" aria-label="Back to library" onClick={back}><Icon name="back"/></button>
       <div className="document-title"><div className="eyebrow">{data.paper.paper_id}</div><h1>{data.paper.title}</h1></div>
       <button className="secondary export-button" aria-label="Export" disabled={!data.exports.length} onClick={exports}><Icon name="export" size={17}/><span>Export</span></button></header>
-    <div className="workspace-taskbar"><div className="task-tabs">{[['inspect','Explore','source'],['review','Review','review'],['compare','Compare','compare']].map(([value,label,icon]) => <button key={value} className={task === value ? 'active' : ''} onClick={() => {
-      setTask(value as typeof task); if (value !== 'inspect') setCategory('Results'); setQuery('');
+    <div className="workspace-taskbar"><div className="task-tabs">{[['inspect','Explore','source'],['ask','Ask','search'],['review','Review','review'],['compare','Compare','compare']].map(([value,label,icon]) => <button key={value} className={task === value ? 'active' : ''} onClick={() => {
+      setTask(value as typeof task); onTask(value); if (value === 'ask') setTab('evidence'); if (value !== 'inspect') setCategory('Results'); setQuery('');
       if (value === 'review') {const first = data.records.find(record => allChecks.some(check => check.result_id === record.result_id)); if (first) chooseRecord(first); else select('', '', page); setTab('evidence');}
     }}><Icon name={icon} size={16}/>{label}{value === 'review' && allChecks.length > 0 && <span>{allChecks.length}</span>}</button>)}</div>
-      <span className="task-note">{task === 'review' ? 'Read-only findings · saved reviews pending' : task === 'compare' ? 'Provisional results · compatibility not assessed' : data.document ? 'Docling detections + source provenance' : 'Source only · no extracted evidence'}</span></div>
+      <span className="task-note">{task === 'ask' ? 'Answers with supporting passages' : task === 'review' ? 'Read-only findings · saved reviews pending' : task === 'compare' ? 'Provisional results · compatibility not assessed' : data.document ? 'Docling detections + source provenance' : 'Source only · no extracted evidence'}</span></div>
     {task === 'compare' ? <div className="comparison">
       <div className="eyebrow">REPORTED RESULTS</div><h2>Context before conclusions.</h2><p className="muted">These are existing curated annotations, not an automatically generated or validated leaderboard. Open a value to inspect its source and conditions.</p>
       <div className="table-scroll"><table><thead><tr><th>Method</th><th>Dataset</th><th>Metric</th><th>Extracted value</th><th>Review</th><th>Conditions</th></tr></thead><tbody>{data.records.map(record => <tr key={record.result_id}><td>{record.method.reported}</td><td>{record.benchmark.dataset.reported}</td><td>{record.metric.name.reported}</td><td><button onClick={() => {setTask('inspect'); chooseRecord(record);}}>{resultLabel(record)} ↗</button></td><td><Badge warning={record.review.status === 'needs_review'}>{friendly(record.review.status)}</Badge></td><td>{record.conditions.map(c => c.value).join('; ') || 'Not specified'}</td></tr>)}</tbody></table></div>
       {!data.records.length && <div className="empty">No result annotations for this document. Its detected regions are available in Explore.</div>}
     </div> : <>
-      <div className="mobile-tabs"><button className={tab === 'source' ? 'active' : ''} onClick={() => setTab('source')}>Original source</button><button className={tab === 'evidence' ? 'active' : ''} onClick={() => setTab('evidence')}>Evidence{record ? ' · ' + (record.value.numeric === null ? 'issue' : record.value.raw) : ''}</button></div>
+      <div className="mobile-tabs"><button className={tab === 'source' ? 'active' : ''} onClick={() => setTab('source')}>Original source</button><button className={tab === 'evidence' ? 'active' : ''} onClick={() => setTab('evidence')}>{task === 'ask' ? 'Ask paper' : 'Evidence'}{record ? ' · ' + (record.value.numeric === null ? 'issue' : record.value.raw) : ''}</button></div>
       <div className={'workbench tab-' + tab} style={{'--inspector-width': panelWidth + 'px'} as CSSProperties}>
         <PdfViewer id={data.paper.paper_id} page={page} setPage={setPage} units={units} selected={selected} support={refs} onSelect={chooseUnit} onCrop={setCrop}/>
         <div className="resize-handle" role="separator" aria-label="Resize evidence panel" aria-orientation="vertical" tabIndex={0} onPointerDown={resize} onKeyDown={event => {if (event.key === 'ArrowLeft') setPanelWidth(Math.min(560,panelWidth+20)); if (event.key === 'ArrowRight') setPanelWidth(Math.max(320,panelWidth-20));}}/>
         <aside className="evidence-panel" aria-label="Evidence inspector">
+          {task === 'ask' ? <AskPanel key={data.paper.paper_id} id={data.paper.paper_id} onPrepare={onPrepare} onCitation={(page, refs, quote) => {const candidates = units.filter(u => refs.includes(u.item_ref) && u.locations.some(l => l.page_no === page)); const normalized = (text: string) => text.replace(/\s+/g,' ').trim(); const unit = (quote ? candidates.find(u => normalized(u.text).includes(normalized(quote))) : undefined) || candidates[0]; select(unit?.evidence_id || '', '', page); setTab('source');}}/> : <>
           <div className="inspector-heading"><Icon name="layers" size={18}/><h2>Evidence explorer</h2><Badge>{data.document ? 'Indexed' : 'Source only'}</Badge></div>
           <div className="category-tabs" role="tablist" aria-label="Evidence categories">{categories.map(value => <button key={value} role="tab" aria-selected={category === value} className={category === value ? 'active' : ''} onClick={() => {setCategory(value); setQuery(''); select('', '', page);}}>
             {value}<span>{value === 'Results' ? data.records.length : units.filter(unit => inCategory(unit,value)).length}</span></button>)}</div>
@@ -249,6 +240,7 @@ function Workspace({data, page, setPage, unitId, resultId, select, back, exports
               {filteredUnits.length > 200 && <p className="muted fine">Showing the first 200 regions. Search or use the picker to reach all regions.</p>}</details>
             <details className="source-details"><summary>Document provenance</summary><p>{data.source_status}</p><dl><dt>Source</dt><dd>{data.paper.original_filename || data.paper.source_pdf}</dd><dt>SHA-256</dt><dd>{data.source_sha256}</dd><dt>Conversion ID</dt><dd>{data.document?.document_id || 'Not converted'}</dd></dl></details>
           </div>
+          </>}
         </aside>
       </div>
     </>}

@@ -1,0 +1,40 @@
+{
+  "version": "tetris-development-1",
+  "frozen_before_v2_extraction": true,
+  "reference_kind": "AI-prepared source-backed development regression set, not independently annotated gold",
+  "source_sha256": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+  "checks": [
+    {"kind":"node","type":"Method","name":"Tetris3D","refs":["#/texts/103"]},
+    {"kind":"node","type":"Method","name":"TRELLIS.2","refs":["#/texts/31"]},
+    {"kind":"node","type":"Dataset","name":"ComOb","refs":["#/texts/143"]},
+    {"kind":"node","type":"Dataset","name":"Toys4K","refs":["#/texts/155"]},
+    {"kind":"node","type":"Dataset","name":"MessyKitchens","refs":["#/texts/155"]},
+    {"kind":"node","type":"Dataset","name":"Picasso","refs":["#/texts/155"]},
+    {"kind":"node","type":"Method","name":"SAM-3D","refs":["#/texts/154"]},
+    {"kind":"node","type":"Method","name":"ShapeR","refs":["#/texts/154"]},
+    {"kind":"node","type":"Method","name":"WorldSculpt","refs":["#/texts/154"]},
+    {"kind":"node","type":"Method","name":"SceneMaker","refs":["#/texts/154"]},
+    {"kind":"node","type":"Method","name":"SceneGen","refs":["#/texts/154"]},
+    {"kind":"node","type":"Method","name":"MIDI","refs":["#/texts/154"]},
+    {"kind":"node","type":"Method","name":"Amodal3R","refs":["#/texts/154"]},
+    {"kind":"node","type":"Method","name":"GENA3D","refs":["#/texts/154"]},
+    {"kind":"edge","source":"Tetris3D","relation":"BUILT_ON","target":"TRELLIS.2","refs":["#/texts/31"]},
+    {"kind":"edge","source":"Tetris3D","relation":"TRAINED_ON","target":"ComOb","refs":["#/texts/315"]},
+    {"kind":"measurement","table":"Table 1","row":"Ours","metric":"PD","value":"0.0036","refs":["#/tables/0"]},
+    {"kind":"measurement","table":"Table 3","row":"Full model (Ours)","metric":"PD","value":"0.0192","refs":["#/tables/2"]},
+    {"kind":"measurement","table":"Table 3","row":"w/o Interaction Cond.","metric":"PD","value":"0.4980","refs":["#/tables/2"]},
+    {"kind":"measurement","table":"Table 4","row":"Ours","metric":"CD-S","value":"7.56","refs":["#/tables/3"]},
+    {"kind":"measurement","table":"Table 5","row":"Ours (GT)","metric":"PD","value":"0.0036","refs":["#/tables/4"]},
+    {"kind":"measurement","table":"Table 5","row":"Ours (VLM)","metric":"PD","value":"0.0038","refs":["#/tables/4"]},
+    {"kind":"finding","finding_kind":"limitation","words":["guarantee","physical"],"refs":["#/texts/411"]},
+    {"kind":"finding","finding_kind":"limitation","words":["error","propagat"],"refs":["#/texts/411"]}
+  ],
+  "retrieval_questions": [
+    {"question":"Which dataset is Tetris3D trained on?","expected_refs":["#/texts/315"]},
+    {"question":"What backbone is Tetris3D built on?","expected_refs":["#/texts/31","#/texts/309"]},
+    {"question":"Which datasets are used for evaluation?","expected_refs":["#/texts/155"]},
+    {"question":"What limitations and error propagation does the paper describe?","expected_refs":["#/texts/411"]},
+    {"question":"What is the penetration depth PD without interaction conditioning in the ablation study?","expected_refs":["#/tables/2","#/texts/201"]},
+    {"question":"Does SAM-3D have higher Uni3D and ULIP scores with estimated depth?","expected_refs":["#/texts/399","#/tables/3"]}
+  ]
+}

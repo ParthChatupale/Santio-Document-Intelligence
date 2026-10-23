@@ -1,0 +1,26 @@
+{
+  "model": "ibm-granite/granite-vision-3.3-2b",
+  "revision": "bf66a8244401a8e26d2ff429aa82df8550a289e5",
+  "image": "C:\\Santio\\playground\\vector-rag\\diagnostics\\enrichment-review\\picture-probe\\crop-1.png",
+  "status": "failed",
+  "quantization": "bitsandbytes 4-bit NF4 with double quantization",
+  "compute_dtype": "float16",
+  "device": "cuda:0",
+  "max_new_tokens": 200,
+  "generation_time_budget_seconds": 120,
+  "prompt": "Describe this image in a few sentences.",
+  "scope": "Single image model probe. Not a full-document or retrieval accuracy benchmark.",
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "transformers": "5.19.0",
+    "accelerate": "1.15.0",
+    "bitsandbytes": "0.50.2"
+  },
+  "gpu": "NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+  "vram_free_gib_before": 5.033,
+  "vram_total_gib": 6.0,
+  "ram_available_gib_before": 0.542,
+  "model_load_seconds": 18.24,
+  "model_footprint_gib": 1.537,
+  "error": "AttributeError: 'LlavaNextForConditionalGeneration' object has no attribute 'hf_device_map'"
+}

@@ -1,0 +1,4 @@
+graphrag==3.3.0
+python-dotenv==1.2.4
+pypdfium2==5.14.0
+pillow==13.0.0

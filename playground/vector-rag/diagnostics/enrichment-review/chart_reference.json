@@ -1,0 +1,14 @@
+{
+  "source": "Original chart crop on PDF page 1, #/pictures/0",
+  "scope": "Small AI-prepared reference for manual checking, not independently verified ground truth.",
+  "prepared_before_granite_inference": true,
+  "checks": [
+    "Horizontal axis spans 2018 through 2024.",
+    "Vertical axis is a count of papers, not a percentage.",
+    "The legend has LLMs, LLMs + Fine-Tuning, and LLMs + Alignment.",
+    "Blue denotes LLMs, red denotes LLMs + Fine-Tuning, green denotes LLMs + Alignment.",
+    "The chart shows overall growth in paper counts over the displayed years."
+  ],
+  "not_supplied_to_model": true,
+  "exact_numeric_bar_values_scored": false
+}

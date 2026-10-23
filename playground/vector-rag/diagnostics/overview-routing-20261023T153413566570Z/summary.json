@@ -1,0 +1,85 @@
+{
+  "status": "answered",
+  "intent": "overview",
+  "sources": [
+    {
+      "pages": [
+        1
+      ],
+      "headings": [
+        "ABSTRACT"
+      ],
+      "refs": [
+        "#/texts/20",
+        "#/texts/21"
+      ]
+    },
+    {
+      "pages": [
+        2
+      ],
+      "headings": [
+        "1 INTRODUCTION"
+      ],
+      "refs": [
+        "#/texts/25",
+        "#/texts/26",
+        "#/texts/27"
+      ]
+    },
+    {
+      "pages": [
+        9
+      ],
+      "headings": [
+        "5 CONCLUSION"
+      ],
+      "refs": [
+        "#/texts/204"
+      ]
+    },
+    {
+      "pages": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "headings": [
+        "E DISCUSSION AND LIMITATIONS"
+      ],
+      "refs": [
+        "#/texts/411",
+        "#/texts/414",
+        "#/texts/426",
+        "#/texts/437",
+        "#/texts/448"
+      ]
+    },
+    {
+      "pages": [
+        2
+      ],
+      "headings": [
+        "1 INTRODUCTION"
+      ],
+      "refs": [
+        "#/texts/28",
+        "#/texts/29"
+      ]
+    }
+  ],
+  "claims": [
+    "Tetris3D is a generative framework for single-image 3D scene reconstruction that recovers objects which are physically and geometrically coherent as a scene.",
+    "Existing methods often generate objects independently or couple them implicitly, providing limited guidance for ensuring fine-grained spatial compatibility between neighboring objects that interact with one another.",
+    "Tetris3D explicitly conditions the generation of each object on the geometry of surrounding objects and their physical relationships, guiding its shape and pose to remain geometrically and physically plausible within the scene.",
+    "The authors introduce ComOb, a physics simulation-based dataset of 1.2M scenes featuring physical interactions across diverse object categories, with per-object meshes and pairwise physical relation annotations.",
+    "Comprehensive experiments on synthetic and real-world scenes show that Tetris3D recovers coherent object shapes and poses even when interacting regions are occluded, and achieves state-of-the-art performance in both generation quality and physical stability.",
+    "The framework generates objects autoregressively, using previously generated neighbors as interaction context, with a VLM inferring a physical dependency hierarchy to derive the generation order.",
+    "Interaction conditions are encoded on the same 3D grid used for generation and injected into corresponding tokens, building on TRELLIS.2's voxel-based generative backbone.",
+    "Limitations include that physical conditions provide learned guidance rather than hard physical constraints, so they do not guarantee physically valid configurations in every case, and the inference pipeline relies on off-the-shelf models whose errors can propagate through the autoregressive process."
+  ],
+  "missing_information": "",
+  "output": "C:\\Santio\\playground\\vector-rag\\diagnostics\\overview-routing-20261023T153413566570Z"
+}

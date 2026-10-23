@@ -1,0 +1,15 @@
+{
+  "python": "3.14.0",
+  "packages": {
+    "docling-graph": "1.9.1",
+    "docling": "2.135.0",
+    "docling-core": "2.101.0",
+    "docling-parse": "7.22.2",
+    "litellm": "1.105.1",
+    "openai": "2.54.0",
+    "pydantic": "2.13.5",
+    "torch": "2.14.1",
+    "torchvision": "0.29.1",
+    "python-dotenv": "1.2.4"
+  }
+}

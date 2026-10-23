@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "source_sha256": "fc65821f2f24d4cfca589c99ae402a9657fb40d849cdf480949ca25cb2348506",
+  "checks": [
+    "Nonempty caption reused without model imports or generated metadata",
+    "All 13 real captioned pictures reused; captioned document unchanged",
+    "missing: fallback selected; unavailable CUDA explicitly reported",
+    "whitespace: fallback selected; unavailable CUDA explicitly reported",
+    "broken: fallback selected; unavailable CUDA explicitly reported",
+    "Actual missing-caption pictures generated on CUDA; captioned pictures receive no AI metadata"
+  ]
+}

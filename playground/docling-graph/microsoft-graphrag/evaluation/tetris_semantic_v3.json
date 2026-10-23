@@ -1,0 +1,276 @@
+{
+  "version": "tetris-full-development-3-source-role-correction",
+  "reference_kind": "AI-prepared source-backed development fixture, frozen from Docling passages before inspecting the full graph. Not independent ground truth. Correction documented before v8 graph completion: source 358 explicitly names Qwen3-VL-30B for object inventory, while its physical-reasoning stage names a generic VLM; do not assign that stage to Qwen without further evidence.",
+  "source_sha256": "c7cca5c7618d084c22ec026bd53ac0848e19346af4109a4209c2f77b7ef7e58a",
+  "relationships": [
+    {
+      "subject": "Tetris3D",
+      "predicate": "builds on generative backbone",
+      "object": "TRELLIS.2",
+      "refs": [
+        "#/texts/28",
+        "#/texts/31"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "trains on",
+      "object": "ComOb",
+      "refs": [
+        "#/texts/315"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "evaluated on",
+      "object": "Toys4K",
+      "refs": [
+        "#/texts/155"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "evaluated on",
+      "object": "Picasso",
+      "refs": [
+        "#/texts/155"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "evaluated on",
+      "object": "MessyKitchens",
+      "refs": [
+        "#/texts/155"
+      ]
+    },
+    {
+      "subject": "ComOb",
+      "predicate": "draws target objects from",
+      "object": "TRELLIS-500K",
+      "refs": [
+        "#/texts/143"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "initializes components from",
+      "object": "Pixal3D",
+      "refs": [
+        "#/texts/315"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "uses for depth and camera estimation",
+      "object": "MoGe3",
+      "refs": [
+        "#/texts/352"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "uses for object masks",
+      "object": "SAM3",
+      "refs": [
+        "#/texts/352"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "uses for object inventory",
+      "object": "Qwen3-VL-30B",
+      "refs": [
+        "#/texts/352",
+        "#/texts/358"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "introduces completion mechanism",
+      "object": "V2I",
+      "refs": [
+        "#/texts/103",
+        "#/texts/139"
+      ]
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "uses frozen image encoder",
+      "object": "DINOv3",
+      "refs": [
+        "#/texts/31",
+        "#/texts/120"
+      ]
+    }
+  ],
+  "forbidden": [
+    {
+      "subject": "Tetris3D",
+      "predicate": "trained on benchmark objects",
+      "object": "Toys4K",
+      "reason": "Evaluation object sources are disjoint from training; paragraph155."
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "guarantees",
+      "object": "physically valid configurations in every case",
+      "reason": "Explicitly denied in limitation411."
+    },
+    {
+      "subject": "ComOb",
+      "predicate": "contains",
+      "object": "1.2 million annotated samples",
+      "reason": "143 distinguishes 1.2M scenes from 3.4M annotated samples."
+    },
+    {
+      "subject": "Tetris3D",
+      "predicate": "reconstructs cup before supporting table",
+      "object": "table",
+      "reason": "149 states the supporting table is generated first."
+    }
+  ],
+  "questions": [
+    {
+      "id": "overview",
+      "category": "overview",
+      "question": "What is the main idea of this paper, and why is it different from generating objects separately?",
+      "required_evidence_groups": [
+        [
+          "#/texts/20",
+          "#/texts/27",
+          "#/texts/103"
+        ]
+      ],
+      "expected": "Single-image compositional 3D reconstruction; conditions each object on neighboring geometry and physical relations for spatial compatibility, including occluded contacts."
+    },
+    {
+      "id": "generation_order",
+      "category": "natural_language_relationship",
+      "question": "If a cup is sitting on a table, which one gets reconstructed first, and how does the system decide?",
+      "required_evidence_groups": [
+        [
+          "#/texts/149"
+        ]
+      ],
+      "expected": "Table first; VLM physical dependency graph, topological ordering, previously generated support geometry conditions cup."
+    },
+    {
+      "id": "interaction_signals",
+      "category": "mechanism",
+      "question": "What information does the model use so nearby objects do not float or go through each other?",
+      "required_evidence_groups": [
+        [
+          "#/texts/124",
+          "#/texts/125"
+        ],
+        [
+          "#/texts/128"
+        ]
+      ],
+      "expected": "Spatial context: UDF, nearest surface direction and normal; relation type embeddings. These are learned guidance, not a hard guarantee."
+    },
+    {
+      "id": "occluded_parts",
+      "category": "paraphrase",
+      "question": "How does it fill in parts of an object that are hidden behind another object?",
+      "required_evidence_groups": [
+        [
+          "#/texts/139"
+        ]
+      ],
+      "expected": "Visible-to-invisible cross-attention; invisible tokens query visible tokens as keys/values, at DiT layers in both stages."
+    },
+    {
+      "id": "training_vs_evaluation",
+      "category": "ownership",
+      "question": "Was Tetris3D trained on Toys4K or ComOb, and which datasets were used to test it?",
+      "required_evidence_groups": [
+        [
+          "#/texts/315",
+          "#/texts/143"
+        ],
+        [
+          "#/texts/155"
+        ]
+      ],
+      "expected": "Training ComOb; evaluation Toys4K, Picasso, MessyKitchens. Toys4K object sources disjoint from training."
+    },
+    {
+      "id": "relation_types",
+      "category": "distinguish_lists",
+      "question": "What are the five relation labels used for conditioning? Are those exactly the same as the interaction types used to generate ComOb?",
+      "required_evidence_groups": [
+        [
+          "#/texts/128"
+        ],
+        [
+          "#/texts/143"
+        ]
+      ],
+      "expected": "Conditioning: stack, lean, contain, touch, none. Dataset construction: stack, lean, contain, pile, touch. Distinguish none from pile."
+    },
+    {
+      "id": "dataset_numbers",
+      "category": "numeric_prose",
+      "question": "How many scenes and annotated samples does ComOb contain? Are those the same count?",
+      "required_evidence_groups": [
+        [
+          "#/texts/143"
+        ]
+      ],
+      "expected": "1.2M scenes; 3.4M annotated samples. Distinct quantities."
+    },
+    {
+      "id": "appendix_training",
+      "category": "appendix_numeric",
+      "question": "What GPUs were used for training, and how long did each of the two models take to train?",
+      "required_evidence_groups": [
+        [
+          "#/texts/315"
+        ]
+      ],
+      "expected": "Two NVIDIA H200 GPUs, batch16; sparse structure about7days, structured latent about9days."
+    },
+    {
+      "id": "preprocessing_roles",
+      "category": "multi_entity_roles",
+      "question": "Which tools provide depth, object masks, and object identification at inference?",
+      "required_evidence_groups": [
+        [
+          "#/texts/352"
+        ]
+      ],
+      "expected": "MoGe3 depth/camera; SAM3 masks; Qwen3-VL-30B distinct object identification. Do not swap roles."
+    },
+    {
+      "id": "limitations",
+      "category": "wrong_premise",
+      "question": "Does the paper guarantee that every reconstructed scene obeys physics? What can still go wrong?",
+      "required_evidence_groups": [
+        [
+          "#/texts/411"
+        ]
+      ],
+      "expected": "No; learned guidance not hard constraints; depth/segmentation/relation errors can propagate autoregressively."
+    },
+    {
+      "id": "unsupported",
+      "category": "unsupported",
+      "question": "What monthly subscription price and warranty does this paper promise for deploying Tetris3D in Santio?",
+      "required_evidence_groups": [],
+      "expected": "No reported subscription price or Santio warranty; abstain instead of inventing."
+    },
+    {
+      "id": "numeric_table",
+      "category": "numeric_table",
+      "question": "In Table 3 on Toys4K, what penetration depth (PD) is reported for the full model versus the model without interaction conditioning? Which is lower?",
+      "required_evidence_groups": [
+        [
+          "#/tables/2"
+        ]
+      ],
+      "expected": "Full model0.0192; without interaction conditioning0.4980. Full model lower. Preserve metric, dataset and configuration ownership."
+    }
+  ]
+}
