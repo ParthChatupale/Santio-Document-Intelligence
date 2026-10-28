@@ -1,0 +1,14 @@
+test_no_relationship_is_created_for_an_isolated_mention (test_isolation_audit.IsolationAudit.test_no_relationship_is_created_for_an_isolated_mention) ... ok
+test_prior_declaration_experiment_reproduces_scope_loss_without_mutating_records (test_isolation_audit.IsolationAudit.test_prior_declaration_experiment_reproduces_scope_loss_without_mutating_records) ... ok
+test_prior_rejected_or_non_source_entities_cannot_authorize_relationship (test_isolation_audit.IsolationAudit.test_prior_rejected_or_non_source_entities_cannot_authorize_relationship) ... ok
+test_quote_matching_alone_does_not_establish_ownership (test_isolation_audit.IsolationAudit.test_quote_matching_alone_does_not_establish_ownership) ... ok
+test_reproduces_last_from_clause_false_rejection (test_isolation_audit.IsolationAudit.test_reproduces_last_from_clause_false_rejection) ... ok
+test_reproduces_overbroad_metric_dependency_rejection (test_isolation_audit.IsolationAudit.test_reproduces_overbroad_metric_dependency_rejection) ... ok
+test_scope_experiment_preserves_quotation_and_role_constraints (test_isolation_audit.IsolationAudit.test_scope_experiment_preserves_quotation_and_role_constraints) ... ok
+test_type_conflict_cannot_authorize_recovery (test_isolation_audit.IsolationAudit.test_type_conflict_cannot_authorize_recovery) ... ok
+test_viewer_check_detects_missing_edges_and_swapped_mapping (test_isolation_audit.IsolationAudit.test_viewer_check_detects_missing_edges_and_swapped_mapping) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 6.461s
+
+OK

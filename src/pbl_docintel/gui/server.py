@@ -299,15 +299,19 @@ def create_app(root: Path) -> FastAPI:
     imports = Imports(workspace)
     from .questions import Questions
     questions = Questions(workspace, imports.executor)
+    from .graphs import Graphs, attach_graph_routes
+    graphs = Graphs(workspace)
     @asynccontextmanager
     async def lifespan(app):
         yield
+        graphs.close()
         questions.close()
         imports.close()
     app = FastAPI(title="Research evidence workspace", docs_url=None, redoc_url=None, lifespan=lifespan)
     app.state.workspace = workspace
     app.state.imports = imports
     app.state.questions = questions
+    app.state.graphs = graphs
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
     static = Path(__file__).parent / "static"
 
@@ -316,11 +320,13 @@ def create_app(root: Path) -> FastAPI:
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "no-referrer"
+        graph_frame = '/graph/view/' in request.url.path
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'self'; worker-src 'self' blob:; "
             "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
             "connect-src 'self'; font-src 'self' data:; object-src 'none'; "
-            "frame-ancestors 'none'; base-uri 'self'")
+            + ("frame-ancestors 'self'; " if graph_frame else "frame-ancestors 'none'; ")
+            + "base-uri 'self'")
         return response
 
     def load(key):
@@ -343,6 +349,8 @@ def create_app(root: Path) -> FastAPI:
                 raise HTTPException(403, "Uploads must originate from this application")
         if request.headers.get("sec-fetch-site") == "cross-site":
             raise HTTPException(403, "Cross-site writes are unavailable")
+
+    attach_graph_routes(app, graphs, same_origin)
 
     @app.get("/api/imports")
     def jobs():

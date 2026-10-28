@@ -2,10 +2,18 @@ import { useEffect, useState } from 'react';
 import { json, paperUrl } from './types';
 import type { QuestionJob, RagState } from './types';
 import { active } from './Processing';
+import { retryMessage } from './questionProgress';
 export function AskPanel({id, onCitation, onPrepare}: {id: string; onCitation(page: number, refs: string[], quote?: string): void; onPrepare(job: string): void}) {
   const [state, setState] = useState<RagState>({status:'loading'}), [question,setQuestion] = useState('');
   const [job,setJob] = useState<QuestionJob | null>(null), [history,setHistory] = useState<QuestionJob[]>([]);
   const [error,setError] = useState(''), [busy,setBusy] = useState(false);
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    if (!job?.retry || !active(job.status)) return;
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 500);
+    return () => clearInterval(timer);
+  }, [job?.question_id, job?.status, job?.retry?.retry_at]);
   useEffect(() => {
     let alive = true;
     setState({status:'loading'}); setQuestion(''); setJob(null); setHistory([]); setError(''); setBusy(false);
@@ -48,7 +56,7 @@ export function AskPanel({id, onCitation, onPrepare}: {id: string; onCitation(pa
     <p className="muted">Questions use passages from this paper. Open citations to inspect the original PDF.</p>
     {error && <p role="alert" className="error">{error}</p>}
     {state.status !== 'ready' ? <div className="notice"><p>{state.status === 'loading' ? 'Checking search readiness…' : 'Prepare this paper’s search index before asking questions.'}</p>{state.status !== 'loading' && <button className="primary" disabled={busy} onClick={() => state.job_id && active(state.status) ? onPrepare(state.job_id) : void prepare()}>{state.job_id && active(state.status) ? 'View preparation' : 'Prepare for questions'}</button>}</div> : <form className="ask-form" onSubmit={e => {e.preventDefault(); void ask();}}><label htmlFor="paper-question">What would you like to understand?</label><textarea id="paper-question" value={question} onChange={e => setQuestion(e.target.value)} maxLength={4000} rows={3} placeholder="Give me the gist, or ask about a method or result…"/><button className="primary" disabled={!question.trim() || busy || !!job && active(job.status)}>Ask paper →</button></form>}
-    {job && <article className="answer"><h3>{job.question}</h3>{active(job.status) ? <div role="status"><span className="spinner"/> {job.stage}<button className="source-link" onClick={() => void json<QuestionJob>('/api/questions/' + job.question_id + '/cancel',{method:'POST'}).then(setJob).catch(e => setError(String(e)))}>Cancel question</button></div> : job.error ? <p className="error" role="alert">{job.error}</p> : job.result && <>
+    {job && <article className="answer"><h3>{job.question}</h3>{active(job.status) ? <div role="status"><span className="spinner"/> {job.retry ? retryMessage(job.retry, now) : job.stage}<button className="source-link" onClick={() => void json<QuestionJob>('/api/questions/' + job.question_id + '/cancel',{method:'POST'}).then(setJob).catch(e => setError(String(e)))}>Cancel question</button></div> : job.error ? <p className="error" role="alert">{job.error}</p> : job.result && <>
       <span className="badge">{({'answered':'Answer with citations','partial':'Partial answer','insufficient_evidence':'Not enough retrieved evidence','clarification_needed':'A little more detail needed'} as Record<string,string>)[job.result.answer.status] || job.result.answer.status.replaceAll('_',' ')}</span>
       <p className="muted fine">Model interpretation · inspect the cited passages to check its reasoning.</p>
       {job.result.retrieval_info?.warnings?.map((warning,i) => <p className="notice" role="status" key={i}>{warning}</p>)}

@@ -5,6 +5,12 @@ The record-parsing fault is fixed. Semantic quality remains mixed, so this is
 an inspectable sandbox, not a verified replacement for Santio's RAG.
 `FULL_PAPER_RESULTS.md` records the original `tetris-full-v1` baseline.
 
+24 October follow-up: [ISOLATION_AUDIT.md](ISOLATION_AUDIT.md) traces all 71
+isolated entities and replays all 352 extraction responses. The UI preserves
+every native edge; custom validation and model-interpretation defects explain
+several missing or inappropriate connections. The follow-up is diagnostic:
+the active 334-entity/425-edge graph has not been repaired or replaced.
+
 ## Source and implementation
 
 - Paper: `C:/Santio/2610.10539v1.pdf`, Tetris3D, 30 pages.

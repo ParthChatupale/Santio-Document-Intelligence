@@ -31,8 +31,12 @@ export interface Job {
 }
 export interface RagState {status: string; job_id?: string; error?: string; chunk_count?: number}
 export interface Evidence {source_id: string; quote: string; pages: number[]; source_refs: string[]}
+export interface ProviderRetry {
+  stage: string; reason: string; retry_number: number; maximum_retries: number; retry_at: string;
+}
 export interface QuestionJob {
   question_id: string; paper_id: string; question: string; status: string; stage: string; error: string | null;
+  retry?: ProviderRetry | null;
   result: {answer: {status: string; claims: {text: string; evidence: Evidence[]}[]; missing_information: string};
     retrieval_info?: {method: string; intent?: string; reranking_status?: string; warnings?: string[]};
     sources: {source_id: string; text: string; pages: number[]; source_refs: string[]}[]; elapsed_seconds: number} | null;

@@ -13,6 +13,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from .vector_index import search, embed_texts
+from .provider_retry import ProviderRetries
 
 RERANK_MODEL = "nvidia/llama-nemotron-rerank-vl-1b-v2"
 TEXT_INDEX_SQL = """CREATE INDEX IF NOT EXISTS chunks_context_english_gin
@@ -89,8 +90,8 @@ def document_profile(document, title=None):
             "headings": [h[:160] for h in headings[:60]]}
 
 
-def plan_query(question, profile, settings, history=None):
-    """One bounded hosted call, with validated output and an explicit fallback."""
+def plan_query(question, profile, settings, history=None, on_trace=None, provider_retries=None, progress=None):
+    """Plan with bounded transport retries, validation, and an explicit fallback."""
     from openai import OpenAI
     started = perf_counter()
     instruction = """Interpret a user's natural-language request about the SELECTED document.
@@ -116,28 +117,41 @@ Return exactly one JSON object with:
 "search_queries":["search query"],"keywords":["term"],"clarification":""}."""
     payload = {"question": question, "selected_document": profile, "previous_turns": (history or [])[-2:]}
     trace = {"mode": "llm", "model": settings["model"]}
+    messages = [{"role":"system","content":instruction},
+                {"role":"user","content":json.dumps(payload, ensure_ascii=False)}]
+    trace["request_messages"] = messages
+    if on_trace: on_trace("Question planner API request", {"model": settings["model"], "messages": messages})
     try:
         options = {"extra_body": {"chat_template_kwargs": {"enable_thinking": False}}} if "nemotron-3" in settings["model"].lower() else {}
         with OpenAI(api_key=settings["api_key"], base_url=settings["base_url"], timeout=35, max_retries=0) as client:
-            response = client.chat.completions.create(model=settings["model"], temperature=0, max_tokens=1000,
-                response_format={"type": "json_object"}, messages=[{"role":"system","content":instruction},
-                {"role":"user","content":json.dumps(payload, ensure_ascii=False)}], **options)
+            response = (provider_retries or ProviderRetries()).run(
+                lambda: client.chat.completions.create(model=settings["model"], temperature=0, max_tokens=1000,
+                    response_format={"type": "json_object"}, messages=messages, **options),
+                "question planning", on_trace=on_trace, progress=progress)
+        usage = getattr(response, "usage", None)
+        trace.update(response_id=response.id, usage=usage.model_dump() if usage else None,
+                     finish_reason=response.choices[0].finish_reason if response.choices else None,
+                     content=(response.choices[0].message.content or "") if response.choices else "")
+        if on_trace: on_trace("Raw question planner response", {k:v for k,v in trace.items() if k != "request_messages"})
         if not response.choices or response.choices[0].finish_reason != "stop":
             raise ValueError("Query plan was incomplete")
         plan = clean_plan(json.loads(response.choices[0].message.content or ""), question)
         trace["response_id"] = response.id
     except Exception as exc:
         plan = fallback_plan(question)
-        trace.update(mode="fallback", error_type=type(exc).__name__)
+        trace.update(mode="fallback", error_type=type(exc).__name__, http_status=getattr(exc, "status_code", None))
+        if on_trace: on_trace("Question planner failed; local fallback", {"error_type": trace["error_type"],
+                                         "http_status": trace["http_status"], "fallback_plan": plan})
     trace["elapsed_seconds"] = round(perf_counter()-started, 3)
     return plan, trace
 
 
-def recover_query_plan(question, profile, previous_plan, sources, missing_information, settings):
+def recover_query_plan(question, profile, previous_plan, sources, missing_information, settings, on_trace=None,
+                       provider_retries=None, progress=None):
     """One hosted reformulation after an evidence miss; never generate an answer.
 
     Previously selected passages are untrusted diagnostic context, not additional
-    evidence. Failure leaves the first round usable and does not retry the API.
+    evidence. Transport retries are bounded; failure leaves the first round usable.
     """
     from openai import OpenAI
     started = perf_counter()
@@ -164,13 +178,19 @@ Return exactly one JSON object with:
              "request_messages": [{"role": "system", "content": instruction},
                                   {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}]}
     plan = None
+    if on_trace: on_trace("Recovery planner API request", {"model": settings["model"], "messages": trace["request_messages"]})
     try:
         options = {"extra_body": {"chat_template_kwargs": {"enable_thinking": False}}} if "nemotron-3" in settings["model"].lower() else {}
         with OpenAI(api_key=settings["api_key"], base_url=settings["base_url"], timeout=35, max_retries=0) as client:
-            response = client.chat.completions.create(model=settings["model"], temperature=0, max_tokens=1000,
-                response_format={"type": "json_object"}, messages=trace["request_messages"], **options)
+            response = (provider_retries or ProviderRetries()).run(
+                lambda: client.chat.completions.create(model=settings["model"], temperature=0, max_tokens=1000,
+                    response_format={"type": "json_object"}, messages=trace["request_messages"], **options),
+                "retrieval recovery planning", on_trace=on_trace, progress=progress)
         trace["response_id"] = response.id
         trace["usage"] = response.usage.model_dump() if response.usage else None
+        trace["finish_reason"] = response.choices[0].finish_reason if response.choices else None
+        trace["content"] = (response.choices[0].message.content or "") if response.choices else ""
+        if on_trace: on_trace("Raw recovery planner response", {k:v for k,v in trace.items() if k not in {"request_messages", "status"}})
         if not response.choices or response.choices[0].finish_reason != "stop":
             raise ValueError("Recovery plan was incomplete")
         trace["content"] = response.choices[0].message.content or ""
@@ -195,6 +215,8 @@ Return exactly one JSON object with:
             trace["status"] = "unchanged_plan"
     except Exception as exc:
         trace["error_type"] = type(exc).__name__
+        trace["http_status"] = getattr(exc, "status_code", None)
+        if on_trace: on_trace("Recovery planner failed", {"error_type": trace["error_type"], "http_status": trace["http_status"]})
     trace["elapsed_seconds"] = round(perf_counter() - started, 3)
     return plan, trace
 
@@ -358,7 +380,7 @@ def collect_candidates(connection, index_id, question, plan, tokenizer, model, l
         "candidates":[{"chunk_id":h["chunk_id"],"channels":h["channels"],"rrf_score":h["rrf_score"]} for h in candidates]}
 
 
-def rerank_sources(question, sources, settings, env_file=None):
+def rerank_sources(question, sources, settings, env_file=None, on_trace=None, provider_retries=None, progress=None):
     """NVIDIA reranking of sanitized author evidence; failures are explicit."""
     import httpx
     from dotenv import dotenv_values
@@ -372,12 +394,25 @@ def rerank_sources(question, sources, settings, env_file=None):
     if values.get("SANTIO_RERANK_ENABLED", "true").lower() in {"0","false","no"}:
         return sources, {**trace,"status":"disabled"}
     try:
-        response = httpx.post(url, headers={"Authorization":"Bearer " + settings["api_key"]},
-            json={"model":model,"query":{"text":question},"passages":[{"text":s["text"]} for s in sources],"truncate":"NONE"}, timeout=35)
+        payload = {"model":model,"query":{"text":question},"passages":[{"text":s["text"]} for s in sources],"truncate":"NONE"}
+        if on_trace: on_trace("Reranker API request", payload)
+        def request():
+            response = httpx.post(url, headers={"Authorization":"Bearer " + settings["api_key"]},
+                                  json=payload, timeout=35)
+            # Raise only transient statuses here. Other HTTP failures retain the
+            # established, inspectable fallback to fused search order below.
+            if response.status_code in {408, 429, 500, 502, 503, 504}:
+                response.raise_for_status()
+            return response
+        response = (provider_retries or ProviderRetries()).run(request, "evidence ranking",
+                                                             on_trace=on_trace, progress=progress)
         if not response.is_success:
+            if on_trace: on_trace("Reranker API failed", {"model": model, "http_status": response.status_code})
             return sources, {**trace,"status":"unavailable","http_status":response.status_code,
                              "elapsed_seconds":round(perf_counter()-started,3)}
-        rankings = response.json()["rankings"]
+        body = response.json()
+        if on_trace: on_trace("Raw reranker response", body)
+        rankings = body["rankings"]
         indices = [r["index"] for r in rankings]
         if (len(indices) != len(sources) or any(type(i) is not int for i in indices)
                 or set(indices) != set(range(len(sources)))):
@@ -390,7 +425,9 @@ def rerank_sources(question, sources, settings, env_file=None):
         return ranked, {**trace,"status":"applied","elapsed_seconds":round(perf_counter()-started,3),
             "ranking":[{"chunk_id":s["chunk_id"],"score":s["rerank_score"]} for s in ranked]}
     except Exception as exc:
+        if on_trace: on_trace("Reranker unavailable", {"model": model, "error_type": type(exc).__name__})
         return sources, {**trace,"status":"unavailable","error_type":type(exc).__name__,
+                         "http_status":getattr(getattr(exc, "response", None), "status_code", None),
                          "elapsed_seconds":round(perf_counter()-started,3)}
 
 

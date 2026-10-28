@@ -1,0 +1,204 @@
+{
+  "verification": "Replay of actual original and real repaired API responses through final controller; no new API requests.",
+  "answer": {
+    "status": "answered",
+    "claims": [
+      {
+        "text": "Ledger is a persistent 3D object memory built offline from egocentric videos that retains object locations, movement histories, and contextual descriptions, including for objects the person never touches.",
+        "evidence": [
+          {
+            "source_id": "S1",
+            "quote": "We present Ledger, a persistent 3D object memory that combines object locations, their histories, and contextual descriptions. It associates observations across the recording and retains objects after they leave the view, including those the person never touches.",
+            "chunk_id": "4ee3baf449f66b36-00001",
+            "pages": [
+              2
+            ],
+            "source_refs": [
+              "#/texts/70"
+            ]
+          },
+          {
+            "source_id": "S5",
+            "quote": "A reusable 3D memory of past observations. We introduce Ledger, a persistent object memory built offline from egocentric videos with supplied or estimated poses, retaining locations, movement histories, and contextual descriptions, even for untouched objects.",
+            "chunk_id": "4ee3baf449f66b36-00010",
+            "pages": [
+              4
+            ],
+            "source_refs": [
+              "#/texts/87",
+              "#/texts/88",
+              "#/texts/89",
+              "#/texts/90"
+            ]
+          }
+        ]
+      },
+      {
+        "text": "Ledger clusters each object's observations by resting locations and records a move only after repeated evidence, reducing localization noise, and saves short descriptions such as an object's contents or supporting surface for later spatial questions without accessing original images or video.",
+        "evidence": [
+          {
+            "source_id": "S1",
+            "quote": "It clusters each object's observations by resting locations and records a move only after repeated evidence, reducing the effect of localization noise. Short descriptions preserve details such as an object's contents or supporting surface. It saves these records to later answer spatial questions without having to access the original images or video.",
+            "chunk_id": "4ee3baf449f66b36-00001",
+            "pages": [
+              2
+            ],
+            "source_refs": [
+              "#/texts/70"
+            ]
+          }
+        ]
+      },
+      {
+        "text": "Ledger raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5%, and localizes Ego4D objects with a 0.99m median error on returned predictions.",
+        "evidence": [
+          {
+            "source_id": "S1",
+            "quote": "Our memory raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5% and localizes Ego4D objects with a 0.99m median error on returned predictions.",
+            "chunk_id": "4ee3baf449f66b36-00001",
+            "pages": [
+              2
+            ],
+            "source_refs": [
+              "#/texts/70"
+            ]
+          }
+        ]
+      },
+      {
+        "text": "Ablations isolate temporal persistence, contextual descriptions, and geometry, while shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.",
+        "evidence": [
+          {
+            "source_id": "S5",
+            "quote": "Ablations isolate temporal persistence, contextual descriptions, and geometry, and shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.",
+            "chunk_id": "4ee3baf449f66b36-00010",
+            "pages": [
+              4
+            ],
+            "source_refs": [
+              "#/texts/87",
+              "#/texts/88",
+              "#/texts/89",
+              "#/texts/90"
+            ]
+          }
+        ]
+      },
+      {
+        "text": "Memory retains its gains up to 75 minutes across recording lengths, while scene changes expose failures in construction and retrieval that per-scene construction partially repairs.",
+        "evidence": [
+          {
+            "source_id": "S5",
+            "quote": "Across recording lengths and 100 paired stitched streams, memory retains its gains up to 75 minutes, while scene changes expose failures in construction and retrieval that building memory per scene partially repairs.",
+            "chunk_id": "4ee3baf449f66b36-00010",
+            "pages": [
+              4
+            ],
+            "source_refs": [
+              "#/texts/87",
+              "#/texts/88",
+              "#/texts/89",
+              "#/texts/90"
+            ]
+          }
+        ]
+      },
+      {
+        "text": "Counting and continuous rest intervals remain unresolved, and construction does not yet scale to the most object-dense hour-long recordings.",
+        "evidence": [
+          {
+            "source_id": "S3",
+            "quote": "Counting and continuous rest intervals remain unresolved, and construction does not yet scale to the most object-dense hour-long recordings (Appendix D).",
+            "chunk_id": "4ee3baf449f66b36-00028",
+            "pages": [
+              11
+            ],
+            "source_refs": [
+              "#/texts/385",
+              "#/texts/386"
+            ]
+          }
+        ]
+      },
+      {
+        "text": "Construction is offline, so filtering records by question time does not establish causal online memory.",
+        "evidence": [
+          {
+            "source_id": "S3",
+            "quote": "Construction is offline, so filtering records by question time does not establish causal online memory.",
+            "chunk_id": "4ee3baf449f66b36-00028",
+            "pages": [
+              11
+            ],
+            "source_refs": [
+              "#/texts/385",
+              "#/texts/386"
+            ]
+          }
+        ]
+      }
+    ],
+    "missing_information": "",
+    "validation": {
+      "schema_and_quote_checks": "passed",
+      "semantic_entailment_verified": false,
+      "normalizations": [
+        {
+          "field": "status",
+          "value": "answered",
+          "reason": "Absent status restored from the existing claims/missing_information state contract after repair."
+        }
+      ]
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "response_id": "replayed:chatcmpl-8a6d67d1-e79a-43e4-9988-c0221f98aa52",
+      "elapsed_seconds": 0.0,
+      "finish_reason": "stop",
+      "usage": null,
+      "content": "{\"claims\": [{\"text\": \"Ledger is a persistent 3D object memory built offline from egocentric videos that retains object locations, movement histories, and contextual descriptions, including for objects the person never touches.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"We present Ledger, a persistent 3D object memory that combines object locations, their histories, and contextual descriptions. It associates observations across the recording and retains objects after they leave the view, including those the person never touches.\"}, {\"source_id\": \"S5\", \"quote\": \"A reusable 3D memory of past observations. We introduce Ledger, a persistent object memory built offline from egocentric videos with supplied or estimated poses, retaining locations, movement histories, and contextual descriptions, even for untouched objects.\"}]}, {\"text\": \"Ledger clusters each object's observations by resting locations and records a move only after repeated evidence, reducing localization noise, and saves short descriptions such as an object's contents or supporting surface for later spatial questions without accessing original images or video.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"It clusters each object's observations by resting locations and records a move only after repeated evidence, reducing the effect of localization noise. Short descriptions preserve details such as an object's contents or supporting surface. It saves these records to later answer spatial questions without having to access the original images or video.\"}]}, {\"text\": \"Ledger raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5%, and localizes Ego4D objects with a 0.99m median error on returned predictions.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"Our memory raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5% and localizes Ego4D objects with a 0.99m median error on returned predictions.\"}]}, {\"text\": \"Ablations isolate temporal persistence, contextual descriptions, and geometry, while shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.\", \"evidence\": [{\"source_id\": \"S5\", \"quote\": \"Ablations isolate temporal persistence, contextual descriptions, and geometry, and shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.\"}]}, {\"text\": \"Memory retains its gains up to 75 minutes across recording lengths, while scene changes expose failures in construction and retrieval that per-scene construction partially repairs.\", \"evidence\": [{\"source_id\": \"S5\", \"quote\": \"Across recording lengths and 100 paired stitched streams, memory retains its gains up to 75 minutes, while scene changes expose failures in construction and retrieval that building memory per scene partially repairs.\"}]}, {\"text\": \"Limitations include unresolved counting and continuous rest intervals, construction not yet scaling to the most object-dense hour-long recordings, and construction being offline so filtering records by question time does not establish causal online memory.\", \"evidence\": [{\"source_id\": \"S3\", \"quote\": \"Counting and continuous rest intervals remain unresolved, and construction does not yet scale to the most object-dense hour-long recordings (Appendix D). ... Construction is offline, so filtering records by question time does not establish causal online memory.\"}]}], \"missing_information\": \"\"}",
+      "validation_error": "status: Field required; claims.5.evidence.0: Quote not found in supplied source S3. This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... .",
+      "validation_issues": [
+        {
+          "kind": "schema",
+          "path": "status",
+          "message": "Field required"
+        },
+        {
+          "claim_index": 5,
+          "path": "claims.5.evidence.0",
+          "source_id": "S3",
+          "kind": "quote_mismatch",
+          "message": "Quote not found in supplied source S3.",
+          "hint": "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "response_id": "chatcmpl-fcfd8f92-dd47-44f8-80c8-698c7297dd54",
+      "elapsed_seconds": 0.0,
+      "finish_reason": "stop",
+      "usage": null,
+      "content": "{\"claims\": [{\"text\": \"Ledger is a persistent 3D object memory built offline from egocentric videos that retains object locations, movement histories, and contextual descriptions, including for objects the person never touches.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"We present Ledger, a persistent 3D object memory that combines object locations, their histories, and contextual descriptions. It associates observations across the recording and retains objects after they leave the view, including those the person never touches.\"}, {\"source_id\": \"S5\", \"quote\": \"A reusable 3D memory of past observations. We introduce Ledger, a persistent object memory built offline from egocentric videos with supplied or estimated poses, retaining locations, movement histories, and contextual descriptions, even for untouched objects.\"}]}, {\"text\": \"Ledger clusters each object's observations by resting locations and records a move only after repeated evidence, reducing localization noise, and saves short descriptions such as an object's contents or supporting surface for later spatial questions without accessing original images or video.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"It clusters each object's observations by resting locations and records a move only after repeated evidence, reducing the effect of localization noise. Short descriptions preserve details such as an object's contents or supporting surface. It saves these records to later answer spatial questions without having to access the original images or video.\"}]}, {\"text\": \"Ledger raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5%, and localizes Ego4D objects with a 0.99m median error on returned predictions.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"Our memory raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5% and localizes Ego4D objects with a 0.99m median error on returned predictions.\"}]}, {\"text\": \"Ablations isolate temporal persistence, contextual descriptions, and geometry, while shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.\", \"evidence\": [{\"source_id\": \"S5\", \"quote\": \"Ablations isolate temporal persistence, contextual descriptions, and geometry, and shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.\"}]}, {\"text\": \"Memory retains its gains up to 75 minutes across recording lengths, while scene changes expose failures in construction and retrieval that per-scene construction partially repairs.\", \"evidence\": [{\"source_id\": \"S5\", \"quote\": \"Across recording lengths and 100 paired stitched streams, memory retains its gains up to 75 minutes, while scene changes expose failures in construction and retrieval that building memory per scene partially repairs.\"}]}, {\"text\": \"Counting and continuous rest intervals remain unresolved, and construction does not yet scale to the most object-dense hour-long recordings.\", \"evidence\": [{\"source_id\": \"S3\", \"quote\": \"Counting and continuous rest intervals remain unresolved, and construction does not yet scale to the most object-dense hour-long recordings (Appendix D).\"}]}, {\"text\": \"Construction is offline, so filtering records by question time does not establish causal online memory.\", \"evidence\": [{\"source_id\": \"S3\", \"quote\": \"Construction is offline, so filtering records by question time does not establish causal online memory.\"}]}], \"missing_information\": \"\"}",
+      "validation_error": "status: Field required",
+      "validation_issues": [
+        {
+          "kind": "schema",
+          "path": "status",
+          "message": "Field required"
+        }
+      ],
+      "normalizations": [
+        {
+          "field": "status",
+          "value": "answered",
+          "reason": "Absent status restored from the existing claims/missing_information state contract after repair."
+        }
+      ],
+      "outcome": "accepted_after_status_restoration"
+    }
+  ]
+}

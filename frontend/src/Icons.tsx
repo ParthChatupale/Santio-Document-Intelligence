@@ -1,5 +1,6 @@
 export function Icon({name, size = 20}: {name: string; size?: number}) {
   const paths: Record<string, React.ReactNode> = {
+    graph: <><path d="m7 7 10 1M7 9l4 9m6-8-4 8"/><circle cx="5" cy="6" r="3"/><circle cx="19" cy="8" r="3"/><circle cx="12" cy="20" r="2.5"/></>,
     library: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
     upload: <><path d="M12 16V3m-5 5 5-5 5 5M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></>,
     search: <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>,

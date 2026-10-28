@@ -85,14 +85,14 @@ class RecoveryPlannerTests(unittest.TestCase):
                 self.assertIsNone(plan)
                 self.assertEqual(trace["status"], expected)
                 create.assert_called_once()
-        with patch("openai.OpenAI") as client:
+        with patch("openai.OpenAI") as client, patch("pbl_docintel.vector_rag.provider_retry.time.sleep"):
             create = client.return_value.__enter__.return_value.chat.completions.create
             create.side_effect = TimeoutError("credential-bearing private details")
             plan, trace = retrieval.recover_query_plan(QUESTION, {}, INITIAL, [], "Missing", SETTINGS)
             self.assertIsNone(plan)
             self.assertEqual(trace["error_type"], "TimeoutError")
             self.assertNotIn("private", json.dumps(trace))
-            create.assert_called_once()
+            self.assertEqual(create.call_count,3)
 
 
 class RecoveryPipelineTests(unittest.TestCase):
@@ -116,7 +116,7 @@ class RecoveryPipelineTests(unittest.TestCase):
         self.collect = self.stack.enter_context(patch.object(retrieval, "collect_candidates"))
         self.collect.side_effect = [([hit("old")], [], {}), ([hit("new")], [], {})]
         self.rerank = self.stack.enter_context(patch.object(retrieval, "rerank_sources",
-            side_effect=lambda q, sources, *args: (sources, {"status": "applied"})))
+            side_effect=lambda q, sources, *args, **kwargs: (sources, {"status": "applied"})))
         self.answer = self.stack.enter_context(patch.object(rag, "call_answer_model"))
         self.answer.side_effect = lambda messages, sources, *a, **kw: (miss() if sources[0]["chunk_id"] == "old" else supported(sources), [{"attempt": 1}])
 
@@ -141,6 +141,30 @@ class RecoveryPipelineTests(unittest.TestCase):
         self.assertTrue(all(c.args[0].startswith("SELECT") for c in self.connection.execute.call_args_list))
         self.assertEqual(self.path.read_bytes(), self.original)
         self.assertTrue(any("another search" in stage for stage in progress))
+
+    def test_provider_retry_reuses_selected_evidence_without_another_retrieval(self):
+        import httpx
+        from openai import RateLimitError
+        self.answer.side_effect = CALL_ANSWER_MODEL
+        error = RateLimitError('private', response=httpx.Response(429,
+            request=httpx.Request('POST','https://example.invalid'), headers={'Retry-After':'0'}), body=None)
+        good = {'status':'answered','claims':[{'text':'Supported', 'evidence':[
+            {'source_id':'S1','quote':hit('old')['contextualized_text']}]}], 'missing_information':''}
+        events=[]
+        with patch('openai.OpenAI') as client:
+            create=client.return_value.__enter__.return_value.chat.completions.create
+            create.side_effect=[error,response(good)]
+            result=rag.answer_question('selected-index',QUESTION,on_trace=lambda n,d:events.append((n,d)))
+        self.assertEqual(result['answer']['status'],'answered')
+        self.collect.assert_called_once()
+        self.rerank.assert_called_once()
+        self.planner.assert_called_once()
+        self.recover.assert_not_called()
+        self.assertEqual(len(result['retrieval_rounds']),1)
+        self.assertEqual(create.call_args_list[0],create.call_args_list[1])
+        self.assertEqual(result['answer']['claims'][0]['evidence'][0]['chunk_id'],'old')
+        self.assertEqual(sum(e['event']=='Provider retry waiting' for e in result['provider_retries']['events']),1)
+        self.assertTrue(any(n=='Provider retry waiting' and d['retrieval_round']==1 for n,d in events))
 
     def test_empty_first_round_gets_one_reformulation_and_only_one_answer_call(self):
         self.collect.side_effect = [([], [], {}), ([hit("new")], [], {})]
@@ -228,6 +252,14 @@ class RecoveryPipelineTests(unittest.TestCase):
         self.assertEqual(result["answer"]["status"], "clarification_needed")
         self.assertFalse(result["retrieval_rounds"])
         self.collect.assert_not_called()
+
+    def test_validation_error_is_not_mislabeled_as_no_recovery_needed(self):
+        self.answer.side_effect=None
+        self.answer.return_value=({"status":"error","error_kind":"answer_validation_failed","error":"Invalid quotes"},[])
+        result=rag.answer_question("selected-index",QUESTION)
+        self.assertEqual(result["retrieval"]["recovery"]["status"],"not_attempted_answer_validation_failed")
+        self.assertIn("validation",result["retrieval"]["recovery"]["skip_reason"])
+        self.recover.assert_not_called()
 
     def test_hybrid_recovery_does_not_require_reranker_and_vector_baseline_stays_single_pass(self):
         result = rag.answer_question("selected-index", QUESTION, retrieval_mode="hybrid", top_k=1)

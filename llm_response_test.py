@@ -8,7 +8,7 @@ from openai import APIError, OpenAI
 
 
 # EDIT YOUR PROMPT HERE, then save and run this file again.
-PROMPT = "is gandu a slang?"
+PROMPT = "is honikchawa a slang?"
 
 
 def main():

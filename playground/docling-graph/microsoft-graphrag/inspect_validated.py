@@ -73,6 +73,11 @@ def replay_native(run, coverage, calls, actual_relationships):
 def inspect(run):
     from _sources import as_rows, load_tables
     run = Path(run).resolve(strict=True)
+    v3 = read_json(run / 'run.json').get('preparation_contract') == 'context-v3'
+    if v3:
+        from _contracts_v3 import GraphRecords as Records, project as projector, prior_entities
+    else:
+        Records, projector = GraphRecords, project
     totals, reasons = Counter(), Counter()
     failures, rows = [], []
     for path in sorted((run / "validated_extractions").glob("*.json")):
@@ -81,7 +86,22 @@ def inspect(run):
         from _contracts import source_text
         source = source_text(request["messages"])
         try:
-            canonical, audit = project(GraphRecords.model_validate(saved["records"]), source)
+            extra = {}
+            if v3:
+                history = native_messages(request['messages'])
+                restored = []
+                for message in history:
+                    if message.get('role') == 'assistant':
+                        # Saved provider history is raw JSON; native history was
+                        # its accepted tuple projection. Reconstruct only that
+                        # source-local initial declaration scope.
+                        initial = Records.model_validate_json(message['content'])
+                        text, _ = projector(initial, source)
+                        restored.append({**message, 'content': text})
+                    else:
+                        restored.append(message)
+                extra['previous_entities'] = prior_entities(restored, source)
+            canonical, audit = projector(Records.model_validate(saved["records"]), source, **extra)
             if canonical != saved["canonical_tuples"]:
                 failures.append({"request_hash": path.stem, "error": "Canonical replay differs from saved extraction"})
             for key in ["raw_entities", "raw_relationships", "entities", "relationships"]:

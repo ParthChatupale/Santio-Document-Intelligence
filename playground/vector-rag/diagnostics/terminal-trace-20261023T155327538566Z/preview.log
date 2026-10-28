@@ -1,0 +1,903 @@
+
+=== RAG / Saved run replay; no new API request ===
+{
+  "saved_report": "C:\\Santio\\playground\\vector-rag\\diagnostics\\overview-routing-20261023T153413566570Z\\answer.json",
+  "question": "Tell me about the paper ?",
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+}
+
+=== RAG / Effective question plan ===
+{
+  "plan": {
+    "intent": "overview",
+    "search_queries": [
+      "Tell me about the paper ?"
+    ],
+    "keywords": [],
+    "clarification": ""
+  },
+  "planning": {
+    "mode": "fallback",
+    "error_type": "InternalServerError",
+    "verification_replayed_original_planner_failure": true
+  }
+}
+
+=== RAG / Selected evidence / round 1 ===
+{
+  "sources": [
+    {
+      "source_id": "S1",
+      "chunk_id": "c7cca5c7618d084c-00001",
+      "retrieval_rank": 16,
+      "text": "ABSTRACT\nWe propose Tetris3D, a generative framework for single-image 3D scene reconstruction that recovers objects which are physically and geometrically coherent as a scene. Existing methods often generate objects independently or couple them implicitly, providing limited guidance for ensuring fine-grained spatial compatibility between neighboring objects that interact with one another. To address this, we explicitly condition the generation of each object on the geometry of surrounding objects and their physical relationships, guiding its shape and pose to remain geometrically and physically plausible within the scene. Moreover, we introduce ComOb, a physics simulation-based dataset of 1.2M scenes featuring physical interactions across diverse object categories, with per-object meshes and pairwise physical relation annotations. Comprehensive experiments on synthetic and realworld scenes show that Tetris3D recovers coherent object shapes and poses even when interacting regions are occluded, and achieves state-of-the-art performance in both generation quality and physical stability.\n† Corresponding author.",
+      "pages": [
+        1
+      ],
+      "source_refs": [
+        "#/texts/20",
+        "#/texts/21"
+      ],
+      "indexed_source_refs": [
+        "#/texts/20",
+        "#/texts/21"
+      ],
+      "headings": [
+        "ABSTRACT"
+      ],
+      "source_items": [
+        {
+          "ref": "#/texts/20",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 79.19177439292025,
+                "l": 143.865,
+                "r": 468.13766739999994,
+                "t": 230.59719399999994,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 1,
+              "charspan": [
+                0,
+                1091
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/21",
+          "label": "footnote",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 60.278384509734565,
+                "l": 120.653,
+                "r": 204.33448160000012,
+                "t": 69.83841759999996,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 1,
+              "charspan": [
+                0,
+                23
+              ]
+            }
+          ]
+        }
+      ],
+      "transformations": [],
+      "origin": "vector_index",
+      "cosine_similarity": null,
+      "rerank_score": -3.6796875
+    },
+    {
+      "source_id": "S2",
+      "chunk_id": "c7cca5c7618d084c-00002",
+      "retrieval_rank": 17,
+      "text": "1 INTRODUCTION\n3D scene generation from an image reconstructs compositional scenes by recovering each object as a separate and complete 3D entity in a shared scene space. This enables the conversion of realworld observations into 3D assets for applications such as physical simulation, VR/AR, and robotic manipulation. To support these applications, scene reconstruction should recover not only plausible objects but also their physically and geometrically coherent composition. Interactions between objects-such as support and containment-depicted in the image require fine-grained spatial compatibility between neighboring objects. However, neighboring objects often occlude the very regions where they interact, making it challenging to recover this consistency from visible evidence alone.\nDespite recent progress in 3D generation (Zhang et al., 2023; Li et al., 2025; Zhang et al., 2024; Xiang et al., 2026; 2025), recovering such inter-object spatial compatibility remains an open problem. Existing methods reconstruct scenes either by assembling individually generated objects (Chen et al., 2026b; Zhou et al., 2026; Li et al., 2026a; Siddiqui et al., 2026) or by jointly generating multiple objects or their poses through implicit feature aggregation (Huang et al., 2025; Meng et al., 2026; Shi et al., 2026). These approaches provide limited explicit guidance for the local spatial compatibility required to recover the depicted interactions.\nMotivated by this, we propose Tetris3D, an object interaction-conditioned 3D generative framework for reconstructing scenes of objects that geometrically and physically fit together. Our key idea is to generate each object in relation to its neighbors rather than in isolation, by explicitly conditioning the generation of its shape and pose on neighboring geometry and physical relationships. Intuitively, when we interpret a scene, we use surrounding geometry to infer the space an object can occupy and physical relationships to reason how it should rest on or fit within its neighbors. Together, these cues help constrain possible object shapes and poses, even when the interacting regions are occluded.",
+      "pages": [
+        2
+      ],
+      "source_refs": [
+        "#/texts/25",
+        "#/texts/26",
+        "#/texts/27"
+      ],
+      "indexed_source_refs": [
+        "#/texts/25",
+        "#/texts/26",
+        "#/texts/27"
+      ],
+      "headings": [
+        "1 INTRODUCTION"
+      ],
+      "source_items": [
+        {
+          "ref": "#/texts/25",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 598.2157743929207,
+                "l": 108.0,
+                "r": 504.0033873999997,
+                "t": 683.4806526,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 2,
+              "charspan": [
+                0,
+                778
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/26",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 515.525774392921,
+                "l": 108.0,
+                "r": 504.00338739999955,
+                "t": 589.8316526000003,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 2,
+              "charspan": [
+                0,
+                657
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/27",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 432.835774392921,
+                "l": 108.0,
+                "r": 504.00338739999967,
+                "t": 507.5301940000007,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 2,
+              "charspan": [
+                0,
+                707
+              ]
+            }
+          ]
+        }
+      ],
+      "transformations": [],
+      "origin": "vector_index",
+      "cosine_similarity": null,
+      "rerank_score": -3.767578125
+    },
+    {
+      "source_id": "S3",
+      "chunk_id": "c7cca5c7618d084c-00038",
+      "retrieval_rank": 19,
+      "text": "5 CONCLUSION\nWe propose Tetris3D, a generative framework for single-image 3D scene reconstruction that explicitly conditions object generation on neighboring geometry and physical relations. We also introduce ComOb, a large-scale simulation-based dataset of diverse objects in physically stable configurations with interaction annotations. Experiments on synthetic and real-world benchmarks demonstrate improved reconstruction quality and physical consistency, even when interacting regions are occluded. We believe Tetris3D provides a practical step toward versatile compositional 3D scene generation.",
+      "pages": [
+        9
+      ],
+      "source_refs": [
+        "#/texts/204"
+      ],
+      "indexed_source_refs": [
+        "#/texts/204"
+      ],
+      "headings": [
+        "5 CONCLUSION"
+      ],
+      "source_items": [
+        {
+          "ref": "#/texts/204",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 60.07177439292025,
+                "l": 108.0,
+                "r": 504.00338739999967,
+                "t": 123.41865259999997,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 9,
+              "charspan": [
+                0,
+                589
+              ]
+            }
+          ]
+        }
+      ],
+      "transformations": [],
+      "origin": "vector_index",
+      "cosine_similarity": null,
+      "rerank_score": -3.875
+    },
+    {
+      "source_id": "S4",
+      "chunk_id": "c7cca5c7618d084c-00083",
+      "retrieval_rank": 20,
+      "text": "E DISCUSSION AND LIMITATIONS\nOur results suggest that physical interactions can serve as cues for recovering object shapes and poses, rather than only as criteria for evaluating a completed scene. By incorporating neighboring geometry and physical relations into generation, Tetris3D uses surrounding context to guide reconstruction even when interacting regions are occluded. However, these conditions provide learned guidance rather than hard physical constraints, and therefore do not guarantee physically valid configurations in every case. Our inference pipeline relies on off-the-shelf models for depth and camera estimation, object segmentation, and physical relation reasoning. Although these modules enable reconstruction from a single RGB image, their errors can affect the conditions used for generation. Inaccurate depth or segmentation can distort the object grid and projected features, while incorrect physical relations can lead to inappropriate interaction conditions or generation orders. Since previously generated objects provide context for subsequent objects, these errors may propagate through the autoregressive process. Reducing these dependencies and accounting for uncertainty in the estimated conditions are directions for future work.\nFigure 9: Qualitative comparison with agentic 3D generation. We compare Tetris3D with an LLM agent-based approach to 3D mesh generation (OpenAI, 2026). Although this approach can produce broadly similar shapes, it often fails to faithfully recover the object geometry depicted in the input image and struggles to generate physically consistent scene layouts.\nFigure 10: Qualitative comparison with baselines on Toys4K (Stojanov et al., 2021).\nFigure 11: Qualitative comparison with baselines on Toys4K (Stojanov et al., 2021).\nFigure 12: Qualitative comparison with baselines on Toys4K (Stojanov et al., 2021).",
+      "pages": [
+        22,
+        23,
+        24,
+        25,
+        26
+      ],
+      "source_refs": [
+        "#/texts/411",
+        "#/texts/414",
+        "#/texts/426",
+        "#/texts/437",
+        "#/texts/448"
+      ],
+      "indexed_source_refs": [
+        "#/texts/411",
+        "#/texts/414",
+        "#/texts/426",
+        "#/texts/437",
+        "#/texts/448"
+      ],
+      "headings": [
+        "E DISCUSSION AND LIMITATIONS"
+      ],
+      "source_items": [
+        {
+          "ref": "#/texts/411",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 60.07177439292036,
+                "l": 108.0,
+                "r": 504.00338739999955,
+                "t": 101.50065259999997,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 22,
+              "charspan": [
+                0,
+                389
+              ]
+            },
+            {
+              "bbox": {
+                "b": 81.59577439292036,
+                "l": 108.0,
+                "r": 504.0033873999997,
+                "t": 177.81965260000004,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 23,
+              "charspan": [
+                390,
+                1234
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/414",
+          "label": "caption",
+          "parent_ref": "#/pictures/7",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 202.44277439292034,
+                "l": 108.0,
+                "r": 504.00338739999955,
+                "t": 244.26019399999996,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 23,
+              "charspan": [
+                0,
+                358
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/426",
+          "label": "caption",
+          "parent_ref": "#/pictures/8",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 61.15181659999996,
+                "l": 129.284,
+                "r": 482.7171975999997,
+                "t": 70.10819400000003,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 24,
+              "charspan": [
+                0,
+                83
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/437",
+          "label": "caption",
+          "parent_ref": "#/pictures/9",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 64.33681660000002,
+                "l": 129.284,
+                "r": 482.7171975999997,
+                "t": 73.29319399999997,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 25,
+              "charspan": [
+                0,
+                83
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/448",
+          "label": "caption",
+          "parent_ref": "#/pictures/10",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 63.12981660000003,
+                "l": 129.284,
+                "r": 482.7171975999997,
+                "t": 72.08619399999998,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 26,
+              "charspan": [
+                0,
+                83
+              ]
+            }
+          ]
+        }
+      ],
+      "transformations": [],
+      "origin": "vector_index",
+      "cosine_similarity": null,
+      "rerank_score": -4.06640625
+    },
+    {
+      "source_id": "S5",
+      "chunk_id": "c7cca5c7618d084c-00003",
+      "retrieval_rank": 18,
+      "text": "1 INTRODUCTION\nSpecifically, we reconstruct the scene by generating objects autoregressively, using previously generated neighbors as interaction context. We use a vision-language model (VLM) to infer a physical dependency hierarchy and derive the generation order by topologically sorting this hierarchy. For instance, given an image of a cup resting on a table, the table is generated first and its surface serves as the interaction context for the cup. For each object, we encode the neighboring geometry as spatial context, represented by surface distance and vectors indicating relative position, and the physical relationships with neighboring objects as relation type, represented by learnable embeddings. To inject these conditions in a manner spatially aligned with generation, we build on TRELLIS.2's voxel-based generative backbone (Xiang et al., 2026). These interaction conditions are encoded on the same 3D grid used for generation and injected into the corresponding tokens, providing local guidance for generating each object shape that is spatially compatible with neighboring surfaces.\nTraining Tetris3D requires scenes that capture diverse object interactions with physical relation annotations. However, existing datasets are often restricted to specific environments (Wang et al., 2026; Ansari et al., 2026), or provide limited coverage of diverse physical interactions (Fu et al., 2021). To address these limitations, we introduce ComOb, a large-scale simulation-based scene dataset in which general objects are arranged according to diverse interaction types, such as stacking and containment, and settled into physically stable configurations through physics simulation (Todorov et al., 2012). It provides 1.2M scenes with per-object geometry, physical relation annotations, and occlusions that naturally arise from these arrangements. Finally, we conduct comprehensive experiments on synthetic (Stojanov et al., 2021) and real-world scenes (Ansari et al., 2026; Yu et al., 2026) to evaluate our framework. The results demonstrate that Tetris3D reconstructs plausible scenes that preserve object interactions even when the interacting regions are occluded, achieving superior performance in reconstruction and generation quality, and physical stability.",
+      "pages": [
+        2
+      ],
+      "source_refs": [
+        "#/texts/28",
+        "#/texts/29"
+      ],
+      "indexed_source_refs": [
+        "#/texts/28",
+        "#/texts/29"
+      ],
+      "headings": [
+        "1 INTRODUCTION"
+      ],
+      "source_items": [
+        {
+          "ref": "#/texts/28",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 306.31077439292096,
+                "l": 108.0,
+                "r": 504.00338739999955,
+                "t": 424.45165260000067,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 2,
+              "charspan": [
+                0,
+                1088
+              ]
+            }
+          ]
+        },
+        {
+          "ref": "#/texts/29",
+          "label": "text",
+          "parent_ref": "#/body",
+          "provenance": [
+            {
+              "bbox": {
+                "b": 168.82677439292092,
+                "l": 108.0,
+                "r": 504.00338739999967,
+                "t": 297.9256526000006,
+                "coord_origin": "BOTTOMLEFT"
+              },
+              "page_no": 2,
+              "charspan": [
+                0,
+                1173
+              ]
+            }
+          ]
+        }
+      ],
+      "transformations": [],
+      "origin": "vector_index",
+      "cosine_similarity": null,
+      "rerank_score": -4.21484375
+    }
+  ],
+  "retrieval": {
+    "method": "document-aware hybrid RRF",
+    "mode": "reranked",
+    "requested_top_k": 5,
+    "warnings": [
+      "Question interpretation was unavailable; used the original question and a conservative search plan."
+    ],
+    "intent": "overview",
+    "vector_candidates": 30,
+    "lexical_candidates": 0,
+    "structural_candidates": 5,
+    "document_item_candidates": 0,
+    "fused_candidates": 20,
+    "fusion": "RRF (k=60)",
+    "candidates": [
+      {
+        "chunk_id": "c7cca5c7618d084c-00091",
+        "channels": {
+          "vector": 2
+        },
+        "rrf_score": 0.016129032258064516
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00086",
+        "channels": {
+          "vector": 4
+        },
+        "rrf_score": 0.015625
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00055",
+        "channels": {
+          "vector": 9
+        },
+        "rrf_score": 0.014492753623188406
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00090",
+        "channels": {
+          "vector": 13
+        },
+        "rrf_score": 0.0136986301369863
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00092",
+        "channels": {
+          "vector": 18
+        },
+        "rrf_score": 0.01282051282051282
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00054",
+        "channels": {
+          "vector": 19
+        },
+        "rrf_score": 0.012658227848101266
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00035",
+        "channels": {
+          "vector": 20
+        },
+        "rrf_score": 0.0125
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00067",
+        "channels": {
+          "vector": 21
+        },
+        "rrf_score": 0.012345679012345678
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00095",
+        "channels": {
+          "vector": 22
+        },
+        "rrf_score": 0.012195121951219513
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00096",
+        "channels": {
+          "vector": 24
+        },
+        "rrf_score": 0.011904761904761904
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00056",
+        "channels": {
+          "vector": 25
+        },
+        "rrf_score": 0.011764705882352941
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00060",
+        "channels": {
+          "vector": 26
+        },
+        "rrf_score": 0.011627906976744186
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00089",
+        "channels": {
+          "vector": 27
+        },
+        "rrf_score": 0.011494252873563218
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00071",
+        "channels": {
+          "vector": 29
+        },
+        "rrf_score": 0.011235955056179775
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00094",
+        "channels": {
+          "vector": 30
+        },
+        "rrf_score": 0.011111111111111112
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00001",
+        "channels": {
+          "document_section": 1
+        },
+        "rrf_score": 0.0
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00002",
+        "channels": {
+          "document_section": 1
+        },
+        "rrf_score": 0.0
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00003",
+        "channels": {
+          "document_section": 1
+        },
+        "rrf_score": 0.0
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00038",
+        "channels": {
+          "document_section": 1
+        },
+        "rrf_score": 0.0
+      },
+      {
+        "chunk_id": "c7cca5c7618d084c-00083",
+        "channels": {
+          "document_section": 1
+        },
+        "rrf_score": 0.0
+      }
+    ],
+    "retained_source_count": 0,
+    "reranking": {
+      "model": "nvidia/llama-nemotron-rerank-vl-1b-v2",
+      "status": "applied",
+      "candidate_count": 20,
+      "elapsed_seconds": 1.955,
+      "ranking": [
+        {
+          "chunk_id": "c7cca5c7618d084c-00001",
+          "score": -3.6796875
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00002",
+          "score": -3.767578125
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00038",
+          "score": -3.875
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00083",
+          "score": -4.06640625
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00003",
+          "score": -4.21484375
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00056",
+          "score": -4.2421875
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00055",
+          "score": -4.41015625
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00035",
+          "score": -4.44921875
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00071",
+          "score": -4.58203125
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00060",
+          "score": -4.66015625
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00054",
+          "score": -4.71484375
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00094",
+          "score": -4.8515625
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00067",
+          "score": -4.9375
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00095",
+          "score": -4.953125
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00086",
+          "score": -5.1953125
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00092",
+          "score": -5.5625
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00090",
+          "score": -5.6484375
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00089",
+          "score": -5.90625
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00091",
+          "score": -6.09375
+        },
+        {
+          "chunk_id": "c7cca5c7618d084c-00096",
+          "score": -6.234375
+        }
+      ]
+    },
+    "reranking_status": "applied",
+    "omitted_from_answer": [
+      "c7cca5c7618d084c-00056",
+      "c7cca5c7618d084c-00055",
+      "c7cca5c7618d084c-00035",
+      "c7cca5c7618d084c-00071",
+      "c7cca5c7618d084c-00060",
+      "c7cca5c7618d084c-00054",
+      "c7cca5c7618d084c-00094",
+      "c7cca5c7618d084c-00067",
+      "c7cca5c7618d084c-00095",
+      "c7cca5c7618d084c-00086",
+      "c7cca5c7618d084c-00092",
+      "c7cca5c7618d084c-00090",
+      "c7cca5c7618d084c-00089",
+      "c7cca5c7618d084c-00091",
+      "c7cca5c7618d084c-00096"
+    ],
+    "retrieved_chunks": 20,
+    "supplied_sources": 5
+  }
+}
+
+=== RAG / Raw answer model response ===
+{
+  "attempt": 1,
+  "response_id": "chatcmpl-067e0a67-ad4e-4c39-873f-fcefacb7376f",
+  "elapsed_seconds": 14.977,
+  "finish_reason": "stop",
+  "usage": {
+    "completion_tokens": 884,
+    "prompt_tokens": 2665,
+    "total_tokens": 3549,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 0
+    }
+  },
+  "content": "{\"status\": \"answered\", \"claims\": [{\"text\": \"Tetris3D is a generative framework for single-image 3D scene reconstruction that recovers objects which are physically and geometrically coherent as a scene.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"We propose Tetris3D, a generative framework for single-image 3D scene reconstruction that recovers objects which are physically and geometrically coherent as a scene.\"}]}, {\"text\": \"Existing methods often generate objects independently or couple them implicitly, providing limited guidance for ensuring fine-grained spatial compatibility between neighboring objects that interact with one another.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"Existing methods often generate objects independently or couple them implicitly, providing limited guidance for ensuring fine-grained spatial compatibility between neighboring objects that interact with one another.\"}]}, {\"text\": \"Tetris3D explicitly conditions the generation of each object on the geometry of surrounding objects and their physical relationships, guiding its shape and pose to remain geometrically and physically plausible within the scene.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"To address this, we explicitly condition the generation of each object on the geometry of surrounding objects and their physical relationships, guiding its shape and pose to remain geometrically and physically plausible within the scene.\"}]}, {\"text\": \"The authors introduce ComOb, a physics simulation-based dataset of 1.2M scenes featuring physical interactions across diverse object categories, with per-object meshes and pairwise physical relation annotations.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"Moreover, we introduce ComOb, a physics simulation-based dataset of 1.2M scenes featuring physical interactions across diverse object categories, with per-object meshes and pairwise physical relation annotations.\"}]}, {\"text\": \"Comprehensive experiments on synthetic and real-world scenes show that Tetris3D recovers coherent object shapes and poses even when interacting regions are occluded, and achieves state-of-the-art performance in both generation quality and physical stability.\", \"evidence\": [{\"source_id\": \"S1\", \"quote\": \"Comprehensive experiments on synthetic and realworld scenes show that Tetris3D recovers coherent object shapes and poses even when interacting regions are occluded, and achieves state-of-the-art performance in both generation quality and physical stability.\"}]}, {\"text\": \"The framework generates objects autoregressively, using previously generated neighbors as interaction context, with a VLM inferring a physical dependency hierarchy to derive the generation order.\", \"evidence\": [{\"source_id\": \"S5\", \"quote\": \"Specifically, we reconstruct the scene by generating objects autoregressively, using previously generated neighbors as interaction context. We use a vision-language model (VLM) to infer a physical dependency hierarchy and derive the generation order by topologically sorting this hierarchy.\"}]}, {\"text\": \"Interaction conditions are encoded on the same 3D grid used for generation and injected into corresponding tokens, building on TRELLIS.2's voxel-based generative backbone.\", \"evidence\": [{\"source_id\": \"S5\", \"quote\": \"To inject these conditions in a manner spatially aligned with generation, we build on TRELLIS.2's voxel-based generative backbone (Xiang et al., 2026). These interaction conditions are encoded on the same 3D grid used for generation and injected into the corresponding tokens, providing local guidance for generating each object shape that is spatially compatible with neighboring surfaces.\"}]}, {\"text\": \"Limitations include that physical conditions provide learned guidance rather than hard physical constraints, so they do not guarantee physically valid configurations in every case, and the inference pipeline relies on off-the-shelf models whose errors can propagate through the autoregressive process.\", \"evidence\": [{\"source_id\": \"S4\", \"quote\": \"However, these conditions provide learned guidance rather than hard physical constraints, and therefore do not guarantee physically valid configurations in every case. Our inference pipeline relies on off-the-shelf models for depth and camera estimation, object segmentation, and physical relation reasoning. Although these modules enable reconstruction from a single RGB image, their errors can affect the conditions used for generation.\"}]}], \"missing_information\": \"\"}"
+}
+
+=== RAG / Final answer ===
+{
+  "status": "answered",
+  "claims": [
+    {
+      "text": "Tetris3D is a generative framework for single-image 3D scene reconstruction that recovers objects which are physically and geometrically coherent as a scene.",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "We propose Tetris3D, a generative framework for single-image 3D scene reconstruction that recovers objects which are physically and geometrically coherent as a scene.",
+          "chunk_id": "c7cca5c7618d084c-00001",
+          "pages": [
+            1
+          ],
+          "source_refs": [
+            "#/texts/20",
+            "#/texts/21"
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Existing methods often generate objects independently or couple them implicitly, providing limited guidance for ensuring fine-grained spatial compatibility between neighboring objects that interact with one another.",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "Existing methods often generate objects independently or couple them implicitly, providing limited guidance for ensuring fine-grained spatial compatibility between neighboring objects that interact with one another.",
+          "chunk_id": "c7cca5c7618d084c-00001",
+          "pages": [
+            1
+          ],
+          "source_refs": [
+            "#/texts/20",
+            "#/texts/21"
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Tetris3D explicitly conditions the generation of each object on the geometry of surrounding objects and their physical relationships, guiding its shape and pose to remain geometrically and physically plausible within the scene.",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "To address this, we explicitly condition the generation of each object on the geometry of surrounding objects and their physical relationships, guiding its shape and pose to remain geometrically and physically plausible within the scene.",
+          "chunk_id": "c7cca5c7618d084c-00001",
+          "pages": [
+            1
+          ],
+          "source_refs": [
+            "#/texts/20",
+            "#/texts/21"
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The authors introduce ComOb, a physics simulation-based dataset of 1.2M scenes featuring physical interactions across diverse object categories, with per-object meshes and pairwise physical relation annotations.",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "Moreover, we introduce ComOb, a physics simulation-based dataset of 1.2M scenes featuring physical interactions across diverse object categories, with per-object meshes and pairwise physical relation annotations.",
+          "chunk_id": "c7cca5c7618d084c-00001",
+          "pages": [
+            1
+          ],
+          "source_refs": [
+            "#/texts/20",
+            "#/texts/21"
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Comprehensive experiments on synthetic and real-world scenes show that Tetris3D recovers coherent object shapes and poses even when interacting regions are occluded, and achieves state-of-the-art performance in both generation quality and physical stability.",
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "Comprehensive experiments on synthetic and realworld scenes show that Tetris3D recovers coherent object shapes and poses even when interacting regions are occluded, and achieves state-of-the-art performance in both generation quality and physical stability.",
+          "chunk_id": "c7cca5c7618d084c-00001",
+          "pages": [
+            1
+          ],
+          "source_refs": [
+            "#/texts/20",
+            "#/texts/21"
+          ]
+        }
+      ]
+    },
+    {
+      "text": "The framework generates objects autoregressively, using previously generated neighbors as interaction context, with a VLM inferring a physical dependency hierarchy to derive the generation order.",
+      "evidence": [
+        {
+          "source_id": "S5",
+          "quote": "Specifically, we reconstruct the scene by generating objects autoregressively, using previously generated neighbors as interaction context. We use a vision-language model (VLM) to infer a physical dependency hierarchy and derive the generation order by topologically sorting this hierarchy.",
+          "chunk_id": "c7cca5c7618d084c-00003",
+          "pages": [
+            2
+          ],
+          "source_refs": [
+            "#/texts/28",
+            "#/texts/29"
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Interaction conditions are encoded on the same 3D grid used for generation and injected into corresponding tokens, building on TRELLIS.2's voxel-based generative backbone.",
+      "evidence": [
+        {
+          "source_id": "S5",
+          "quote": "To inject these conditions in a manner spatially aligned with generation, we build on TRELLIS.2's voxel-based generative backbone (Xiang et al., 2026). These interaction conditions are encoded on the same 3D grid used for generation and injected into the corresponding tokens, providing local guidance for generating each object shape that is spatially compatible with neighboring surfaces.",
+          "chunk_id": "c7cca5c7618d084c-00003",
+          "pages": [
+            2
+          ],
+          "source_refs": [
+            "#/texts/28",
+            "#/texts/29"
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Limitations include that physical conditions provide learned guidance rather than hard physical constraints, so they do not guarantee physically valid configurations in every case, and the inference pipeline relies on off-the-shelf models whose errors can propagate through the autoregressive process.",
+      "evidence": [
+        {
+          "source_id": "S4",
+          "quote": "However, these conditions provide learned guidance rather than hard physical constraints, and therefore do not guarantee physically valid configurations in every case. Our inference pipeline relies on off-the-shelf models for depth and camera estimation, object segmentation, and physical relation reasoning. Although these modules enable reconstruction from a single RGB image, their errors can affect the conditions used for generation.",
+          "chunk_id": "c7cca5c7618d084c-00083",
+          "pages": [
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "source_refs": [
+            "#/texts/411",
+            "#/texts/414",
+            "#/texts/426",
+            "#/texts/437",
+            "#/texts/448"
+          ]
+        }
+      ]
+    }
+  ],
+  "missing_information": "",
+  "validation": {
+    "schema_and_quote_checks": "passed",
+    "semantic_entailment_verified": false
+  }
+}

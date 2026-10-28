@@ -11,6 +11,8 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from email.utils import parsedate_to_datetime
+from datetime import datetime, timezone
 import subprocess
 import threading
 from time import monotonic, sleep
@@ -33,7 +35,7 @@ class BudgetExceeded(RuntimeError):
 
 
 class Runtime:
-    def __init__(self, folder, *, max_calls=20, max_tokens=150000, max_seconds=600):
+    def __init__(self, folder, *, max_calls=20, max_tokens=150000, max_seconds=600, min_request_interval=0):
         self.folder = Path(folder)
         self.folder.mkdir(parents=True, exist_ok=True)
         self.model, self.base, self.key = connection()
@@ -51,9 +53,26 @@ class Runtime:
         self.request_locks = {}
         self.extraction_feedback = {}
         self.extraction_history = {}
+        # Native GraphRAG's first-pass completion cache bypasses this provider
+        # on resume. Restore V3 initial-pass feedback/history so continuation
+        # requests retain the exact prompt and can reuse their real API cache.
+        from _contracts import native_messages, source_text
+        for path in sorted((self.folder / 'validated_extractions').glob('*.json')):
+            saved = json.loads(path.read_text(encoding='utf-8'))
+            request_path = self.folder / 'requests' / path.name
+            if saved.get('contract_version') != 3 or not request_path.exists():
+                continue
+            messages = native_messages(json.loads(request_path.read_text(encoding='utf-8'))['messages'])
+            if len(messages) == 1:
+                source = source_text(messages)
+                identity = (source, saved['canonical_tuples'])
+                self.extraction_feedback[identity] = saved['withheld_records']
+                self.extraction_history[identity] = json.dumps(saved['records'])
         self.idle = threading.Condition(self.lock)
         self.active_requests = 0
         self.closing = False
+        self.min_request_interval = min_request_interval
+        self.last_request_started = 0
         from openai import OpenAI
         self.client = OpenAI(base_url=self.base, api_key=self.key, timeout=90, max_retries=0)
         atexit.register(self.close)
@@ -73,7 +92,7 @@ class Runtime:
         with self.lock:
             request_lock = self.request_locks.setdefault(key, threading.Lock())
         with request_lock:
-            for attempt in range(3):
+            for attempt in range(4):
                 try:
                     return self._complete_once(messages, response_format, **kwargs)
                 except BudgetExceeded:
@@ -87,7 +106,7 @@ class Runtime:
                         kwargs = {**kwargs, '_provider_model_override': self.fallback_model,
                                   '_json_object_transport': False}
                         continue
-                    if not failed.get("retryable") or attempt == 2:
+                    if not failed.get("retryable") or attempt == 3:
                         raise
                     if failed.get("status_code") == 500 and failed.get("response_schema"):
                         # Preserve the full client schema check while avoiding
@@ -98,13 +117,27 @@ class Runtime:
                             and self.fallback_model != self.model and failed.get('status_code') != 429):
                         kwargs = {**kwargs, '_provider_model_override': self.fallback_model,
                                   '_json_object_transport': False}
-                    sleep(2 ** (attempt + 1))
+                    delay = max(15 * (2 ** attempt), failed.get('retry_after_seconds') or 0) if failed.get('status_code') == 429 else 2 ** (attempt + 1)
+                    if delay > 60 or monotonic() - self.started + delay >= self.max_seconds:
+                        raise BudgetExceeded('Provider retry wait exceeds the remaining bounded run budget.')
+                    with self.lock:
+                        failed['retry_wait_seconds'] = delay
+                    print(f"GraphRAG provider retry: HTTP {failed.get('status_code')}; waiting {delay:g}s", flush=True)
+                    sleep(delay)
 
     def _complete_once(self, messages, response_format=None, **kwargs):
         from graphrag_llm.types import LLMCompletionResponse
         if isinstance(messages, str):
             messages = [{"role": "user", "content": messages}]
         from _contracts import GraphRecords, source_text, project, SCHEMA_TRANSPORT_MARKER
+        prior_scope = []
+        extraction_v3 = any('SANTIO_GRAPH_JSON_V3' in m.get('content', '') for m in messages
+                            if isinstance(m.get('content'), str))
+        if extraction_v3:
+            from _contracts_v3 import GraphRecords, source_text, project, prior_entities
+            prior_scope = prior_entities(messages, source_text(messages))
+        def project_response(records, source):
+            return project(records, source, previous_entities=prior_scope) if extraction_v3 else project(records, source)
         extraction_source = source_text(messages)
         if extraction_source is not None:
             response_format = GraphRecords
@@ -125,8 +158,22 @@ class Runtime:
                 messages = [dict(m) for m in messages]
                 for message in messages:
                     if message.get("role") == "assistant":
-                        message["content"] = self.extraction_history.get(
-                            (extraction_source, message.get("content", "")), message.get("content", ""))
+                        history_key = (extraction_source, message.get('content', ''))
+                        history = self.extraction_history.get(history_key)
+                        if history is None and extraction_v3:
+                            # A native first-pass cache hit can bypass this
+                            # runtime. Restore only an exact source+tuple match
+                            # from this run's saved raw JSON, never another unit.
+                            for path in (self.folder / 'validated_extractions').glob('*.json'):
+                                saved = json.loads(path.read_text(encoding='utf-8'))
+                                if saved.get('canonical_tuples') != message.get('content'):
+                                    continue
+                                request = json.loads((self.folder / 'requests' / path.name).read_text(encoding='utf-8'))
+                                if source_text(request['messages']) == extraction_source:
+                                    history = json.dumps(saved['records'])
+                                    self.extraction_history[history_key] = history
+                                    break
+                        message['content'] = history or message.get('content', '')
         schema = response_format.model_json_schema() if response_format else None
         report_request = response_format is not None and response_format.__name__ == 'CommunityReportResponse'
         output_cap = 8192 if extraction_source is not None or report_request else 4096
@@ -216,6 +263,12 @@ class Runtime:
                 self.save()
                 self.active_requests += 1
         if not cached:
+            with self.lock:
+                now = monotonic()
+                spacing = max(0, self.last_request_started + self.min_request_interval - now)
+                self.last_request_started = now + spacing
+            if spacing:
+                sleep(spacing)
             start = monotonic()
             try:
                 request_timeout = 180 if response_format and response_format.__name__ == "CommunityReportResponse" else 90
@@ -235,7 +288,7 @@ class Runtime:
                         response_format.model_validate_json(response.choices[0].message.content)
                     if extraction_source is not None:
                         records = GraphRecords.model_validate_json(response.choices[0].message.content)
-                        canonical, audit = project(records, extraction_source)
+                        canonical, audit = project_response(records, extraction_source)
                         write_json(self.folder / "validated_extractions" / (fingerprint + ".json"),
                                    {"request_hash": fingerprint, "records": records.model_dump(),
                                     "canonical_tuples": canonical, **audit})
@@ -243,8 +296,18 @@ class Runtime:
                     row["status"] = "completed"
             except Exception as exc:
                 status = getattr(exc, "status_code", None)
+                retry_after = None
+                header = getattr(getattr(exc, 'response', None), 'headers', {}).get('retry-after')
+                if header:
+                    try:
+                        retry_after = max(0, float(header))
+                    except ValueError:
+                        try:
+                            retry_after = max(0, (parsedate_to_datetime(header) - datetime.now(timezone.utc)).total_seconds())
+                        except (TypeError, ValueError):
+                            pass
                 with self.lock:
-                    row.update(status="failed", status_code=status, error=safe_error(exc, self.key), seconds=round(monotonic() - start, 2),
+                    row.update(status="failed", status_code=status, retry_after_seconds=retry_after, error=safe_error(exc, self.key), seconds=round(monotonic() - start, 2),
                                retryable=status in {408, 429, 500, 502, 503, 504} or type(exc).__name__ in {"APITimeoutError", "APIConnectionError"})
                     self.save()
                 raise RuntimeError(row["error"]) from None
@@ -257,7 +320,7 @@ class Runtime:
             result.formatted_response = response_format.model_validate_json(result.content)
         if extraction_source is not None:
             model_content = result.content
-            canonical, audit = project(GraphRecords.model_validate_json(result.content), extraction_source)
+            canonical, audit = project_response(GraphRecords.model_validate_json(result.content), extraction_source)
             write_json(self.folder / "validated_extractions" / (fingerprint + ".json"),
                        {"request_hash": fingerprint, "records": result.formatted_response.model_dump(),
                         "canonical_tuples": canonical, **audit})

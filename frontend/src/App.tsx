@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode, CSSProperties } from 'react';
 import { Processing, active } from './Processing';
 import type { Transfer } from './Processing';
@@ -9,6 +9,9 @@ import { Cover } from './Cover';
 import { PdfViewer } from './PdfViewer';
 import { json, paperUrl, pageOf, supportingRefs, unitTitle } from './types';
 import type { Paper, DocumentData, Job, Unit, Result } from './types';
+import './GraphPanel.css';
+
+const GraphPanel = lazy(() => import('./GraphPanel'));
 
 const categories = ['Results', 'Tables', 'Figures', 'Equations', 'Text'] as const;
 type Category = typeof categories[number];
@@ -101,7 +104,7 @@ export default function App() {
   useEffect(() => {
     if (!route.paper) return;
     const query = new URLSearchParams({paper: route.paper, page: String(route.page)});
-    if (route.task === 'ask') query.set('task','ask');
+    if (route.task === 'ask' || route.task === 'graph') query.set('task', route.task);
     if (route.result) query.set('result', route.result);
     if (route.unit && !route.result) query.set('unit', route.unit);
     history.replaceState({}, '', '?' + query);
@@ -176,9 +179,11 @@ function Workspace({data, page, setPage, unitId, resultId, select, back, exports
   const initialUnit = data.units[unitId];
   const unitCategory = (unit: Unit): Category => unit.label === 'formula' ? 'Equations' : unit.kind === 'picture' ? 'Figures' : unit.kind.startsWith('table') ? 'Tables' : 'Text';
   const [category, setCategory] = useState<Category>(resultId ? 'Results' : initialUnit ? unitCategory(initialUnit) : data.records.length ? 'Results' : data.counts.table ? 'Tables' : data.counts.picture ? 'Figures' : 'Text');
-  const [task, setTask] = useState<'inspect'|'review'|'compare'|'ask'>(initialTask === 'ask' ? 'ask' : 'inspect');
+  const [task, setTask] = useState<'inspect'|'review'|'compare'|'ask'|'graph'>(initialTask === 'ask' || initialTask === 'graph' ? initialTask : 'inspect');
+  const graphTab = useRef<HTMLButtonElement>(null);
+  useEffect(() => {if (task === 'graph') graphTab.current?.scrollIntoView({block:'nearest',inline:'nearest'});}, [task]);
   const [tab, setTab] = useState(initialTask === 'ask' ? 'evidence' : 'source'), [query, setQuery] = useState('');
-  useEffect(() => {if (['inspect','review','compare','ask'].includes(initialTask)) setTask(initialTask as typeof task);}, [initialTask]);
+  useEffect(() => {if (['inspect','review','compare','ask','graph'].includes(initialTask)) setTask(initialTask as typeof task);}, [initialTask]);
   const [crop, setCrop] = useState<string | null>(null);
   const [panelWidth, setPanelWidth] = useState(400);
   const units = useMemo(() => Object.values(data.units), [data]);
@@ -202,12 +207,12 @@ function Workspace({data, page, setPage, unitId, resultId, select, back, exports
     <header className="document-header"><button className="icon-button" aria-label="Back to library" onClick={back}><Icon name="back"/></button>
       <div className="document-title"><div className="eyebrow">{data.paper.paper_id}</div><h1>{data.paper.title}</h1></div>
       <button className="secondary export-button" aria-label="Export" disabled={!data.exports.length} onClick={exports}><Icon name="export" size={17}/><span>Export</span></button></header>
-    <div className="workspace-taskbar"><div className="task-tabs">{[['inspect','Explore','source'],['ask','Ask','search'],['review','Review','review'],['compare','Compare','compare']].map(([value,label,icon]) => <button key={value} className={task === value ? 'active' : ''} onClick={() => {
-      setTask(value as typeof task); onTask(value); if (value === 'ask') setTab('evidence'); if (value !== 'inspect') setCategory('Results'); setQuery('');
+    <div className="workspace-taskbar"><div className="task-tabs graph-feature-tabs">{[['inspect','Explore','source'],['ask','Ask','search'],['review','Review','review'],['compare','Compare','compare'],['graph','Graph','graph']].map(([value,label,icon]) => <button key={value} ref={value === 'graph' ? graphTab : undefined} className={task === value ? 'active' : ''} onClick={() => {
+      setTask(value as typeof task); onTask(value); if (value === 'ask') setTab('evidence'); if (value !== 'inspect' && value !== 'graph') setCategory('Results'); setQuery('');
       if (value === 'review') {const first = data.records.find(record => allChecks.some(check => check.result_id === record.result_id)); if (first) chooseRecord(first); else select('', '', page); setTab('evidence');}
     }}><Icon name={icon} size={16}/>{label}{value === 'review' && allChecks.length > 0 && <span>{allChecks.length}</span>}</button>)}</div>
-      <span className="task-note">{task === 'ask' ? 'Answers with supporting passages' : task === 'review' ? 'Read-only findings · saved reviews pending' : task === 'compare' ? 'Provisional results · compatibility not assessed' : data.document ? 'Docling detections + source provenance' : 'Source only · no extracted evidence'}</span></div>
-    {task === 'compare' ? <div className="comparison">
+      <span className="task-note">{task === 'graph' ? 'Source-linked connections · experimental' : task === 'ask' ? 'Answers with supporting passages' : task === 'review' ? 'Read-only findings · saved reviews pending' : task === 'compare' ? 'Provisional results · compatibility not assessed' : data.document ? 'Docling detections + source provenance' : 'Source only · no extracted evidence'}</span></div>
+    {task === 'graph' ? <Suspense fallback={<div className="loading-screen" role="status">Opening graph…</div>}><GraphPanel key={data.paper.paper_id} id={data.paper.paper_id}/></Suspense> : task === 'compare' ? <div className="comparison">
       <div className="eyebrow">REPORTED RESULTS</div><h2>Context before conclusions.</h2><p className="muted">These are existing curated annotations, not an automatically generated or validated leaderboard. Open a value to inspect its source and conditions.</p>
       <div className="table-scroll"><table><thead><tr><th>Method</th><th>Dataset</th><th>Metric</th><th>Extracted value</th><th>Review</th><th>Conditions</th></tr></thead><tbody>{data.records.map(record => <tr key={record.result_id}><td>{record.method.reported}</td><td>{record.benchmark.dataset.reported}</td><td>{record.metric.name.reported}</td><td><button onClick={() => {setTask('inspect'); chooseRecord(record);}}>{resultLabel(record)} ↗</button></td><td><Badge warning={record.review.status === 'needs_review'}>{friendly(record.review.status)}</Badge></td><td>{record.conditions.map(c => c.value).join('; ') || 'Not specified'}</td></tr>)}</tbody></table></div>
       {!data.records.length && <div className="empty">No result annotations for this document. Its detected regions are available in Explore.</div>}

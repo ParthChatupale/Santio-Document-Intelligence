@@ -1,6 +1,7 @@
 """Persistent question jobs over server-selected paper indexes."""
 from datetime import datetime, timezone
 import json
+import os
 import subprocess
 import sys
 from threading import RLock
@@ -18,7 +19,7 @@ class Questions:
         for path in self.directory.glob("*.job.json"):
             job = json.loads(path.read_text(encoding="utf-8"))
             if job["status"] in ACTIVE:
-                job.update(status="failed", stage="Interrupted", error="The service stopped. Ask this question again.")
+                job.update(status="failed", stage="Interrupted", retry=None, error="The service stopped. Ask this question again.")
                 atomic_json(path, job)
             self.jobs[job["question_id"]] = job
 
@@ -57,7 +58,7 @@ class Questions:
             question_id = new_upload_id()
             job = {"question_id": question_id, "paper_id": paper_id, "question": question.strip(),
                    "context_question_id": context_question_id,
-                   "status": "queued", "stage": "Waiting for worker", "error": None, "result": None,
+                   "status": "queued", "stage": "Waiting for worker", "retry": None, "error": None, "result": None,
                    "created_at": datetime.now(timezone.utc).isoformat()}
             spec = {"pdf": str(loaded.pdf.relative_to(self.workspace.root)),
                     "document": str(loaded.docling.relative_to(self.workspace.root)),
@@ -82,14 +83,18 @@ class Questions:
             future, process = self.futures.get(question_id), self.processes.get(question_id)
             if future:
                 future.cancel()
-            self.update(question_id, status="cancelling" if process else "cancelled", stage="Cancelling")
+            self.update(question_id, status="cancelling" if process else "cancelled", stage="Cancelling", retry=None)
         if process:
             terminate_owned_process(process)
-        return self.update(question_id, status="cancelled", stage="Cancelled")
+        return self.update(question_id, status="cancelled", stage="Cancelled", retry=None)
 
     def run(self, question_id):
         process = None
         try:
+            from pbl_docintel.vector_rag.terminal import TerminalTrace, trace_enabled
+            terminal = TerminalTrace([self.workspace.root / ".env", self.workspace.root / "playground/vector-rag/.env",
+                                      os.getenv("SANTIO_DB_ENV_FILE")])
+            prefix = f"[RAG {question_id[:8]}] "
             with self.lock:
                 if self.jobs[question_id]["status"] != "queued":
                     return
@@ -102,20 +107,26 @@ class Questions:
             error = None
             with (self.directory / f"{question_id}.log").open("w", encoding="utf-8") as log:
                 for line in process.stdout:
+                    line = terminal.redact_text(line)
                     log.write(line); log.flush()
                     if line.startswith("SANTIO_EVENT:"):
                         event = json.loads(line.split(":", 1)[1])
+                        if trace_enabled():
+                            terminal.write_line(event.get("stage") or event.get("error") or event.get("kind", "event"), prefix)
                         with self.lock:
                             if self.jobs[question_id]["status"] in {"cancelled", "cancelling"}:
                                 continue
                             if event.get("kind") == "error":
                                 error = event["error"]
                             elif event.get("stage"):
-                                self.update(question_id, stage=event["stage"])
+                                self.update(question_id, stage=event["stage"],
+                                            **({"retry": event["retry"]} if "retry" in event else {}))
+                    elif trace_enabled():
+                        terminal.write_line(line, prefix)
             code = process.wait()
             with self.lock:
                 if self.jobs[question_id]["status"] in {"cancelled", "cancelling"}:
-                    self.update(question_id, status="cancelled", stage="Cancelled")
+                    self.update(question_id, status="cancelled", stage="Cancelled", retry=None)
                     return
                 if code:
                     raise ValueError(error or "The answer worker failed. Check model and database settings, then retry.")
@@ -125,11 +136,11 @@ class Questions:
                 result = {"answer": report["answer"], "retrieval_info": {k: report["retrieval"].get(k) for k in ["method","intent","reranking_status","warnings","recovery"]}, "sources": [{k: s[k] for k in
                           ["source_id", "chunk_id", "text", "pages", "source_refs", "headings", "transformations"]}
                           for s in report["sources"]], "elapsed_seconds": report["total_seconds"]}
-                self.update(question_id, status="completed", stage="Answer ready", result=result)
+                self.update(question_id, status="completed", stage="Answer ready", retry=None, result=result)
         except Exception as exc:
             with self.lock:
                 if self.jobs[question_id]["status"] not in {"cancelled", "cancelling"}:
-                    self.update(question_id, status="failed", stage="Answer failed",
+                    self.update(question_id, status="failed", stage="Answer failed", retry=None,
                                 error=str(exc) if isinstance(exc, ValueError) else "The answer worker failed. Try again.")
         finally:
             with self.lock:

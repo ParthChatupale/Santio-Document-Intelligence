@@ -95,6 +95,106 @@ class PaperQuestionTests(unittest.TestCase):
     setUp = gui_fixtures.WorkspaceTests.setUp
     save_manifest = gui_fixtures.WorkspaceTests.save_manifest
 
+    def test_waiting_worker_remains_active_and_cancel_terminates_it(self):
+        import subprocess
+        import sys
+        from threading import Event, Thread
+        from datetime import datetime, timezone, timedelta
+        workspace=self.client.app.state.workspace
+        workspace.set_rag_status('fixture:v1',status='ready',index_id='server-selected',
+            document_sha256=hashlib.sha256(self.docling.read_bytes()).hexdigest(),
+            source_sha256=hashlib.sha256(self.pdf.read_bytes()).hexdigest())
+        manager=self.client.app.state.questions
+        with patch.object(manager,'run'):
+            job=manager.create('fixture:v1','Explain this paper')
+        qid=job['question_id']
+        waiting=Event()
+        original_update=manager.update
+        def update(*args,**fields):
+            value=original_update(*args,**fields)
+            if fields.get('retry'):waiting.set()
+            return value
+        retry={'stage':'answer generation','reason':'rate_limit','retry_number':1,'maximum_retries':2,
+               'retry_at':(datetime.now(timezone.utc)+timedelta(seconds=30)).isoformat()}
+        event='SANTIO_EVENT:'+json.dumps({'stage':'Waiting to retry','retry':retry})
+        child_code='import time; print('+repr(event)+',flush=True); time.sleep(30)'
+        popen=subprocess.Popen
+        def spawn(*args,**kwargs):
+            if 'pbl_docintel.gui.rag_worker' in args[0]:
+                return popen([sys.executable,'-u','-c',child_code],**kwargs)
+            return popen(*args,**kwargs)
+        thread=Thread(target=manager.run,args=(qid,))
+        with patch('pbl_docintel.gui.questions.subprocess.Popen',side_effect=spawn), \
+             patch.object(manager,'update',side_effect=update), patch.dict('os.environ',{'SANTIO_RAG_TRACE':'0'}):
+            thread.start()
+            try:
+                self.assertTrue(waiting.wait(5),'Worker did not report waiting')
+                current=self.client.get('/api/questions/'+qid).json()
+                self.assertEqual(current['status'],'processing')
+                self.assertEqual(current['retry'],retry)
+                process=manager.processes[qid]
+                # Use the real process terminator; no model or database request.
+                cancelled=self.client.post('/api/questions/'+qid+'/cancel').json()
+                self.assertEqual(cancelled['status'],'cancelled')
+                self.assertIsNone(cancelled['retry'])
+                thread.join(5)
+                self.assertFalse(thread.is_alive())
+                self.assertIsNotNone(process.poll())
+                self.assertNotIn(qid,manager.processes)
+            finally:
+                manager.cancel(qid)
+                thread.join(5)
+
+    def test_question_worker_publishes_retry_deadline_and_clears_it_when_resuming(self):
+        spec={'pdf':'sample.pdf','document':'document.json','index_id':'selected','trace':'question.trace.json',
+              'source_sha256':hashlib.sha256(self.pdf.read_bytes()).hexdigest(),
+              'document_sha256':hashlib.sha256(self.docling.read_bytes()).hexdigest(),'question':'Explain'}
+        retry={'stage':'answer generation','reason':'rate_limit','retry_number':1,'maximum_retries':2,
+               'retry_at':'2026-10-23T12:00:00+00:00'}
+        def answer(*args,**kwargs):
+            kwargs['on_trace']('Provider retry waiting',retry)
+            kwargs['on_trace']('Provider retry resumed',{'stage':'answer generation'})
+            return {'answer':{'status':'answered'}}
+        with patch('pbl_docintel.vector_rag.vector_index.connect_database') as connect, \
+             patch('pbl_docintel.vector_rag.rag.answer_question',side_effect=answer), \
+             patch('pbl_docintel.gui.rag_worker.emit') as emit, patch.dict('os.environ',{'SANTIO_RAG_TRACE':'0'}):
+            connect.return_value.__enter__.return_value.execute.return_value.fetchone.return_value=(
+                {'identity':{'source_sha256':spec['document_sha256']}},)
+            run_question(self.root,spec)
+        published=[c.kwargs for c in emit.call_args_list if 'retry' in c.kwargs]
+        self.assertEqual(published,[{'stage':'Waiting to retry','retry':retry},
+                                    {'stage':'Retrying answer generation','retry':None}])
+
+    def test_worker_model_output_is_teed_to_backend_terminal_and_retained_log(self):
+        import io
+        from contextlib import redirect_stderr
+        workspace = self.client.app.state.workspace
+        workspace.set_rag_status('fixture:v1',status='ready',index_id='server-selected',
+            document_sha256=hashlib.sha256(self.docling.read_bytes()).hexdigest(),
+            source_sha256=hashlib.sha256(self.pdf.read_bytes()).hexdigest())
+        manager = self.client.app.state.questions
+        with patch.object(manager,'run'):
+            job = manager.create('fixture:v1','Explain this paper')
+        qid = job['question_id']
+        report = {'answer':{'status':'answered','claims':[]}, 'retrieval':{}, 'sources':[], 'total_seconds':1}
+        (self.root/f'data/question-jobs/{qid}.trace.json').write_text(json.dumps(report),encoding='utf-8')
+        process = MagicMock()
+        process.stdout = io.StringIO('SANTIO_EVENT:{"stage":"Writing answer"}\n'
+                                    '=== RAG / Raw answer model response ===\n'
+                                    '{"content":"model said hello", "secret":"test-nv-key"}\n')
+        process.wait.return_value = process.poll.return_value = 0
+        output = io.StringIO()
+        with patch('pbl_docintel.gui.questions.subprocess.Popen',return_value=process), \
+             patch.dict('os.environ',{'SANTIO_RAG_TRACE':'1','NVIDIA_API_KEY':'test-nv-key'}), redirect_stderr(output):
+            manager.run(qid)
+        self.assertEqual(manager.get(qid)['status'],'completed')
+        self.assertIn(f'[RAG {qid[:8]}] Writing answer',output.getvalue())
+        self.assertIn('Raw answer model response',output.getvalue())
+        self.assertIn('model said hello',output.getvalue())
+        saved=(self.root/f'data/question-jobs/{qid}.log').read_text(encoding='utf-8')
+        self.assertIn('model said hello',saved)
+        self.assertNotIn('test-nv-key',output.getvalue()+saved)
+
     def test_preparation_deduplicates_and_no_arbitrary_index_is_accepted(self):
         with patch.object(Imports,'run'):
             a = self.client.post('/api/papers/fixture:v1/prepare')

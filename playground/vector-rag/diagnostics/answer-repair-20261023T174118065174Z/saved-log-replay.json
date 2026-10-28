@@ -1,0 +1,300 @@
+[
+  {
+    "original_trace": "C:\\Santio\\data\\question-jobs\\3a3c6bc1b2dd4c0597e8ca1191a1e797.trace.json",
+    "retrieval_rounds": 1,
+    "original_answer_calls": 2,
+    "all_detected_issues": [
+      {
+        "attempt": 1,
+        "issues": [
+          {
+            "kind": "schema",
+            "path": "status",
+            "message": "Field required"
+          },
+          {
+            "claim_index": 4,
+            "path": "claims.4.evidence.0",
+            "source_id": "S3",
+            "kind": "quote_mismatch",
+            "message": "Quote not found in supplied source S3.",
+            "hint": "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+          }
+        ]
+      },
+      {
+        "attempt": 2,
+        "issues": [
+          {
+            "claim_index": 4,
+            "path": "claims.4.evidence.0",
+            "source_id": "S3",
+            "kind": "quote_mismatch",
+            "message": "Quote not found in supplied source S3.",
+            "hint": "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+          }
+        ]
+      }
+    ],
+    "new_partial_result": {
+      "status": "partial",
+      "claims": [
+        {
+          "text": "Ledger is a persistent 3D object memory built from egocentric videos that retains object locations, movement histories, and contextual descriptions, including for objects the person never touches.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "We present Ledger, a persistent 3D object memory that combines object locations, their histories, and contextual descriptions. It associates observations across the recording and retains objects after they leave the view, including those the person never touches.",
+              "chunk_id": "4ee3baf449f66b36-00001",
+              "pages": [
+                2
+              ],
+              "source_refs": [
+                "#/texts/70"
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ledger clusters each object's observations by resting locations and records a move only after repeated evidence, reducing localization noise, and saves short descriptions such as an object's contents or supporting surface for later spatial questions without accessing original images or video.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "It clusters each object's observations by resting locations and records a move only after repeated evidence, reducing the effect of localization noise. Short descriptions preserve details such as an object's contents or supporting surface. It saves these records to later answer spatial questions without having to access the original images or video.",
+              "chunk_id": "4ee3baf449f66b36-00001",
+              "pages": [
+                2
+              ],
+              "source_refs": [
+                "#/texts/70"
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ledger raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5%, and localizes Ego4D objects with a 0.99m median error on returned predictions.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "Our memory raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5% and localizes Ego4D objects with a 0.99m median error on returned predictions.",
+              "chunk_id": "4ee3baf449f66b36-00001",
+              "pages": [
+                2
+              ],
+              "source_refs": [
+                "#/texts/70"
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ablations identify complementary roles for temporal persistence, contextual descriptions, and retrieval, while a study of 100 stitched streams exposes failures in retrieval and construction that per-scene construction partially repairs.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "Our analyses identify complementary roles for temporal persistence, contextual descriptions, and retrieval. Our study on 100 stitched streams of multiple scenes each further exposes failures in both retrieval and construction. Per-scene construction partially recovers the performance lost across scene changes compared to that of single scene streams.",
+              "chunk_id": "4ee3baf449f66b36-00001",
+              "pages": [
+                2
+              ],
+              "source_refs": [
+                "#/texts/70"
+              ]
+            }
+          ]
+        }
+      ],
+      "missing_information": "Withheld 1 generated statement(s) because their source quotations could not be verified. This does not mean the paper lacks that information.",
+      "validation": {
+        "schema_and_quote_checks": "passed",
+        "semantic_entailment_verified": false,
+        "scope": "retained_claims",
+        "original_claim_count": 5,
+        "retained_claim_count": 4,
+        "withheld_claims": [
+          {
+            "claim_index": 4,
+            "issues": [
+              {
+                "claim_index": 4,
+                "path": "claims.4.evidence.0",
+                "source_id": "S3",
+                "kind": "quote_mismatch",
+                "message": "Quote not found in supplied source S3.",
+                "hint": "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "replay_only": true
+  },
+  {
+    "original_trace": "C:\\Santio\\data\\question-jobs\\42b3c5bf022a4bf7881a63fa67666b5e.trace.json",
+    "retrieval_rounds": 1,
+    "original_answer_calls": 2,
+    "all_detected_issues": [
+      {
+        "attempt": 1,
+        "issues": [
+          {
+            "kind": "schema",
+            "path": "status",
+            "message": "Field required"
+          },
+          {
+            "claim_index": 5,
+            "path": "claims.5.evidence.0",
+            "source_id": "S3",
+            "kind": "quote_mismatch",
+            "message": "Quote not found in supplied source S3.",
+            "hint": "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+          }
+        ]
+      },
+      {
+        "attempt": 2,
+        "issues": [
+          {
+            "claim_index": 5,
+            "path": "claims.5.evidence.0",
+            "source_id": "S3",
+            "kind": "quote_mismatch",
+            "message": "Quote not found in supplied source S3.",
+            "hint": "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+          }
+        ]
+      }
+    ],
+    "new_partial_result": {
+      "status": "partial",
+      "claims": [
+        {
+          "text": "Ledger is a persistent 3D object memory built offline from egocentric videos that retains object locations, movement histories, and contextual descriptions, including for objects the person never touches.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "We present Ledger, a persistent 3D object memory that combines object locations, their histories, and contextual descriptions. It associates observations across the recording and retains objects after they leave the view, including those the person never touches.",
+              "chunk_id": "4ee3baf449f66b36-00001",
+              "pages": [
+                2
+              ],
+              "source_refs": [
+                "#/texts/70"
+              ]
+            },
+            {
+              "source_id": "S5",
+              "quote": "A reusable 3D memory of past observations. We introduce Ledger, a persistent object memory built offline from egocentric videos with supplied or estimated poses, retaining locations, movement histories, and contextual descriptions, even for untouched objects.",
+              "chunk_id": "4ee3baf449f66b36-00010",
+              "pages": [
+                4
+              ],
+              "source_refs": [
+                "#/texts/87",
+                "#/texts/88",
+                "#/texts/89",
+                "#/texts/90"
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ledger clusters each object's observations by resting locations and records a move only after repeated evidence, reducing localization noise, and saves short descriptions such as an object's contents or supporting surface for later spatial questions without accessing original images or video.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "It clusters each object's observations by resting locations and records a move only after repeated evidence, reducing the effect of localization noise. Short descriptions preserve details such as an object's contents or supporting surface. It saves these records to later answer spatial questions without having to access the original images or video.",
+              "chunk_id": "4ee3baf449f66b36-00001",
+              "pages": [
+                2
+              ],
+              "source_refs": [
+                "#/texts/70"
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ledger raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5%, and localizes Ego4D objects with a 0.99m median error on returned predictions.",
+          "evidence": [
+            {
+              "source_id": "S1",
+              "quote": "Our memory raises HD-EPIC accuracy from 29.7% to 42.6%, UCS-Bench accuracy from 33.8% to 38.5% and localizes Ego4D objects with a 0.99m median error on returned predictions.",
+              "chunk_id": "4ee3baf449f66b36-00001",
+              "pages": [
+                2
+              ],
+              "source_refs": [
+                "#/texts/70"
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ablations isolate temporal persistence, contextual descriptions, and geometry, while shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.",
+          "evidence": [
+            {
+              "source_id": "S5",
+              "quote": "Ablations isolate temporal persistence, contextual descriptions, and geometry, and shared readers reveal how retrieval shapes a representation's apparent advantage; costlier iterative search does not improve every task.",
+              "chunk_id": "4ee3baf449f66b36-00010",
+              "pages": [
+                4
+              ],
+              "source_refs": [
+                "#/texts/87",
+                "#/texts/88",
+                "#/texts/89",
+                "#/texts/90"
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Memory retains its gains up to 75 minutes across recording lengths, while scene changes expose failures in construction and retrieval that per-scene construction partially repairs.",
+          "evidence": [
+            {
+              "source_id": "S5",
+              "quote": "Across recording lengths and 100 paired stitched streams, memory retains its gains up to 75 minutes, while scene changes expose failures in construction and retrieval that building memory per scene partially repairs.",
+              "chunk_id": "4ee3baf449f66b36-00010",
+              "pages": [
+                4
+              ],
+              "source_refs": [
+                "#/texts/87",
+                "#/texts/88",
+                "#/texts/89",
+                "#/texts/90"
+              ]
+            }
+          ]
+        }
+      ],
+      "missing_information": "Withheld 1 generated statement(s) because their source quotations could not be verified. This does not mean the paper lacks that information.",
+      "validation": {
+        "schema_and_quote_checks": "passed",
+        "semantic_entailment_verified": false,
+        "scope": "retained_claims",
+        "original_claim_count": 6,
+        "retained_claim_count": 5,
+        "withheld_claims": [
+          {
+            "claim_index": 5,
+            "issues": [
+              {
+                "claim_index": 5,
+                "path": "claims.5.evidence.0",
+                "source_id": "S3",
+                "kind": "quote_mismatch",
+                "message": "Quote not found in supplied source S3.",
+                "hint": "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "replay_only": true
+  }
+]

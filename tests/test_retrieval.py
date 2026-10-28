@@ -66,7 +66,7 @@ class RetrievalTests(unittest.TestCase):
     def test_planner_success_history_is_data_and_failure_is_visible(self):
         response = SimpleNamespace(id="test", choices=[SimpleNamespace(finish_reason="stop",message=SimpleNamespace(
             content=json.dumps({"intent":"overview","search_queries":["Selected paper overview"],"keywords":[]})))])
-        with patch("openai.OpenAI") as client:
+        with patch("openai.OpenAI") as client, patch("pbl_docintel.vector_rag.provider_retry.time.sleep"):
             create = client.return_value.__enter__.return_value.chat.completions.create
             create.return_value = response
             plan, trace = r.plan_query("Give me the gist",{"title":"Selected"},SETTINGS,[{"question":"earlier"}])
@@ -181,7 +181,7 @@ class RetrievalTests(unittest.TestCase):
         sources = [source("a"),source("b")]
         response = MagicMock(is_success=True)
         response.json.return_value = {"rankings":[{"index":1,"logit":2},{"index":0,"logit":-1}]}
-        with patch("httpx.post",return_value=response) as post, patch.dict("os.environ",{"SANTIO_RERANK_ENABLED":"true"}):
+        with patch("httpx.post",return_value=response) as post, patch.dict("os.environ",{"SANTIO_RERANK_ENABLED":"true"}), patch("pbl_docintel.vector_rag.provider_retry.time.sleep"):
             ranked,trace = r.rerank_sources("q",sources,SETTINGS)
             self.assertEqual([s["chunk_id"] for s in ranked],["b","a"])
             self.assertEqual(trace["status"],"applied")

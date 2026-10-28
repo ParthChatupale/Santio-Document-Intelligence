@@ -164,6 +164,33 @@ All modes use the same index, embedding model, answer model and quote checks.
 Full traces record the plan, fallback state, candidate ranks, selected source
 identifiers and timings under `data/question-jobs/<id>.trace.json` in the GUI.
 
+### Watch questions in the terminal
+
+Question diagnostics are printed in the same terminal that runs `npm run dev`
+(or the Python backend directly). Restart that session after updating the code.
+Worker output was previously saved only to a per-question log; it is now also
+forwarded to the backend terminal with a `[RAG <question-id>]` prefix.
+
+The output includes the selected document/index and model, actual planner/answer
+prompts, raw model replies, token usage and finish reasons, candidate rankings,
+selected source passages and page references, API failures, validation failures,
+JSON repairs, retrieval recovery and the final accepted answer. Rejected replies
+remain visible so an empty UI result does not hide what the model returned.
+API keys, configured passwords and authentication headers are redacted/omitted.
+Raw replies are model outputs, not verified claims. Logs show submitted prompts
+and returned content, not private model reasoning.
+
+The same diagnostics apply to the RAG CLI. To silence detailed terminal tracing:
+
+```powershell
+$env:SANTIO_RAG_TRACE = "0"
+npm run dev
+```
+
+Use `"1"` to enable it again (the default). Full JSON traces and per-question
+`.log` files under `data/question-jobs/` remain available with terminal tracing
+disabled. Detailed logging does not make additional API requests.
+
 ### One evidence-recovery attempt
 
 The main hybrid/reranked question path now makes at most one additional search
@@ -195,6 +222,72 @@ Use `--no-retrieval-recovery` to disable it in the CLI. Explicit
 `--retrieval-mode vector` remains a single-pass comparison baseline automatically.
 The recovery tests cover empty/unchanged evidence, a second miss, endpoint/planner
 failures, retained source identity, unknown citations and the one-retry limit.
+
+### Temporary provider failures and waiting
+
+Question planning, relevance ranking, answer generation/repair, and recovery
+planning each allow at most **two additional transport attempts** for HTTP 408,
+429, 500, 502, 503, 504, connection failures, and timeouts. A single retry controller
+shares **60 seconds of total retry waiting per question**, including any answer
+repair or retrieval-recovery round. This is a waiting budget, not an overall
+question deadline: conversion, model loading and request execution take separate
+time. SDK automatic retries remain disabled to avoid hidden nested attempts.
+
+`Retry-After` seconds or HTTP-date is respected. Without it, waits are 4 and 8
+seconds plus up to one second of jitter. A requested delay exceeding the remaining
+budget is not shortened: that stage stops or uses its existing degraded fallback.
+Credential/access errors, missing endpoints, bad requests and malformed model
+content do not trigger transport retries. Planning still has its conservative
+local fallback; unavailable reranking still preserves fused search order. Answer
+generation reports a specific final error when retries cannot complete. There is
+no automatic local LLM fallback in this change.
+
+While waiting, the question remains active and its persisted `retry` metadata
+includes the affected stage, reason, retry count and UTC retry deadline. The Ask
+panel renders a live countdown and keeps Cancel available. Cancellation terminates
+the owned worker, clears the countdown and prevents it from making another attempt.
+Restarting the backend marks an interrupted job as failed rather than silently
+continuing it. Retry only repeats the failed provider request with the same input;
+an answer-generation rate limit does not re-extract, re-embed or retrieve again.
+
+Terminal traces distinguish provider attempts, answer schema/citation repair,
+and retrieval recovery. The saved report's `provider_retries` records safe event
+metadata and waiting totals; `attempts` continues to identify generation/repair
+rounds. Existing citation checks apply after a successful retry.
+
+### Answer repair and partial output
+
+An answer repair reuses the same retrieved passages; it is not another retrieval
+round. JSON-object transport alone does not enforce our required response fields.
+The client checks the complete schema and every parsable citation before asking
+for its single repair. A missing `status` therefore no longer hides quotation
+errors until that repair is exhausted. Feedback identifies all detected paths
+and asks for separated verbatim quotations when the model joins sentences with
+ellipses. Retrieval rounds and generation/repair attempts are labeled separately
+in terminal output.
+
+If the repaired response has a valid schema but only some claims pass citation
+checks, the server withholds each entire invalid claim and returns a **partial**
+answer containing only the remaining claims. It explicitly says how many generated
+statements were withheld. This does not assert that the paper lacks those facts.
+Original raw replies, rejected claims and reasons remain in the trace. Matching
+quotes are still not independent semantic verification. No partial output is
+promoted when root fields/state are invalid or no claim has usable citations,
+except for the explicit missing-status normalization described below.
+
+After the single repair, a still-absent `status` can be restored only when the
+otherwise valid `claims` and `missing_information` unambiguously determine it
+under the existing state contract. This restores result metadata, not facts or
+quotations; it never overwrites an explicit status or fills other missing fields.
+The restored object must still pass citation checks, and the raw reply plus the
+normalization are recorded. Remaining invalid claims may only yield a labeled
+partial answer. Malformed or entirely uncitable answers still fail.
+
+Generation/validation errors are labeled `not_attempted_answer_validation_failed`
+(or the corresponding API/incomplete-response reason) in retrieval recovery,
+rather than misleadingly saying `not_needed`. Finding more passages is reserved
+for insufficient-evidence results; it does not fix a model miscopying passages
+already supplied. No quote matching or numeric checking has been relaxed.
 
 An October 17 diagnostic froze AI-selected source references before testing 11
 questions across the two prepared papers. At five passages, vector-only search

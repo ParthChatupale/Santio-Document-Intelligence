@@ -1,0 +1,1349 @@
+{
+  "scope": "Every current isolate reviewed against its saved Docling-backed source records. Categories explain issues; they do not approve repaired graph edges.",
+  "category_counts": {
+    "incorrect_predicate": 6,
+    "quotation_alignment": 3,
+    "citation_as_scientific_entity": 24,
+    "cross_pass_scope": 6,
+    "scope_and_subject_ownership": 7,
+    "overbroad_metric_rule": 4,
+    "alias_or_representation_fragment": 7,
+    "misclassified_training_example_type": 3,
+    "missing_endpoint_declarations": 6,
+    "legitimate_isolated_affiliation": 1,
+    "last_from_clause_rule": 1,
+    "misclassified_relation": 1,
+    "document_marker_as_entity": 2
+  },
+  "nodes": [
+    {
+      "entity_id": "bc8e9f3b-0be0-4127-8690-a52cea981aab",
+      "name": "3D GENERATION",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "incorrect_predicate",
+      "assessment": "Candidate uses training/evaluation or model-dependency vocabulary for a field, task or application. Rejection protects against the wrong predicate; source-supported re-extraction needs an appropriate relation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:26:part:0",
+          "pages": [
+            2
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 1 INTRODUCTION\n\nDespite recent progress in 3D generation (Zhang et al., 2023; Li et al., 2025; Zhang et al., 2024; Xiang et al., 2026; 2025), recovering such inter-object spatial compatibility remains an open problem. Existing methods reconstruct scenes either by assembling individually generated objects (Chen et al., 2026b; Zhou et al., 2026; Li et al., 2026a; Siddiqui et al., 2026) or by jointly generating multiple objects or their poses through implicit feature aggregation (Huang et al., 2025; Meng et al., 2026; Shi et al., 2026). These approaches provide limited explicit guidance for the local spatial compatibility required to recover the depicted interactions."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "4f2f876c-14e8-44e3-8ece-28dc2ee8fa83",
+      "name": "3D SCENE GENERATION FROM AN IMAGE",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "incorrect_predicate",
+      "assessment": "Candidate uses training/evaluation or model-dependency vocabulary for a field, task or application. Rejection protects against the wrong predicate; source-supported re-extraction needs an appropriate relation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:25:part:0",
+          "pages": [
+            2
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 1 INTRODUCTION\n\n3D scene generation from an image reconstructs compositional scenes by recovering each object as a separate and complete 3D entity in a shared scene space. This enables the conversion of realworld observations into 3D assets for applications such as physical simulation, VR/AR, and robotic manipulation. To support these applications, scene reconstruction should recover not only plausible objects but also their physically and geometrically coherent composition. Interactions between objects-such as support and containment-depicted in the image require fine-grained spatial compatibility between neighboring objects. However, neighboring objects often occlude the very regions where they interact, making it challenging to recover this consistency from visible evidence alone."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "f83d87dd-dbf7-4516-956e-c21b03eefd5b",
+      "name": "AMODAL GENERATION METHODS COMBINED WITH POSE ESTIMATION",
+      "current_type": "METHOD",
+      "primary_diagnosis": "quotation_alignment",
+      "assessment": "The model changed the exact extracted string (for example Tetris3Doutperforms or graphby). Citation spans should refer to actual source strings; do not disable quote validation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:158:part:0",
+          "pages": [
+            7
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 4 EXPERIMENTS\nSection: 4.1 COMPARISONS\n\nQuantitativeComparison. As shown in Tab. 1, Tetris3Doutperforms both scene generation baselines and amodal generation methods combined with pose estimation across reconstruction quality, generative quality, and physical stability. These results indicate that Tetris3D recovers plausible shapes and well-aligned poses under occlusion, by leveraging surrounding spatial context to produce physically consistent scenes. Moreover, as shown in Tab. 2, Tetris3D maintains superior performance on real-world scene benchmarks with complex interactions and contacts, demonstrating its generalization beyond synthetic scenes. Across these comparisons, Tetris3D achieves substantial improvements in physical stability including PD and Dmean, indicating the effectiveness of conditioning object generation on neighboring geometry and physical relationships."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "30efbd47-276b-48d7-924e-da7fe64580ee",
+      "name": "ARDELEAN ET AL., 2025",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "7092d23f-6828-4ba4-9082-ce32c05dedbb",
+      "name": "ASSETS",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "cross_pass_scope",
+      "assessment": "The additional-pass candidate can pass existing checks with accepted initial declarations. Predicate, ownership, quotation scope and table conditions still require review. Ours (GT) has one continuous valid first-cell quote; its other thirteen quotes concatenate nonadjacent cells.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "f3729d8a-9dda-4377-9e76-9f6131e43e40",
+      "name": "AUTOREGRESSIVE CO-GENERATION",
+      "current_type": "TOOL",
+      "primary_diagnosis": "cross_pass_scope",
+      "assessment": "The additional-pass candidate can pass existing checks with accepted initial declarations. Predicate, ownership, quotation scope and table conditions still require review. Ours (GT) has one continuous valid first-cell quote; its other thirteen quotes concatenate nonadjacent cells.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "a40ec420-ce38-4d9d-b3bb-0c947871c2b3",
+      "name": "AZINOVI´C ET AL., 2022",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "9e0b9583-7bf1-4be0-857a-76f0375f2613",
+      "name": "BOXES",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "scope_and_subject_ownership",
+      "assessment": "Legitimate primitives in DATASET GENERATOR DETAILS. The saved candidate assigns them to Tetris3D itself. Preserve the generator subject; do not blindly restore these links.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:334:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nPrimitive Selection. We use twelve parametric primitives: boxes, planks, cylinders, cones, spheres, wedges, tubes, tori, cups, open bins, polygonal bins, and bowls. The available primitive types depend on the intended interaction:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "84756c10-6a86-4ff9-9c9c-289609c47f30",
+      "name": "CHAMFER DISTANCE",
+      "current_type": "METRIC",
+      "primary_diagnosis": "overbroad_metric_rule",
+      "assessment": "The Metric-target rule prohibits USES/HAS_COMPONENT indiscriminately. MMD/COV legitimately use Chamfer Distance; F-Score to scene/object variants needs a different predicate. MMD/COV quotes also changed useMinimumMatching into use MinimumMatching.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:392:part:0",
+          "pages": [
+            21
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nMMD and COV. We useMinimumMatching Distance (MMD) and Coverage (COV) (Achlioptas et al., 2018) to compare the set of generated objects with the set of ground-truth objects, using Chamfer Distance as the underlying distance measure. Let ˆQ = { ˆQ} and Q = {Q} denote the sets of generated and ground-truth objects, respectively. MMD averages, over each ground-truth object, the distance to its nearest generated object:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "6a68126d-0fa0-49ab-8ead-744c85d2709f",
+      "name": "CHAMFER DISTANCE (CD-S, CD-O)",
+      "current_type": "METRIC",
+      "primary_diagnosis": "alias_or_representation_fragment",
+      "assessment": "This exact name has no saved relationship candidate. Inspect the local source and potential aliases; this does not justify an inferred edge. In particular SLAT also appears as STRUCTURED LATENTS (SLAT), and metric abbreviations have separate nodes.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:371:part:0",
+          "pages": [
+            20
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nChamfer Distance (CD-S, CD-O). We measure the geometric discrepancy between ˆQ and Q using the symmetric mean of squared nearest-neighbor distances:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "3d07ad1f-f055-4423-89fb-05fb440e4fae",
+      "name": "CHEN ET AL., 2026A",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "b26855d8-055e-4df1-96f8-4f74c72714c5",
+      "name": "CHEN ET AL., 2026B",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "c77ce598-2bc7-4a9a-b35c-99ff28cb3b53",
+      "name": "COMPLETE IMAGES WITHOUT OCCLUSION",
+      "current_type": "DATASET",
+      "primary_diagnosis": "misclassified_training_example_type",
+      "assessment": "Source lists kinds of training images rather than three named datasets. The Dataset classification is too coarse; nearby curriculum/stage statements need their own ownership and image-type conditions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:316:part:0",
+          "pages": [
+            16,
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.2 TRAINING DETAILS\n\nCurriculumTrainingwithOcclusion. To improve robustness to diverse forms of occlusionwhile preserving the prior of the pretrained shape generator, we use three types of training images: complete images without occlusion, images occluded by the primitives, and images with synthetic occlusion. For synthetic occlusion, we follow the protocol of Axolotl3D (Hu & Shugrina, 2026), compositing synthetic occluders onto complete images. Following (Siddiqui et al., 2026), we adopt a two-stage curriculum training strategy. In Stage 1, the model is trained only on complete images with all conditions provided. In Stage 2, we additionally include primitive-occluded and synthetically occluded images, sampling the three image types at a ratio of 1:2:1, respectively. Specifically, we train the sparse structure generation model for 50K iterations in Stage 1 and 150K iterations in Stage 2. For structured latent generation, we train for 30K and 70K iterations in Stage 1 and Stage 2, respectively. For the ablation study, we train 50K iterations in Stage 2 for the sparse structure generation model while keeping Stage 1 training iterations unchanged. The ablation study is conducted with models trained for the same number of iterations to exclude the effect of training configuration."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "2653cdcf-144a-4d70-b37a-47bae9cc13d5",
+      "name": "CONES",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "scope_and_subject_ownership",
+      "assessment": "Legitimate primitives in DATASET GENERATOR DETAILS. The saved candidate assigns them to Tetris3D itself. Preserve the generator subject; do not blindly restore these links.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:334:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nPrimitive Selection. We use twelve parametric primitives: boxes, planks, cylinders, cones, spheres, wedges, tubes, tori, cups, open bins, polygonal bins, and bowls. The available primitive types depend on the intended interaction:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "f0edd1b7-b0bb-431f-8a99-2bc1239a6d32",
+      "name": "COVERAGE (COV)",
+      "current_type": "METRIC",
+      "primary_diagnosis": "overbroad_metric_rule",
+      "assessment": "The Metric-target rule prohibits USES/HAS_COMPONENT indiscriminately. MMD/COV legitimately use Chamfer Distance; F-Score to scene/object variants needs a different predicate. MMD/COV quotes also changed useMinimumMatching into use MinimumMatching.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:392:part:0",
+          "pages": [
+            21
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nMMD and COV. We useMinimumMatching Distance (MMD) and Coverage (COV) (Achlioptas et al., 2018) to compare the set of generated objects with the set of ground-truth objects, using Chamfer Distance as the underlying distance measure. Let ˆQ = { ˆQ} and Q = {Q} denote the sets of generated and ground-truth objects, respectively. MMD averages, over each ground-truth object, the distance to its nearest generated object:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "1751e0b0-0413-4784-b9f8-73e409543fd1",
+      "name": "CYLINDERS",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "scope_and_subject_ownership",
+      "assessment": "Legitimate primitives in DATASET GENERATOR DETAILS. The saved candidate assigns them to Tetris3D itself. Preserve the generator subject; do not blindly restore these links.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:334:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nPrimitive Selection. We use twelve parametric primitives: boxes, planks, cylinders, cones, spheres, wedges, tubes, tori, cups, open bins, polygonal bins, and bowls. The available primitive types depend on the intended interaction:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "6042a6fa-4786-4937-9395-323233edb13f",
+      "name": "DAHNERT ET AL., 2024",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "09f0367a-7e8d-4b44-9782-e56775327044",
+      "name": "DAI ET AL., 2017",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "6e92fb3b-c366-4ed5-97c3-4c19976ded5e",
+      "name": "DAI ET AL., 2024",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "d1ff08df-676b-4faa-819d-5029c55c895a",
+      "name": "EEVEE",
+      "current_type": "TOOL",
+      "primary_diagnosis": "missing_endpoint_declarations",
+      "assessment": "Saved candidates lack a declared counterpart even across the verified two-pass history. A same-source inheritance fix alone cannot repair this. EEVEE is a real rasterizer; indoor rooms is a domain, not a named dataset; retain those distinctions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:350:part:0",
+          "pages": [
+            18
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nRendering Details. We render each settled scene in Blender using the EEVEE rasterizer, with the field of view randomly sampled from [35◦ , 70◦ ]. To obtain a suitable level of occlusion, we generate candidate viewpoints over a predefined set of azimuth and elevation angles and retain those whose target-object visible ratio lies within [0.3, 0.9]. Other rendering configurations, including lighting, follow TRELLIS (Xiang et al., 2025)."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "bed94358-2d63-45d5-963b-f372ee6efc1c",
+      "name": "F-SCORE",
+      "current_type": "METRIC",
+      "primary_diagnosis": "overbroad_metric_rule",
+      "assessment": "The Metric-target rule prohibits USES/HAS_COMPONENT indiscriminately. MMD/COV legitimately use Chamfer Distance; F-Score to scene/object variants needs a different predicate. MMD/COV quotes also changed useMinimumMatching into use MinimumMatching.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:374:part:0",
+          "pages": [
+            20
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nF-Score (F1-S, F1-O). Thresholding the same nearest-neighbour distances, this time Euclidean, at τ gives a precision and a recall:"
+        },
+        {
+          "source_id": "c7cca5c7618d084c:texts:376:part:0",
+          "pages": [
+            20
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nand the F-Score is their harmonic mean. We use τ = 0.005, and report F1-S and F1-O at the scene and object level respectively."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "35e1342f-1e0d-4512-8818-14e0aad9a6eb",
+      "name": "FLOATING",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "missing_endpoint_declarations",
+      "assessment": "Saved candidates lack a declared counterpart even across the verified two-pass history. A same-source inheritance fix alone cannot repair this. EEVEE is a real rasterizer; indoor rooms is a domain, not a named dataset; retain those distinctions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "b5d7afc2-79ce-4744-bac6-8fcaf8bec50f",
+      "name": "FU ET AL., 2021",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "e9ecd307-87f9-4ebb-bdc1-aa288590925b",
+      "name": "GENERATION ORDER",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "quotation_alignment",
+      "assessment": "The model changed the exact extracted string (for example Tetris3Doutperforms or graphby). Citation spans should refer to actual source strings; do not disable quote validation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:460:part:0",
+          "pages": [
+            27
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: F PROMPT EXAMPLES\n\nPrompt 1: Prompt used for physical dependency reasoning You are a careful 3D scene reasoning assistant. You infer a physical dependency hierarchy: directed load-bearing edges and undirected contact edges among scene objects, including the ground plane. This hierarchy is used for sequential physical assembly, layered from the ground up. Each edge must be labeled with a pairwise physical relation from R = {stack, lean, contain , touch}. stack, lean, and contain are directed. touch is undirected. The generation order is determined by safely removing cycles from the original graphby deleting edge pairs with the minimum sum of confidenceand then following an order that satisfies topological sorting. The unique node with an in-degree of 0 is given as the root node, 'Plane'. Every listed object must appear in your output. Return strict JSON only. No markdown fences, no comments, no extra text. You are given: 1. An original RGB scene image. 2. A color instance-segmentation image, where each object instance is painted in a unique flat RGB color. 3. An object inventory JSON. Each entry has a description and an instance RGB color [R, G, B]. How to use the inputs: - Match each inventory name to its region by the instance_rgb_color in the segmentation image. - Then inspect the same region in the scene image, using the description as semantic context. - Use object names exactly as given. Do not rename, merge, split, or invent objects. Task: Infer every pairwise physical relation that is visible or physically necessary, and emit it as an edge. Then run the Optimal Topological Sort below on those edges and emit the recovered generation order as the last field. Two kinds of edges (algorithm inputs): - Directed edges (stack, lean, contain): object A relies on object B for physical support or stability. Output from=\"B\", to=\"A\", i.e. B -> A. In the sort, B is a possible predecessor of A under a specific confidence level. - Undirected edges (touch): real physical contact that is not load-bearing support. Output one edge whose from/to merely name the pair; the from/to order is not generation order. In the sort, each endpoint is a possible predecessor of the other. - Do not let a touch edge reverse, cancel, or replace a stack, lean, or contain edge. How generation order is computed (Optimal Topological Sort). Your edges must be valid inputs to this procedure: 1. Vertices N = all objects including Plane. Root = Plane. 2. possiblePredecessors[v] starts empty for every vertex v. 3. For every directed edge (u, v, confidence): add u to possiblePredecessors[v]. 4. For every undirected touch edge (u, v, confidence): add v to possiblePredecessors[u] and u to possiblePredecessors[v]. 5. startState = {Plane}. fullState = N. Every subset of N that contains Plane is a state. Cost of every state is infinity except cost(startState) = 0. Each state records a parent vertex or none. 6. Process states from smaller subsets to larger. Skip a state S if its cost is still infinity. 7. For each vertex v not in S: if S contains no possible predecessor of v, skip v. Otherwise deletionCost is the sum of confidences of directed edges v -> u with u already in S. Those directed edges are treated as deleted. nextState = S union {v}. If cost(S) + deletionCost is strictly cheaper than the current cost of nextState, update that cost and set parent(nextState) = v. 8. Recover the order by walking backward from fullState to startState: repeatedly prepend parent(state) and remove it from the state. Plane is generated first; the recovered sequence is the generation order of the remaining objects. Emit that full sequence, Plane excluded, as \"order\". What this implies for the edges you emit: - An object can be generated only after at least one of its possible predecessors is already generated. An object with no possible predecessor can never be generated. - Directed cycles are allowed. If two objects mutually load-bear, emit both directed edges with honest"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "2df05b68-a808-4c37-afde-93068e59469b",
+      "name": "HUANG ET AL., 2025",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "9e0e2eb0-7808-467f-ba99-9939be1e3589",
+      "name": "IMAGES OCCLUDED BY THE PRIMITIVES",
+      "current_type": "DATASET",
+      "primary_diagnosis": "misclassified_training_example_type",
+      "assessment": "Source lists kinds of training images rather than three named datasets. The Dataset classification is too coarse; nearby curriculum/stage statements need their own ownership and image-type conditions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:316:part:0",
+          "pages": [
+            16,
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.2 TRAINING DETAILS\n\nCurriculumTrainingwithOcclusion. To improve robustness to diverse forms of occlusionwhile preserving the prior of the pretrained shape generator, we use three types of training images: complete images without occlusion, images occluded by the primitives, and images with synthetic occlusion. For synthetic occlusion, we follow the protocol of Axolotl3D (Hu & Shugrina, 2026), compositing synthetic occluders onto complete images. Following (Siddiqui et al., 2026), we adopt a two-stage curriculum training strategy. In Stage 1, the model is trained only on complete images with all conditions provided. In Stage 2, we additionally include primitive-occluded and synthetically occluded images, sampling the three image types at a ratio of 1:2:1, respectively. Specifically, we train the sparse structure generation model for 50K iterations in Stage 1 and 150K iterations in Stage 2. For structured latent generation, we train for 30K and 70K iterations in Stage 1 and Stage 2, respectively. For the ablation study, we train 50K iterations in Stage 2 for the sparse structure generation model while keeping Stage 1 training iterations unchanged. The ablation study is conducted with models trained for the same number of iterations to exclude the effect of training configuration."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "a137bc6d-af42-481c-8d85-63d4d2f657b2",
+      "name": "IMAGES WITH SYNTHETIC OCCLUSION",
+      "current_type": "DATASET",
+      "primary_diagnosis": "misclassified_training_example_type",
+      "assessment": "Source lists kinds of training images rather than three named datasets. The Dataset classification is too coarse; nearby curriculum/stage statements need their own ownership and image-type conditions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:316:part:0",
+          "pages": [
+            16,
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.2 TRAINING DETAILS\n\nCurriculumTrainingwithOcclusion. To improve robustness to diverse forms of occlusionwhile preserving the prior of the pretrained shape generator, we use three types of training images: complete images without occlusion, images occluded by the primitives, and images with synthetic occlusion. For synthetic occlusion, we follow the protocol of Axolotl3D (Hu & Shugrina, 2026), compositing synthetic occluders onto complete images. Following (Siddiqui et al., 2026), we adopt a two-stage curriculum training strategy. In Stage 1, the model is trained only on complete images with all conditions provided. In Stage 2, we additionally include primitive-occluded and synthetically occluded images, sampling the three image types at a ratio of 1:2:1, respectively. Specifically, we train the sparse structure generation model for 50K iterations in Stage 1 and 150K iterations in Stage 2. For structured latent generation, we train for 30K and 70K iterations in Stage 1 and Stage 2, respectively. For the ablation study, we train 50K iterations in Stage 2 for the sparse structure generation model while keeping Stage 1 training iterations unchanged. The ablation study is conducted with models trained for the same number of iterations to exclude the effect of training configuration."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "773b3d62-9779-4012-8833-a0170a09432d",
+      "name": "INDOOR ROOMS",
+      "current_type": "DATASET",
+      "primary_diagnosis": "missing_endpoint_declarations",
+      "assessment": "Saved candidates lack a declared counterpart even across the verified two-pass history. A same-source inheritance fix alone cannot repair this. EEVEE is a real rasterizer; indoor rooms is a domain, not a named dataset; retain those distinctions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "8cc997eb-3fb1-4db8-82c6-9172812ca50b",
+      "name": "INPUT IMAGE",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "alias_or_representation_fragment",
+      "assessment": "This exact name has no saved relationship candidate. Inspect the local source and potential aliases; this does not justify an inferred edge. In particular SLAT also appears as STRUCTURED LATENTS (SLAT), and metric abbreviations have separate nodes.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:pictures:7:part:0",
+          "pages": [
+            23
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: E DISCUSSION AND LIMITATIONS\n\nFigure 9: Qualitative comparison with agentic 3D generation. We compare Tetris3D with an LLM agent-based approach to 3D mesh generation (OpenAI, 2026). Although this approach can produce broadly similar shapes, it often fails to faithfully recover the object geometry depicted in the input image and struggles to generate physically consistent scene layouts."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "fc047ea8-71e1-485f-9f87-8f7e1ce8fe5d",
+      "name": "KAIST AI",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "legitimate_isolated_affiliation",
+      "assessment": "A real author affiliation, not automatically a dependency of the method. No affiliation edge was generated; a scientific-method graph need not force this node to be connected.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:3:part:0",
+          "pages": [
+            1
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\n\nJaeyeong Kim Jinhyuk Jang Jongmin Lee Kyehong Park Seungryong Kim† KAIST AI"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "35e51e4c-7ec8-4d0d-984a-8e7c28648cbf",
+      "name": "LI ET AL., 2026A",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "611b6784-c5dc-42c4-887d-ed90ad156fa0",
+      "name": "LI ET AL., 2026C",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "a718a4c8-82fb-45fd-98de-aaeee5adb289",
+      "name": "LIN ET AL., 2026A",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "9379fb83-e6ec-49da-99ae-f2ff5480cc5e",
+      "name": "LIN ET AL., 2026B",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "459960db-fdfe-4bfe-87bf-7efca897229e",
+      "name": "LIU ET AL., 2022",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "794d5a62-23c3-4c6b-b328-512aa7fbfc32",
+      "name": "MENG ET AL., 2026",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "d79fc500-7d58-462b-a6d7-d20afb7a21f5",
+      "name": "MINIMUMMATCHING DISTANCE (MMD)",
+      "current_type": "METRIC",
+      "primary_diagnosis": "overbroad_metric_rule",
+      "assessment": "The Metric-target rule prohibits USES/HAS_COMPONENT indiscriminately. MMD/COV legitimately use Chamfer Distance; F-Score to scene/object variants needs a different predicate. MMD/COV quotes also changed useMinimumMatching into use MinimumMatching.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:392:part:0",
+          "pages": [
+            21
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nMMD and COV. We useMinimumMatching Distance (MMD) and Coverage (COV) (Achlioptas et al., 2018) to compare the set of generated objects with the set of ground-truth objects, using Chamfer Distance as the underlying distance measure. Let ˆQ = { ˆQ} and Q = {Q} denote the sets of generated and ground-truth objects, respectively. MMD averages, over each ground-truth object, the distance to its nearest generated object:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "fc3dcf5f-e21a-4996-b1a8-de80918bd6c9",
+      "name": "MULTIPLE INSTANCES",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "cross_pass_scope",
+      "assessment": "The additional-pass candidate can pass existing checks with accepted initial declarations. Predicate, ownership, quotation scope and table conditions still require review. Ours (GT) has one continuous valid first-cell quote; its other thirteen quotes concatenate nonadjacent cells.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "191aa3ac-6e10-4cf8-8e68-2d2dc997f21b",
+      "name": "NIU ET AL., 2026",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "4aa92a79-02d7-4648-b71b-03f2a91f8f74",
+      "name": "OBJECT INTERACTIONS",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "cross_pass_scope",
+      "assessment": "The additional-pass candidate can pass existing checks with accepted initial declarations. Predicate, ownership, quotation scope and table conditions still require review. Ours (GT) has one continuous valid first-cell quote; its other thirteen quotes concatenate nonadjacent cells.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:103:part:0",
+          "pages": [
+            3
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 3 METHOD\nSection: 3.1 OVERVIEW\n\nWe propose Tetris3D, a generative framework for object-centric 3D scene reconstruction from a single image. Our goal is to reconstruct a scene in which objects are physically and geometrically coherent with one another by explicitly conditioning generation on surrounding geometry and physical relationships. To achieve this, we incorporate object interactions into the generation process in two forms: spatial context and relation type. The spatial context captures the geometric arrangement of neighboring objects relative to the target object, helping recover geometry spatially compatible with the surroundings and avoid physically invalid configurations such as penetration. The relation type specifies the physical relationship between the target object and its neighbors, guiding the generated shape to reflect the interactions depicted in the input scene. Furthermore, to reconstruct the scene without a separate per-object pose-estimation stage, we generate each object directly in the pose observed in the scene image using the depth map and image feature back-projection. We also introduce a visible-to-invisible (V2I) cross-attention that guides the completion of occluded regions using information aggregated from visible tokens. To generate a scene, we generate objects autoregressively in a physical dependency order inferred by a VLM, so that each object is generated after the neighbors it depends on. We describe the overall pipeline in Fig. 2."
+        },
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "e0ac81ab-a4a7-4e86-bf95-42989e668ba7",
+      "name": "OBJECT-CENTRIC 3D SCENE RECONSTRUCTION FROM A SINGLE IMAGE",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "alias_or_representation_fragment",
+      "assessment": "This exact name has no saved relationship candidate. Inspect the local source and potential aliases; this does not justify an inferred edge. In particular SLAT also appears as STRUCTURED LATENTS (SLAT), and metric abbreviations have separate nodes.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:103:part:0",
+          "pages": [
+            3
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 3 METHOD\nSection: 3.1 OVERVIEW\n\nWe propose Tetris3D, a generative framework for object-centric 3D scene reconstruction from a single image. Our goal is to reconstruct a scene in which objects are physically and geometrically coherent with one another by explicitly conditioning generation on surrounding geometry and physical relationships. To achieve this, we incorporate object interactions into the generation process in two forms: spatial context and relation type. The spatial context captures the geometric arrangement of neighboring objects relative to the target object, helping recover geometry spatially compatible with the surroundings and avoid physically invalid configurations such as penetration. The relation type specifies the physical relationship between the target object and its neighbors, guiding the generated shape to reflect the interactions depicted in the input scene. Furthermore, to reconstruct the scene without a separate per-object pose-estimation stage, we generate each object directly in the pose observed in the scene image using the depth map and image feature back-projection. We also introduce a visible-to-invisible (V2I) cross-attention that guides the completion of occluded regions using information aggregated from visible tokens. To generate a scene, we generate objects autoregressively in a physical dependency order inferred by a VLM, so that each object is generated after the neighbors it depends on. We describe the overall pipeline in Fig. 2."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "dd07e072-396a-4729-bc44-f11751452484",
+      "name": "OPEN-SET DATA",
+      "current_type": "DATASET",
+      "primary_diagnosis": "missing_endpoint_declarations",
+      "assessment": "Saved candidates lack a declared counterpart even across the verified two-pass history. A same-source inheritance fix alone cannot repair this. EEVEE is a real rasterizer; indoor rooms is a domain, not a named dataset; retain those distinctions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "996cfd47-d157-4c06-9cc7-efda1bae20fa",
+      "name": "OURS (GT)",
+      "current_type": "METHOD",
+      "primary_diagnosis": "cross_pass_scope",
+      "assessment": "The additional-pass candidate can pass existing checks with accepted initial declarations. Predicate, ownership, quotation scope and table conditions still require review. Ours (GT) has one continuous valid first-cell quote; its other thirteen quotes concatenate nonadjacent cells.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:tables:4:row:2",
+          "pages": [
+            22
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nContent: Results table; use its caption and row/column headers.\n\nTable 5: Quantitative comparison on Toys4K (Stojanov et al., 2021) with VLM-based reasoning. We compare results using ground-truth physical relation annotations with those using relations inferred by a VLM (Bai et al., 2025). Tetris3D maintains comparable performance with VLMinferred relations.\nTable row context: \nRow label: Ours (GT)\nCell [Method]: Ours (GT)\nCell [Reconstruction Quality / CD-S ↓]: 3.68\nCell [Reconstruction Quality / CD-O ↓]: 0.97\nCell [Reconstruction Quality / F1-S ↑]: 0.8407\nCell [Reconstruction Quality / F1-O ↑]: 0.8084\nCell [Reconstruction Quality / IoU-B ↑]: 0.7918\nCell [Reconstruction Quality / ICP-Rot ↓]: 5.29\nCell [Generation Quality / MMD ↓]: 1.501\nCell [Generation Quality / COV ↑]: 83.11\nCell [Generation Quality / P-FID ↓]: 1.599\nCell [Generation Quality / Uni3D ↑]: 0.6884\nCell [Generation Quality / ULIP ↑]: 0.7182\nCell [Physical Stability / PD ↓]: 0.0036\nCell [Physical Stability / Dmean ↓]: 38.91\nCell [Physical Stability / Epeak ↓]: 0.1721"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "648b6597-2ba6-4d64-82e8-5d9592d0f911",
+      "name": "PENETRATION",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "missing_endpoint_declarations",
+      "assessment": "Saved candidates lack a declared counterpart even across the verified two-pass history. A same-source inheritance fix alone cannot repair this. EEVEE is a real rasterizer; indoor rooms is a domain, not a named dataset; retain those distinctions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "99ff44ba-86b1-4da6-92d3-e620c764aa13",
+      "name": "PHYSICAL DEPENDENCY ORDER",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "alias_or_representation_fragment",
+      "assessment": "This exact name has no saved relationship candidate. Inspect the local source and potential aliases; this does not justify an inferred edge. In particular SLAT also appears as STRUCTURED LATENTS (SLAT), and metric abbreviations have separate nodes.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:103:part:0",
+          "pages": [
+            3
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 3 METHOD\nSection: 3.1 OVERVIEW\n\nWe propose Tetris3D, a generative framework for object-centric 3D scene reconstruction from a single image. Our goal is to reconstruct a scene in which objects are physically and geometrically coherent with one another by explicitly conditioning generation on surrounding geometry and physical relationships. To achieve this, we incorporate object interactions into the generation process in two forms: spatial context and relation type. The spatial context captures the geometric arrangement of neighboring objects relative to the target object, helping recover geometry spatially compatible with the surroundings and avoid physically invalid configurations such as penetration. The relation type specifies the physical relationship between the target object and its neighbors, guiding the generated shape to reflect the interactions depicted in the input scene. Furthermore, to reconstruct the scene without a separate per-object pose-estimation stage, we generate each object directly in the pose observed in the scene image using the depth map and image feature back-projection. We also introduce a visible-to-invisible (V2I) cross-attention that guides the completion of occluded regions using information aggregated from visible tokens. To generate a scene, we generate objects autoregressively in a physical dependency order inferred by a VLM, so that each object is generated after the neighbors it depends on. We describe the overall pipeline in Fig. 2."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "ee71b01b-199f-4c95-b774-1c3867654a19",
+      "name": "PHYSICAL SIMULATION",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "incorrect_predicate",
+      "assessment": "Candidate uses training/evaluation or model-dependency vocabulary for a field, task or application. Rejection protects against the wrong predicate; source-supported re-extraction needs an appropriate relation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:25:part:0",
+          "pages": [
+            2
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 1 INTRODUCTION\n\n3D scene generation from an image reconstructs compositional scenes by recovering each object as a separate and complete 3D entity in a shared scene space. This enables the conversion of realworld observations into 3D assets for applications such as physical simulation, VR/AR, and robotic manipulation. To support these applications, scene reconstruction should recover not only plausible objects but also their physically and geometrically coherent composition. Interactions between objects-such as support and containment-depicted in the image require fine-grained spatial compatibility between neighboring objects. However, neighboring objects often occlude the very regions where they interact, making it challenging to recover this consistency from visible evidence alone."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "54835127-4bde-4990-9682-42cd9c49dcfc",
+      "name": "PLANKS",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "scope_and_subject_ownership",
+      "assessment": "Legitimate primitives in DATASET GENERATOR DETAILS. The saved candidate assigns them to Tetris3D itself. Preserve the generator subject; do not blindly restore these links.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:334:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nPrimitive Selection. We use twelve parametric primitives: boxes, planks, cylinders, cones, spheres, wedges, tubes, tori, cups, open bins, polygonal bins, and bowls. The available primitive types depend on the intended interaction:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "c8812204-6e52-42ec-88c0-805429fc3a58",
+      "name": "PRECΤ",
+      "current_type": "METRIC",
+      "primary_diagnosis": "alias_or_representation_fragment",
+      "assessment": "This exact name has no saved relationship candidate. Inspect the local source and potential aliases; this does not justify an inferred edge. In particular SLAT also appears as STRUCTURED LATENTS (SLAT), and metric abbreviations have separate nodes.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:375:part:0",
+          "pages": [
+            20
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nPrecτ = 1 |P | ∑ p∈P ✶[ min q∈Q∥p- q∥ < τ ], Recτ = 1 |Q| ∑ q∈Q ✶[ min p∈P ∥q - p∥ < τ ], (9)"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "ae2ebf61-cc2b-43c4-abd7-a31846db205c",
+      "name": "PRETRAINED CROSS-ATTENTION",
+      "current_type": "METHOD",
+      "primary_diagnosis": "last_from_clause_rule",
+      "assessment": "The validator searches only after the last from in a sentence containing two initialization clauses. It therefore rejects the earlier cross-attention source. Re-extraction should identify the initialized subcomponents separately rather than assigning all branch weights one source.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:313:part:0",
+          "pages": [
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.1 MODEL DETAILS\n\nVisible-to-Invisible Attention. Within each sample, tokens with fully observed projected features are classified as visible, while those receiving any null contribution are classified as invisible. Tokens projecting outside the image crop are excluded from this attention branch. In each DiT block, we initialize the weights of the branch's normalization and query/output projections from the pretrained cross-attention, and its key/value projections from self-attention. The residual output is applied only to invisible tokens through a zero-initialized gate, so the added branch initially leaves the original block update unchanged. When no invisible tokens are present, this layer is skipped."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "6151040f-44bf-4b6b-b20b-edbe0738a768",
+      "name": "RECΤ",
+      "current_type": "METRIC",
+      "primary_diagnosis": "alias_or_representation_fragment",
+      "assessment": "This exact name has no saved relationship candidate. Inspect the local source and potential aliases; this does not justify an inferred edge. In particular SLAT also appears as STRUCTURED LATENTS (SLAT), and metric abbreviations have separate nodes.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:375:part:0",
+          "pages": [
+            20
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: C EVALUATION DETAILS\nSection: C.2 EVALUATION METRIC DETAILS\n\nPrecτ = 1 |P | ∑ p∈P ✶[ min q∈Q∥p- q∥ < τ ], Recτ = 1 |Q| ∑ q∈Q ✶[ min p∈P ∥q - p∥ < τ ], (9)"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "76323c05-cfe6-4039-93d3-a63297482939",
+      "name": "ROBOTIC MANIPULATION",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "incorrect_predicate",
+      "assessment": "Candidate uses training/evaluation or model-dependency vocabulary for a field, task or application. Rejection protects against the wrong predicate; source-supported re-extraction needs an appropriate relation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:25:part:0",
+          "pages": [
+            2
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 1 INTRODUCTION\n\n3D scene generation from an image reconstructs compositional scenes by recovering each object as a separate and complete 3D entity in a shared scene space. This enables the conversion of realworld observations into 3D assets for applications such as physical simulation, VR/AR, and robotic manipulation. To support these applications, scene reconstruction should recover not only plausible objects but also their physically and geometrically coherent composition. Interactions between objects-such as support and containment-depicted in the image require fine-grained spatial compatibility between neighboring objects. However, neighboring objects often occlude the very regions where they interact, making it challenging to recover this consistency from visible evidence alone."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "3eb55589-813a-4bd0-8852-199ee8b8427a",
+      "name": "SCENE DATASETS",
+      "current_type": "DATASET",
+      "primary_diagnosis": "missing_endpoint_declarations",
+      "assessment": "Saved candidates lack a declared counterpart even across the verified two-pass history. A same-source inheritance fix alone cannot repair this. EEVEE is a real rasterizer; indoor rooms is a domain, not a named dataset; retain those distinctions.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "c447641c-4334-46ad-9eb6-59714a8e9eea",
+      "name": "SCENE GENERATION BASELINES",
+      "current_type": "METHOD",
+      "primary_diagnosis": "quotation_alignment",
+      "assessment": "The model changed the exact extracted string (for example Tetris3Doutperforms or graphby). Citation spans should refer to actual source strings; do not disable quote validation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:158:part:0",
+          "pages": [
+            7
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 4 EXPERIMENTS\nSection: 4.1 COMPARISONS\n\nQuantitativeComparison. As shown in Tab. 1, Tetris3Doutperforms both scene generation baselines and amodal generation methods combined with pose estimation across reconstruction quality, generative quality, and physical stability. These results indicate that Tetris3D recovers plausible shapes and well-aligned poses under occlusion, by leveraging surrounding spatial context to produce physically consistent scenes. Moreover, as shown in Tab. 2, Tetris3D maintains superior performance on real-world scene benchmarks with complex interactions and contacts, demonstrating its generalization beyond synthetic scenes. Across these comparisons, Tetris3D achieves substantial improvements in physical stability including PD and Dmean, indicating the effectiveness of conditioning object generation on neighboring geometry and physical relationships."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "864c11cf-33ca-46ec-a158-862eccbc37b7",
+      "name": "SCENE-LEVEL GENERATION",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "incorrect_predicate",
+      "assessment": "Candidate uses training/evaluation or model-dependency vocabulary for a field, task or application. Rejection protects against the wrong predicate; source-supported re-extraction needs an appropriate relation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "cbbd7b3c-bfdd-43c4-8289-f962aa15c410",
+      "name": "SHAPE AND POSE",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "cross_pass_scope",
+      "assessment": "The additional-pass candidate can pass existing checks with accepted initial declarations. Predicate, ownership, quotation scope and table conditions still require review. Ours (GT) has one continuous valid first-cell quote; its other thirteen quotes concatenate nonadjacent cells.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "4371e84a-a270-418c-8fbd-10d44db13b7b",
+      "name": "SHI ET AL., 2026",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "57b322c5-8b2b-4584-aacc-d27a18648438",
+      "name": "SLAT",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "alias_or_representation_fragment",
+      "assessment": "This exact name has no saved relationship candidate. Inspect the local source and potential aliases; this does not justify an inferred edge. In particular SLAT also appears as STRUCTURED LATENTS (SLAT), and metric abbreviations have separate nodes.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:31:part:0",
+          "pages": [
+            2,
+            3
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 2 PRELIMINARIES: TRELLIS.2\n\nWe build our framework on TRELLIS.2 (Xiang et al., 2026), which generates a 3D shape through a two-stage pipeline. It first generates the sparse structure (SS), a binary occupancy grid O ∈ {0, 1}Ns×Ns×Ns of resolution Ns in the canonical object space, whose L active voxels S = {pj}Lj=1 , with pj ∈ {0, . . . ,Ns - 1}3 the coordinate of the j-th active voxel, outline the coarse geometry. It subsequently generates the Structured LATents (SLAT) zSLAT = {zj}Lj=1 attached to these active voxels, which encode geometry and texture. SLAT is the latent encoding of the O-Voxel representation, a field-free sparse voxel structure that encodes geometry and appearance jointly as per-voxel feature tuples F = {(f shape j , f mat j , pj)}Lj=1 , where f shape j and f mat j describe the local geometry and material of the j-th voxel, respectively. Each stage is modeled by a diffusion transformer (DiT) (Peebles & Xie, 2023) with flow-matching formulation (Lipman et al., 2022). The first, vSS θ , denoises a dense latent volume on a coarse grid of resolution Nc (< Ns), which is then decoded into O. The second, vSLAT θ , operates only on the L active voxels, treating them as tokens positionally embedded by their coordinates pj. Both are conditioned on the input image features from a frozen DINOv3 (Sim´eoni et al., 2025) encoder."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "d75b0d1b-0666-4af2-92e8-3c4ea5f48eda",
+      "name": "SPHERES",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "scope_and_subject_ownership",
+      "assessment": "Legitimate primitives in DATASET GENERATOR DETAILS. The saved candidate assigns them to Tetris3D itself. Preserve the generator subject; do not blindly restore these links.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:334:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nPrimitive Selection. We use twelve parametric primitives: boxes, planks, cylinders, cones, spheres, wedges, tubes, tori, cups, open bins, polygonal bins, and bowls. The available primitive types depend on the intended interaction:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "7e8e5dac-c40d-4164-bf85-89d3e523f894",
+      "name": "STACKING",
+      "current_type": "DATASET",
+      "primary_diagnosis": "misclassified_relation",
+      "assessment": "Source says Stacking: boxes, planks, and cylinders under Dataset Generator Details. It is an interaction category, not an evaluation dataset; the saved evaluated-on candidate is wrong.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:335:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nStacking: boxes, planks, and cylinders."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "5cd1dd18-1b1b-477e-9229-e7388801cee0",
+      "name": "TAB. 1",
+      "current_type": "CONFIGURATION",
+      "primary_diagnosis": "document_marker_as_entity",
+      "assessment": "Tab. 1/Tab. 2 is a document reference, not a method configuration. The current guard recognizes Table but misses the Tab. abbreviation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:158:part:0",
+          "pages": [
+            7
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 4 EXPERIMENTS\nSection: 4.1 COMPARISONS\n\nQuantitativeComparison. As shown in Tab. 1, Tetris3Doutperforms both scene generation baselines and amodal generation methods combined with pose estimation across reconstruction quality, generative quality, and physical stability. These results indicate that Tetris3D recovers plausible shapes and well-aligned poses under occlusion, by leveraging surrounding spatial context to produce physically consistent scenes. Moreover, as shown in Tab. 2, Tetris3D maintains superior performance on real-world scene benchmarks with complex interactions and contacts, demonstrating its generalization beyond synthetic scenes. Across these comparisons, Tetris3D achieves substantial improvements in physical stability including PD and Dmean, indicating the effectiveness of conditioning object generation on neighboring geometry and physical relationships."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "1891b755-b3e4-48db-8112-a8fcd42beb5f",
+      "name": "TAB. 2",
+      "current_type": "CONFIGURATION",
+      "primary_diagnosis": "document_marker_as_entity",
+      "assessment": "Tab. 1/Tab. 2 is a document reference, not a method configuration. The current guard recognizes Table but misses the Tab. abbreviation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:158:part:0",
+          "pages": [
+            7
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 4 EXPERIMENTS\nSection: 4.1 COMPARISONS\n\nQuantitativeComparison. As shown in Tab. 1, Tetris3Doutperforms both scene generation baselines and amodal generation methods combined with pose estimation across reconstruction quality, generative quality, and physical stability. These results indicate that Tetris3D recovers plausible shapes and well-aligned poses under occlusion, by leveraging surrounding spatial context to produce physically consistent scenes. Moreover, as shown in Tab. 2, Tetris3D maintains superior performance on real-world scene benchmarks with complex interactions and contacts, demonstrating its generalization beyond synthetic scenes. Across these comparisons, Tetris3D achieves substantial improvements in physical stability including PD and Dmean, indicating the effectiveness of conditioning object generation on neighboring geometry and physical relationships."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "60efe91a-295a-4452-a50b-193a75a2c7d8",
+      "name": "TANG ET AL., 2024",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "ba4e685d-7abb-4af3-a613-d4ea3f7db299",
+      "name": "TANG ET AL., 2026",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "ecdd9faf-4fa2-4a02-bfc5-40068cb53d65",
+      "name": "TODOROV ET AL., 2012",
+      "current_type": "TOOL",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:29:part:0",
+          "pages": [
+            2
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 1 INTRODUCTION\n\nTraining Tetris3D requires scenes that capture diverse object interactions with physical relation annotations. However, existing datasets are often restricted to specific environments (Wang et al., 2026; Ansari et al., 2026), or provide limited coverage of diverse physical interactions (Fu et al., 2021). To address these limitations, we introduce ComOb, a large-scale simulation-based scene dataset in which general objects are arranged according to diverse interaction types, such as stacking and containment, and settled into physically stable configurations through physics simulation (Todorov et al., 2012). It provides 1.2M scenes with per-object geometry, physical relation annotations, and occlusions that naturally arise from these arrangements. Finally, we conduct comprehensive experiments on synthetic (Stojanov et al., 2021) and real-world scenes (Ansari et al., 2026; Yu et al., 2026) to evaluate our framework. The results demonstrate that Tetris3D reconstructs plausible scenes that preserve object interactions even when the interacting regions are occluded, achieving superior performance in reconstruction and generation quality, and physical stability."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "fc9a5c6e-8e0c-4dfd-bd0e-68fcb6226985",
+      "name": "TORI",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "scope_and_subject_ownership",
+      "assessment": "Legitimate primitives in DATASET GENERATOR DETAILS. The saved candidate assigns them to Tetris3D itself. Preserve the generator subject; do not blindly restore these links.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:334:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nPrimitive Selection. We use twelve parametric primitives: boxes, planks, cylinders, cones, spheres, wedges, tubes, tori, cups, open bins, polygonal bins, and bowls. The available primitive types depend on the intended interaction:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "2d1914d9-e8b9-44d3-b2ae-590fcdf71919",
+      "name": "VR/AR",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "incorrect_predicate",
+      "assessment": "Candidate uses training/evaluation or model-dependency vocabulary for a field, task or application. Rejection protects against the wrong predicate; source-supported re-extraction needs an appropriate relation.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:25:part:0",
+          "pages": [
+            2
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: 1 INTRODUCTION\n\n3D scene generation from an image reconstructs compositional scenes by recovering each object as a separate and complete 3D entity in a shared scene space. This enables the conversion of realworld observations into 3D assets for applications such as physical simulation, VR/AR, and robotic manipulation. To support these applications, scene reconstruction should recover not only plausible objects but also their physically and geometrically coherent composition. Interactions between objects-such as support and containment-depicted in the image require fine-grained spatial compatibility between neighboring objects. However, neighboring objects often occlude the very regions where they interact, making it challenging to recover this consistency from visible evidence alone."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "97add740-297f-4fbf-bd02-28a7f2361648",
+      "name": "WEDGES",
+      "current_type": "CONCEPT",
+      "primary_diagnosis": "scope_and_subject_ownership",
+      "assessment": "Legitimate primitives in DATASET GENERATOR DETAILS. The saved candidate assigns them to Tetris3D itself. Preserve the generator subject; do not blindly restore these links.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:334:part:0",
+          "pages": [
+            17
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: B IMPLEMENTATION DETAILS\nSection: B.3 DATASET GENERATOR DETAILS\n\nPrimitive Selection. We use twelve parametric primitives: boxes, planks, cylinders, cones, spheres, wedges, tubes, tori, cups, open bins, polygonal bins, and bowls. The available primitive types depend on the intended interaction:"
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "b37b7081-4c20-417c-92f5-2de9f20c1eb0",
+      "name": "XIA ET AL., 2026; SIDDIQUI ET AL., 2026",
+      "current_type": "DATASET",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:303:part:0",
+          "pages": [
+            15
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D generative models. With large-scale 3D datasets (Deitke et al., 2023b;a), 3D generation has shifted toward 3D-native models over compact latents: one line encodes a shape as an unordered set of latent vectors (Zhang et al., 2023; 2024; Li et al., 2025; Zhao et al., 2025b), while another line attaches latents to a sparse voxel grid and decodes them into 3D assets (Xiang et al., 2025; Wu et al., 2026; Xiang et al., 2026). Across both lines, the input image feature is typically injected via crossattention into a canonical-pose generator (Cheng et al., 2023; Hong et al., 2024; Li et al., 2025; Chen et al., 2026b). A complementary line instead grounds the condition in the generation space itself: Pixal3D (Li et al., 2026a) back-projects pixel features along camera rays and generates in the input camera frame, while 3D priors such as point cloud (Xia et al., 2026; Siddiqui et al., 2026) are also embedded into the latent rather than attended to. These models, however, assume a clean image of a single object, whereas objects in real scenes occlude one another. Amodal completion addresses this in image space (Ozguroglu et al., 2024; Ao et al., 2025; Qu et al., 2026), and recent works complete occluded objects in the 3D latent space, conditioning attention on visibility and occlusion cues (Wu et al., 2025; Hu & Shugrina, 2026; Zhou & Tai, 2025). All of these, however, complete each object from its own visible region alone, without leveraging cues from the surrounding scene. Motivated by this, we condition generation on the spatial context and physical relations of neighboring objects, and complete occluded regions by attending from hidden to visible tokens."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "e6eb9b11-e03c-4ea0-9a6c-be1d74dc2596",
+      "name": "YAO ET AL., 2025",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "863fd3f7-a962-4896-bac5-79eb4a4eb9c6",
+      "name": "ZHANG ET AL., 2026",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    },
+    {
+      "entity_id": "e2738761-cb59-496c-9118-ba41f647a540",
+      "name": "ZHAO ET AL., 2025A",
+      "current_type": "ORGANIZATION",
+      "primary_diagnosis": "citation_as_scientific_entity",
+      "assessment": "An author-year citation is being cast as Organization, Tool or Dataset. The saved source identifies a cited work, not that entity type. Keep as citation metadata or a separately supported publication/author schema; never invent organization dependencies.",
+      "source_evidence": [
+        {
+          "source_id": "c7cca5c7618d084c:texts:304:part:0",
+          "pages": [
+            15,
+            16
+          ],
+          "quote": "Paper title: TETRIS3D: 3D SCENE GENERATION WITH OBJECTS THAT FIT TOGETHER\nSection: A RELATED WORKS\n\n3D scene generation. Scenes have been built either by retrieving assets from offline libraries (Dai et al., 2024), which limits open-set diversity, or by learning scene-native generative models (Liu et al., 2022; Dahnert et al., 2024; Tang et al., 2024) from scene datasets (Fu et al., 2021; Dai et al., 2017; Azinovi´c et al., 2022), which confines them to specific domains such as indoor rooms. Objectnative pipelines (Ardelean et al., 2025; Zhao et al., 2025a; Chen et al., 2026b) lift this restriction with generators trained on open-set data, generating each object before registering it into the scene. Concurrently, WorldSculpt (Niu et al., 2026) extends Pixal3D (Li et al., 2026a) to multi-view setting for scene-level generation. Since objects are generated independently, the composed scenes often exhibit physically implausible artifacts such as penetration or floating. To enforce physical plausibility, one line resolves these violations at test time, using VLM relation graphs to refine poses (Yao et al., 2025; Li et al., 2026b), or running a simulation in the loop (Lin et al., 2026a; Lee et al., 2026), while another builds physics into the generation process (Li et al., 2026c; Chen et al., 2026a). More recently, several methods generate multiple instances in a single pass, coupling shape and pose through attention (Huang et al., 2025; Meng et al., 2026; Lin et al., 2026b; Zhang et al., 2026) or autoregressive co-generation (Tang et al., 2026), while another line (Shi et al., 2026; Ansari et al., 2026) predicts object poses jointly, letting attention among them settle into a layout. In contrast to this family, where object interactions remain implicit in attention or confined to pose, we explicitly condition generation on the spatial context and physical relations between objects."
+        }
+      ],
+      "graph_modified": false,
+      "review_method": "AI-assisted source review; not independent ground truth"
+    }
+  ]
+}

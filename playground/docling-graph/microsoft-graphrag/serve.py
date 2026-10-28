@@ -161,7 +161,9 @@ class Explorer:
                 "elapsed_seconds": usage.get("elapsed_seconds", 0),
                 "stage": read_json(self.run / "progress.json") if (self.run / "progress.json").exists() else {},
                 "error": manifest.get("error"), "native_tables": manifest.get("native_tables", {}),
-                "quality_verified": manifest.get("quality_verified", False)}
+                "quality_verified": manifest.get("quality_verified", False),
+                "run_name": self.run.name,
+                "extraction_version": 3 if manifest.get('preparation_contract') == 'context-v3' else 2}
 
     def saved_job(self, ident):
         if not re.fullmatch(r"\d{8}T\d{12}Z", ident):
@@ -306,6 +308,7 @@ def handler(explorer):
                     return self.send(200, explorer.pdf.read_bytes(), "application/pdf", {"Accept-Ranges": "bytes"})
                 static = {"/": ("explorer.html", "text/html; charset=utf-8"),
                           "/explorer.js": ("explorer.js", "text/javascript; charset=utf-8"),
+                          "/graph-geometry.js": ("graph-geometry.js", "text/javascript; charset=utf-8"),
                           "/explorer.css": ("explorer.css", "text/css; charset=utf-8")}
                 if url.path in static:
                     name, kind = static[url.path]

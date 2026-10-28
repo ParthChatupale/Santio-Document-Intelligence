@@ -125,6 +125,16 @@ class ExplorerContracts(TestCase):
                 {"X-Graph-Session": self.explorer.token, "Content-Type": "application/json"})
         self.assertEqual(exc.exception.code, 400)
 
+    def test_graph_room_serves_local_module_and_complete_accessible_controls(self):
+        with self.request('/') as response:
+            html=response.read().decode('utf-8')
+        self.assertIn('type="module"',html)
+        for ident in ['search','type','community','overview','source-dialog','ask-form','fullscreen','toggle-room','toggle-explore']:
+            self.assertIn(f'id="{ident}"',html)
+        with self.request('/graph-geometry.js') as response:
+            self.assertIn('javascript',response.headers['Content-Type'])
+            self.assertIn('assertionDirections',response.read().decode('utf-8'))
+
     def test_native_completion_still_requires_processing_coverage(self):
         write_json(self.root / "run.json", {"status": "completed", "partial_document_scope": False})
         self.assertFalse(self.explorer.status()["can_ask"])

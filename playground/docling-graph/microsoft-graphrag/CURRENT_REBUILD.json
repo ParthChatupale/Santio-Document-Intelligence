@@ -1,0 +1,14 @@
+{
+  "run_directory": "C:\\Santio\\playground\\docling-graph\\microsoft-graphrag\\runs\\tetris-full-scoped-v20",
+  "baseline_directory": "C:\\Santio\\playground\\docling-graph\\microsoft-graphrag\\runs\\tetris-full-validated-v14",
+  "status": "active",
+  "graph_room_serves": "tetris-full-scoped-v20",
+  "graph_url": "http://127.0.0.1:8775/",
+  "paper": "Tetris3D, arxiv:2610.10539v1, 30 pages",
+  "main_website_integrated": true,
+  "processing_verified": true,
+  "semantic_accuracy_verified": false,
+  "note": "Completed native pipeline, source replay and targeted regression checks; brighter edges active. All native records preserved, including isolated entities. Source review flags known incorrect interpretations.",
+  "main_graph_url": "http://127.0.0.1:5173/?paper=arxiv%3A2610.10539v1&task=graph",
+  "integration_mode": "Optional paper-scoped Graph tab; app-owned runtime and copied artifact, separate from existing vector Ask."
+}

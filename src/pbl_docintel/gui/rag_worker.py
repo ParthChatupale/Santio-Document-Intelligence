@@ -72,6 +72,7 @@ def run_preparation(root, spec):
 def run_question(root, spec):
     from pbl_docintel.vector_rag.rag import answer_question
     from pbl_docintel.vector_rag.vector_index import connect_database
+    from pbl_docintel.vector_rag.terminal import TerminalTrace
 
     # Bind the server-selected paper to the index before sending passages to a model.
     if hashlib.sha256((root / spec["document"]).read_bytes()).hexdigest() != spec["document_sha256"]:
@@ -83,10 +84,20 @@ def run_question(root, spec):
         if not row or row[0]["identity"]["source_sha256"] != spec["document_sha256"]:
             raise ValueError("The stored index does not match this paper. Prepare it again.")
     emit(stage="Finding supporting passages")
+    terminal = TerminalTrace([root / ".env", database_env(root)])
+    def observe(stage, data):
+        terminal(stage, data)
+        if stage == "Provider retry waiting":
+            emit(stage="Waiting to retry", retry=data)
+        elif stage == "Provider retry resumed":
+            emit(stage="Retrying " + data["stage"], retry=None)
+        elif stage in {"Provider request succeeded", "Provider request stopped", "Provider retries exhausted"}:
+            emit(stage=data["stage"].capitalize() + (" completed" if stage == "Provider request succeeded" else " stopped"), retry=None)
     report = answer_question(spec["index_id"], spec["question"], db_env=database_env(root), llm_env=root / ".env",
                              document_title=spec.get("document_title"), history=spec.get("history"),
-                             progress=lambda stage: emit(stage=stage))
+                             progress=lambda stage: emit(stage=stage), on_trace=observe)
     (root / spec["trace"]).write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+    terminal("Saved question trace", {"path": str(root / spec["trace"])})
 
 
 def main():

@@ -190,32 +190,71 @@ Source identifiers must come from the supplied list. Do not generate page number
     return [{"role": "system", "content": instructions}, {"role": "user", "content": payload}]
 
 
+class AnswerValidationError(ValueError):
+    """All detectable schema/state/citation issues for one model response."""
+    def __init__(self, issues):
+        self.issues = issues
+        super().__init__("; ".join(f"{i['path']}: {i['message']}" + (" " + i['hint'] if i.get('hint') else "") for i in issues))
+
+
+def answer_value(content):
+    content = content.strip()
+    if content.startswith("```") and content.endswith("```"):
+        content = re.sub(r"^```(?:json)?\s*", "", content, count=1).removesuffix("```").strip()
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError as exc:
+        raise AnswerValidationError([{"kind": "schema", "path": "response", "message": "Invalid JSON: " + exc.msg}]) from exc
+
+
 def validate_answer(content: str, sources: list[dict]) -> dict:
     """Reject invalid structure, unknown source IDs and quotes absent from evidence.
 
     A matching quote is NOT a proof that it logically supports its attached claim.
     Entailment and factual correctness still require evaluation/source review.
     """
-    content = content.strip()
-    if content.startswith("```") and content.endswith("```"):
-        content = re.sub(r"^```(?:json)?\s*", "", content, count=1).removesuffix("```").strip()
-    answer = ModelAnswer.model_validate_json(content)
-    if answer.status == "insufficient_evidence":
-        if answer.claims or not answer.missing_information:
-            raise ValueError("Insufficient evidence requires no claims and an explanation.")
-    elif not answer.claims or (answer.status == "partial") != bool(answer.missing_information):
-        raise ValueError("Answered/partial status does not match claims and missing information.")
+    value = answer_value(content)
+    issues, answer = [], None
+    try:
+        answer = ModelAnswer.model_validate(value)
+    except ValidationError as exc:
+        issues.extend({"kind": "schema", "path": ".".join(map(str, e["loc"])) or "response", "message": e["msg"]}
+                      for e in exc.errors(include_input=False, include_url=False))
+    if answer is not None:
+        if answer.status == "insufficient_evidence":
+            if answer.claims or not answer.missing_information:
+                issues.append({"kind":"answer_state", "path":"status", "message":"Insufficient evidence requires no claims and an explanation."})
+        elif not answer.claims or (answer.status == "partial") != bool(answer.missing_information):
+            issues.append({"kind":"answer_state", "path":"status", "message":"Answered/partial status does not match claims and missing information."})
     lookup = {s["source_id"]: s for s in sources}
     normalized = lambda text: re.sub(r"\s+", " ", text).strip()
+    # Inspect valid evidence objects even when a root field is missing. Otherwise
+    # the only repair can fix status while leaving a previously hidden bad quote.
+    raw_claims = value.get("claims", []) if isinstance(value, dict) else []
+    for i, raw_claim in enumerate(raw_claims if isinstance(raw_claims, list) else []):
+        raw_evidence = raw_claim.get("evidence", []) if isinstance(raw_claim, dict) else []
+        for j, raw in enumerate(raw_evidence if isinstance(raw_evidence, list) else []):
+            try:
+                evidence = EvidenceQuote.model_validate(raw)
+            except ValidationError:
+                continue  # Already reported with its complete schema path above.
+            source = lookup.get(evidence.source_id)
+            issue = {"claim_index": i, "path": f"claims.{i}.evidence.{j}", "source_id": evidence.source_id}
+            if source is None:
+                issues.append({**issue, "kind":"unknown_source", "message":f"Unknown citation identifier: {evidence.source_id}.",
+                               "hint":"Use only source IDs supplied in the original request."})
+            elif normalized(evidence.quote) not in normalized(source["text"]):
+                hint = "Copy a continuous passage verbatim from this source; do not paraphrase quotations."
+                if "..." in evidence.quote or "…" in evidence.quote:
+                    hint = "This quotation contains an ellipsis. Split separated sentences into separate evidence entries, each copied verbatim; do not join them with ... ."
+                issues.append({**issue, "kind":"quote_mismatch", "message":f"Quote not found in supplied source {evidence.source_id}.", "hint":hint})
+    if issues:
+        raise AnswerValidationError(issues)
     claims = []
     for claim in answer.claims:
         citations = []
         for evidence in claim.evidence:
             source = lookup.get(evidence.source_id)
-            if source is None:
-                raise ValueError(f"Unknown citation identifier: {evidence.source_id}.")
-            if normalized(evidence.quote) not in normalized(source["text"]):
-                raise ValueError(f"Quote not found in supplied source {evidence.source_id}.")
             citations.append({**evidence.model_dump(), "chunk_id": source["chunk_id"],
                               "pages": source["pages"], "source_refs": source["source_refs"]})
         claims.append({"text": claim.text, "evidence": citations})
@@ -223,16 +262,77 @@ def validate_answer(content: str, sources: list[dict]) -> dict:
             "validation": {"schema_and_quote_checks": "passed", "semantic_entailment_verified": False}}
 
 
+def retain_cited_claims(content, sources):
+    """After repair, withhold whole invalid claims; never silently accept them.
+
+    Only citation failures are recoverable here. Missing/invalid root fields,
+    contradictory status, malformed claims and entirely invalid answers still fail.
+    """
+    try:
+        validate_answer(content, sources)
+        return None
+    except AnswerValidationError as exc:
+        if any(i["kind"] not in {"quote_mismatch", "unknown_source"} for i in exc.issues):
+            return None
+        issues = exc.issues
+    value = answer_value(content)
+    invalid = {i["claim_index"] for i in issues}
+    claims = [claim for i, claim in enumerate(value["claims"]) if i not in invalid]
+    if not claims:
+        return None
+    note = f"Withheld {len(invalid)} generated statement(s) because their source quotations could not be verified. This does not mean the paper lacks that information."
+    missing = " ".join(filter(None, [note, value.get("missing_information", "")]))[:2000]
+    partial = validate_answer(json.dumps({**value, "status":"partial", "claims":claims, "missing_information":missing}), sources)
+    partial["validation"].update(scope="retained_claims", original_claim_count=len(value["claims"]),
+        retained_claim_count=len(claims), withheld_claims=[{"claim_index":i, "issues":[issue for issue in issues if issue["claim_index"] == i]}
+                                                         for i in sorted(invalid)])
+    return partial
+
+
+def restore_answer_status(content):
+    """Restore only absent result metadata, never facts, quotations or gaps.
+
+    The documented state contract determines status from claims and declared
+    missing information. Explicit/invalid status and other schema errors are
+    never overridden. Citation validation still runs after this normalization.
+    """
+    try:
+        value = answer_value(content)
+    except AnswerValidationError:
+        return content, None
+    if (not isinstance(value, dict) or "status" in value or not isinstance(value.get("claims"), list)
+            or not isinstance(value.get("missing_information"), str)):
+        return content, None
+    if value["claims"]:
+        status = "partial" if value["missing_information"].strip() else "answered"
+    elif value["missing_information"].strip():
+        status = "insufficient_evidence"
+    else:
+        return content, None
+    candidate = {**value, "status": status}
+    try:
+        ModelAnswer.model_validate(candidate)
+    except ValidationError:
+        return content, None
+    return json.dumps(candidate), {"field":"status", "value":status,
+                                  "reason":"Absent status restored from the existing claims/missing_information state contract after repair."}
+
+
 def call_answer_model(messages: list[dict], sources: list[dict], settings: dict,
-                      *, max_tokens: int = 4096, timeout: float = 90) -> tuple[dict, list[dict]]:
-    """Make one hosted request, with at most one repair for invalid structured output."""
+                      *, max_tokens: int = 4096, timeout: float = 90, on_trace=None,
+                      provider_retries=None, progress=None) -> tuple[dict, list[dict]]:
+    """Generate and optionally repair, with independent bounded transport retries."""
     from openai import OpenAI
+    from .provider_retry import ProviderRetries, provider_error_message
 
     attempts = []
+    provider_retries = provider_retries or ProviderRetries()
     with OpenAI(api_key=settings["api_key"], base_url=settings["base_url"],
                 timeout=timeout, max_retries=0) as client:
         for attempt in range(2):
-            print(f"Answer model request {attempt+1}/2...", file=sys.stderr, flush=True)
+            stage = "answer generation" if attempt == 0 else "answer schema/citation repair"
+            print(f"{stage.capitalize()} (same retrieved passages; provider retries separate)...", file=sys.stderr, flush=True)
+            if progress: progress("Writing answer from retrieved evidence" if attempt == 0 else "Repairing answer format and citations")
             started = perf_counter()
             options = {}
             if "nemotron-3" in settings["model"].lower():
@@ -241,14 +341,19 @@ def call_answer_model(messages: list[dict], sources: list[dict], settings: dict,
                 options["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
                 options["response_format"] = {"type": "json_object"}
             try:
-                response = client.chat.completions.create(
+                if on_trace:
+                    on_trace("Answer API request", {"model": settings["model"], "attempt": attempt+1,
+                        "attempt_kind": "initial_generation" if attempt == 0 else "schema_and_citation_repair",
+                        "temperature": 0, "max_tokens": max_tokens, "messages": messages, **options})
+                response = provider_retries.run(lambda: client.chat.completions.create(
                     model=settings["model"], messages=messages, temperature=0,
-                    max_tokens=max_tokens, stream=False, **options)
+                    max_tokens=max_tokens, stream=False, **options), stage, on_trace=on_trace, progress=progress)
             except Exception as exc:
                 # Do not persist headers, client objects or credential-bearing exceptions.
                 attempts.append({"attempt": attempt+1, "elapsed_seconds": round(perf_counter()-started, 3),
-                                 "error_type": type(exc).__name__})
-                return {"status": "error", "error": f"Answer endpoint failed ({type(exc).__name__}); check the connection/key and retry."}, attempts
+                                 "error_type": type(exc).__name__, "http_status": getattr(exc, "status_code", None)})
+                if on_trace: on_trace("Answer API failed", attempts[-1])
+                return {"status": "error", "error_kind":"api_error", "error": provider_error_message(exc)}, attempts
             choice = response.choices[0] if response.choices else None
             content = (choice.message.content or "") if choice else ""
             record = {"attempt": attempt+1, "response_id": response.id,
@@ -257,21 +362,50 @@ def call_answer_model(messages: list[dict], sources: list[dict], settings: dict,
                       "usage": response.usage.model_dump() if response.usage else None,
                       "content": content}
             attempts.append(record)
+            if on_trace: on_trace("Raw answer model response", record)
             if not choice or choice.finish_reason != "stop":
-                return {"status": "error", "error": "The model did not finish normally; no partial output was accepted. Check finish_reason in the report."}, attempts
+                return {"status": "error", "error_kind":"incomplete_response", "error": "The model did not finish normally; no partial output was accepted. Check finish_reason in the report."}, attempts
             try:
-                return validate_answer(content, sources), attempts
+                accepted = validate_answer(content, sources)
+                if on_trace: on_trace("Answer validation accepted", accepted)
+                return accepted, attempts
             except (ValidationError, ValueError) as exc:
                 reason = ("Schema errors: " + "; ".join(
                     f"{'.'.join(map(str,e['loc'])) or 'response'}: {e['msg']}"
                     for e in exc.errors(include_input=False, include_url=False)[:6])
                     if isinstance(exc, ValidationError) else str(exc))
                 record["validation_error"] = reason
+                record["validation_issues"] = exc.issues if isinstance(exc, AnswerValidationError) else []
+                if on_trace: on_trace("Answer rejected; repair pending" if attempt == 0 else "Answer rejected after repair",
+                                      {"attempt": attempt+1, "reason": reason, "issues": record["validation_issues"]})
                 if attempt == 0:
                     messages = [*messages, {"role": "assistant", "content": content},
-                                {"role": "user", "content": "Repair your JSON response using only the original supplied sources. "
-                                 + reason + " Return only the corrected JSON object; if unsupported, report insufficient_evidence."}]
-    return {"status": "error", "error": "Model output failed validation after one repair. No answer was accepted."}, attempts
+                                {"role": "user", "content": "Repair ALL of these issues together using only the original supplied sources: "
+                                 + reason + " Include all required root fields: status, claims, missing_information. "
+                                 "Every evidence quote must be a continuous verbatim source span. Split separated sentences into separate evidence entries; do not join them with ellipses. "
+                                 "Keep correctly cited claims. Remove an entire claim if it cannot be supported, and use partial with a clear missing_information note when other claims remain. "
+                                 "Return only the corrected JSON object; if no requested claim is supported, report insufficient_evidence."}]
+    candidate, normalization = restore_answer_status(attempts[-1]["content"])
+    if normalization:
+        attempts[-1]["normalizations"] = [normalization]
+        if on_trace: on_trace("Result metadata restored after repair", normalization)
+        try:
+            accepted = validate_answer(candidate, sources)
+        except AnswerValidationError:
+            pass  # Remaining citation failures may allow only a partial answer.
+        else:
+            accepted["validation"]["normalizations"] = [normalization]
+            attempts[-1]["outcome"] = "accepted_after_status_restoration"
+            if on_trace: on_trace("Answer validation accepted after metadata restoration", accepted)
+            return accepted, attempts
+    partial = retain_cited_claims(candidate, sources)
+    if partial:
+        if normalization: partial["validation"]["normalizations"] = [normalization]
+        attempts[-1]["outcome"] = "partial_after_withholding_invalid_claims"
+        if on_trace: on_trace("Partial answer retained; invalid claims withheld", partial)
+        return partial, attempts
+    return {"status": "error", "error_kind":"answer_validation_failed",
+            "error": "Model output failed schema or citation checks after one repair; no valid answer could be retained. See the question log for details."}, attempts
 
 
 def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env",
@@ -279,7 +413,7 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
                     device: str = "auto", model_name: str | None = None,
                     max_tokens: int = 4096, timeout: float = 90, progress=None,
                     retrieval_mode: str = "reranked", document_title: str | None = None, history: list | None = None,
-                    retrieval_recovery: bool = True) -> dict:
+                    retrieval_recovery: bool = True, on_trace=None) -> dict:
     """Answer from evidence, with one optional retrieval recovery after a miss.
 
     Recovery applies to the main hybrid/reranked path. Explicit vector-only mode
@@ -291,6 +425,12 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
         raise ValueError("Use top_k 1-20, max_tokens 256-8192, and timeout 1-300 seconds.")
     started = perf_counter()
     settings = load_answer_settings(llm_env, model_name)
+    from .provider_retry import ProviderRetries
+    provider_retries = ProviderRetries()
+    if on_trace:
+        on_trace("Question started", {"question": question, "document_title": document_title,
+                 "index_id": index_id, "answer_model": settings["model"], "retrieval_mode": retrieval_mode,
+                 "top_k": top_k, "max_tokens": max_tokens, "provider_retry_policy": provider_retries.summary()})
     if retrieval_mode not in {"vector", "hybrid", "reranked"}:
         raise ValueError("Choose vector, hybrid, or reranked retrieval.")
     from .retrieval import (document_profile, plan_query, recover_query_plan, collect_candidates,
@@ -310,7 +450,9 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
                  "mode":retrieval_mode,"requested_top_k":top_k,"warnings":[]}
     if retrieval_mode != "vector":
         if progress: progress("Understanding your question")
-        query_plan, planning_trace = plan_query(question, profile, settings, history)
+        query_plan, planning_trace = plan_query(question, profile, settings, history, provider_retries=provider_retries,
+                                               progress=progress, **({"on_trace": on_trace} if on_trace else {}))
+        if on_trace: on_trace("Effective question plan", {"plan": query_plan, "planning": planning_trace})
         retrieval["intent"] = query_plan["intent"]
         if planning_trace["mode"] == "fallback":
             retrieval["warnings"].append("Question interpretation was unavailable; used the original question and a conservative search plan.")
@@ -334,7 +476,9 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
                 if retrieval_mode == "reranked":
                     if progress: progress("Ranking relevant evidence")
                     ranking_question = "\n".join([question, *plan["search_queries"][1:]]) if history else question
-                    ranked, ranking_trace = rerank_sources(ranking_question, candidates, settings, llm_env)
+                    ranked, ranking_trace = rerank_sources(ranking_question, candidates, settings, llm_env,
+                                                          provider_retries=provider_retries, progress=progress,
+                                                          **({"on_trace": on_trace} if on_trace else {}))
                 else:
                     ranked, ranking_trace = candidates, {"status":"not_requested"}
                 trace["reranking"] = ranking_trace
@@ -346,12 +490,15 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
         trace.update(retrieved_chunks=len(found), supplied_sources=len(selected))
         return found, selected, excluded, trace
 
-    def write_answer(selected, plan):
+    def write_answer(selected, plan, round_number=1):
         messages = build_messages(question, selected, plan["search_queries"][1:] if plan and history else None,
                                   plan["intent"] if plan else None)
         if selected:
             if progress: progress("Writing answer from retrieved evidence")
-            answer, calls = call_answer_model(messages, selected, settings, max_tokens=max_tokens, timeout=timeout)
+            observe = (lambda stage, data: on_trace(stage, {"retrieval_round": round_number, **data})) if on_trace else None
+            answer, calls = call_answer_model(messages, selected, settings, max_tokens=max_tokens, timeout=timeout,
+                                              provider_retries=provider_retries, progress=progress,
+                                              **({"on_trace": observe} if observe else {}))
         else:
             answer = {"status": "insufficient_evidence", "claims": [],
                       "missing_information": "No usable passages remain after evidence preparation.",
@@ -371,6 +518,7 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
         hits, sources, exclusions, trace = retrieve(query_plan)
         retrieval["warnings"].extend(trace.pop("warnings"))
         retrieval.update(trace)
+        if on_trace: on_trace("Selected evidence / round 1", {"retrieval": trace, "sources": sources, "excluded_chunks": exclusions})
     retrieval_seconds = round(perf_counter()-started, 3)
     if query_plan and query_plan["clarification"]:
         messages = build_messages(question, sources)
@@ -388,7 +536,10 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
             if progress: progress("Evidence was insufficient; trying another search")
             recovery_started = perf_counter()
             revised_plan, recovery["planning"] = recover_query_plan(
-                question, profile, query_plan, sources, answer["missing_information"], settings)
+                question, profile, query_plan, sources, answer["missing_information"], settings,
+                provider_retries=provider_retries, progress=progress,
+                **({"on_trace": on_trace} if on_trace else {}))
+            if on_trace: on_trace("Recovery plan", {"plan": revised_plan, "planning": recovery["planning"]})
             if revised_plan is None:
                 recovery["status"] = recovery["planning"]["status"]
                 retrieval["warnings"].append("Search recovery did not produce a usable new plan; the first result is retained.")
@@ -398,6 +549,8 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
                 # the original insufficient-evidence result into a made-up answer.
                 try:
                     retry_hits, retry_sources, retry_exclusions, retry_trace = retrieve(revised_plan, sources)
+                    if on_trace: on_trace("Selected evidence / round 2", {"retrieval": retry_trace, "sources": retry_sources,
+                                                                         "excluded_chunks": retry_exclusions})
                 except Exception as exc:
                     recovery.update(status="failed", error_type=type(exc).__name__)
                     rounds.append({"round": 2, "query_plan": revised_plan,
@@ -418,7 +571,7 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
                         recovery["status"] = "unchanged_evidence"
                         retrieval["warnings"].append("The extra search found no additional usable passages for an answer; the first result is retained.")
                     else:
-                        retry_messages, retry_answer, retry_calls = write_answer(retry_sources, revised_plan)
+                        retry_messages, retry_answer, retry_calls = write_answer(retry_sources, revised_plan, 2)
                         retry_round.update(answer=retry_answer, request_messages=retry_messages, attempts=retry_calls)
                         if retry_answer["status"] == "error":
                             recovery["status"] = "answer_failed"
@@ -432,8 +585,19 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
                             hits, sources, exclusions = retry_hits, retry_sources, retry_exclusions
                             messages, answer, selected_plan = retry_messages, retry_answer, revised_plan
         attempts = [{**call, "retrieval_round": r["round"]} for r in rounds for call in r["attempts"]]
+    if enabled and not recovery["attempted"]:
+        if answer["status"] == "error":
+            recovery.update(status="not_attempted_" + answer.get("error_kind", "answer_error"),
+                            skip_reason="The answer failed generation/validation; this is not an insufficient-evidence retrieval result.")
+        elif answer.get("validation", {}).get("withheld_claims"):
+            recovery.update(status="not_needed_partial_with_matching_quotes",
+                            skip_reason="Returned only claims with matching source quotations; invalid generated claims were withheld after repair.")
     retrieval["warnings"] = list(dict.fromkeys(retrieval["warnings"]))
     retrieval["recovery"] = recovery
+    if on_trace:
+        on_trace("Retrieval recovery outcome", recovery)
+        on_trace("Final answer", {"model": settings["model"], "answer": answer,
+                                  "warnings": retrieval["warnings"], "total_seconds": round(perf_counter()-started, 3)})
     return {"question": question, "index_id": index_id, "answer_model": settings["model"],
             "answer_request": {"temperature": 0, "max_tokens": max_tokens, "timeout_seconds": timeout,
                                 "sdk_retries": 0, "maximum_validation_repairs": 1,
@@ -442,7 +606,7 @@ def answer_question(index_id: str, question: str, *, db_env: Path = ROOT / ".env
                                "thinking_enabled": False if "nemotron-3" in settings["model"].lower() else None,
                                "json_object_mode": "nemotron-3" in settings["model"].lower()},
             "query_plan":query_plan, "query_planning":planning_trace, "effective_query_plan":selected_plan,
-            "retrieval_rounds": rounds,
+            "provider_retries": provider_retries.summary(), "retrieval_rounds": rounds,
             "retrieval": {**retrieval, "retrieved_chunks":len(hits), "supplied_sources":len(sources),
                           "device":str(model.device) if model is not None else None,
                           "elapsed_seconds_including_model_load":retrieval_seconds},
@@ -498,10 +662,12 @@ def main() -> int:
     if output.exists():
         parser.error("Output directory already exists; choose a new path.")
     try:
+        from .terminal import TerminalTrace
+        terminal = TerminalTrace([args.llm_env_file, args.db_env_file])
         report = answer_question(args.index_id, args.question, db_env=args.db_env_file, llm_env=args.llm_env_file,
                                  top_k=args.top_k, device=args.device, model_name=args.model,
                                  max_tokens=args.max_tokens, timeout=args.timeout, retrieval_mode=args.retrieval_mode,
-                                 retrieval_recovery=not args.no_retrieval_recovery)
+                                 retrieval_recovery=not args.no_retrieval_recovery, on_trace=terminal)
     except Exception as exc:
         # Avoid printing raw exceptions which may contain connection credentials.
         detail = str(exc) if isinstance(exc, (ValueError, FileNotFoundError)) else (
@@ -513,7 +679,8 @@ def main() -> int:
     markdown = render_answer(report)
     (output / "answer.md").write_text(markdown, encoding="utf-8")
     # Some Windows consoles use cp1252. Files always retain complete UTF-8 text.
-    print(markdown.encode(sys.stdout.encoding or "utf-8", errors="replace").decode(sys.stdout.encoding or "utf-8"))
+    safe_markdown = terminal.redact_text(markdown)
+    print(safe_markdown.encode(sys.stdout.encoding or "utf-8", errors="replace").decode(sys.stdout.encoding or "utf-8"))
     print(f"Full trace saved: {output.resolve()}")
     return 2 if report["answer"]["status"] == "error" else 0
 

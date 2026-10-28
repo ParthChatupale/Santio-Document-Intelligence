@@ -97,7 +97,7 @@ class GraphRecords(BaseModel):
 def source_text(messages):
     for message in messages:
         text = message.get("content", "")
-        if isinstance(text, str) and MARKER in text:
+        if isinstance(text, str) and (MARKER in text or 'SANTIO_GRAPH_JSON_V3' in text):
             return text.split("SOURCE_TEXT_BEGIN\n", 1)[1].rsplit("\nSOURCE_TEXT_END", 1)[0]
     return None
 
